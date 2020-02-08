@@ -80,19 +80,21 @@ In theme.lua you can set theme mode. Possible values: "light", "dark".
 
 PS: also in rc.lua and theme.lua you can make your own experiments, suggestions are appreciated. For example, you can create widget for bluetooth, add calendar popup to ClockCalendarWidget, extend theme modes. Let's make the world better together!
 
+# Prerequisites
+
++ Awesome WM 4.x
++ LightDM (if you use *dm-lock* as session lock tool)
++ wireless_tools (if you use NetworkWidget)
++ Lain for Awesome WM 4.x
++ Vicious widgets for the Awesome WM 4.x
++ Fonts: Droid, Noto (otherwise use another fonts in theme.lua instead)
+
 # Installation
 
 ```
 > git clone https://github.com/Relz/awesome-wm-theme.git
 > mv -bv awesome-wm-theme/* ~/.config/awesome; rm -rf awesome-wm-theme
 ```
-
-# System requirments
-
-+ Awesome WM 4.x
-+ LightDM (if you use *dm-lock* as session lock tool)
-+ wireless_tools (if you use NetworkWidget)
-+ Maybe some other packages :)
 
 # Donate
 
