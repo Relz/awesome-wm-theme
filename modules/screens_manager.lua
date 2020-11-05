@@ -61,10 +61,10 @@ local function create_left_layout(screen_index, panel)
   )
 
   local taglist_margin_container = wibox.container.margin(tag_list)
-  taglist_margin_container.top = 2
-  taglist_margin_container.right = 2
-  taglist_margin_container.bottom = 2
-  taglist_margin_container.left = 2
+  taglist_margin_container.top = 3
+  taglist_margin_container.right = 3
+  taglist_margin_container.bottom = 3
+  taglist_margin_container.left = 3
 
   return taglist_margin_container
 end

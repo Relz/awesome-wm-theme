@@ -15,6 +15,7 @@ NetworkWidget_prototype = function()
     -- Private Static Variables
     config_path = awful.util.getdir("config"),
     wired_interface_name = "enp3s0",
+    wireless_interface_name = "wlo1",
     -- Private Static Funcs
     read_command_result = function(command)
       local command_subprocess = io.popen(command)
@@ -103,7 +104,7 @@ NetworkWidget_prototype = function()
         end
       end,
       2^4,
-      "wlp2s0b1"
+      this.__private_static.wireless_interface_name
     )
   end
 

@@ -31,7 +31,7 @@ theme.tooltip_border_color = theme.text_color
 
 -- | Borders | --
 
-theme.border_width = 1
+theme.border_width = 0
 theme.border_normal = theme.background_color .. "ee"
 theme.border_focus = theme.background_color .. "ee"
 theme.border_marked = theme.background_color .. "ee"
@@ -62,8 +62,8 @@ theme.layout_tiletop = theme.icons .. "/panel/layouts/tiletop.png"
 
 -- | Taglist | --
 
-theme.taglist_spacing = 2
-theme.taglist_font = "Noto Sans Mono Regular 13"
+theme.taglist_spacing = 4
+theme.taglist_font = "Noto Sans Mono Regular 11"
 
 theme.taglist_fg_empty = "#1e293d"
 theme.taglist_fg_focus = "#f4feff"
@@ -77,9 +77,7 @@ theme.taglist_bg_urgent = "#f44336"
 
 theme.taglist_shape_border_width_empty = 1
 theme.taglist_shape_border_color_empty = "#1e293d"
-theme.taglist_shape = function(cr, width, height)
-	gears.shape.rounded_rect(cr, width, height, 3)
-end
+theme.taglist_shape = gears.shape.rounded_bar
 
 -- | Tasklist | --
 

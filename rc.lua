@@ -26,11 +26,11 @@ local screens_manager = require("modules/screens_manager")
 
 -- | Variable definitions | --
 
-local terminal             = "deepin-terminal"
-local browser              = "firefox"
-local file_manager         = "dde-file-manager"
-local graphic_text_editor  = "subl3"
-local music_player         = "deepin-music"
+local terminal             = "alacritty"
+local browser              = "google-chrome-stable"
+local file_manager         = "nautilus"
+local graphic_text_editor  = "subl"
+local music_player         = "spotify"
 local session_lock_command = "dm-tool lock"
 
 -- | Widgets | --
@@ -64,11 +64,11 @@ end
 local screen_0_panel = Panel()
 screen_0_panel.position = "top"
 screen_0_panel.tags.list = {
-  Tag("1", awful.layout.suit.fair),
-  Tag("2", awful.layout.suit.floating),
-  Tag("3", awful.layout.suit.floating),
-  Tag("4", awful.layout.suit.floating),
-  Tag("5", awful.layout.suit.floating),
+  Tag(" 1 ", awful.layout.suit.fair),
+  Tag(" 2 ", awful.layout.suit.floating),
+  Tag(" 3 ", awful.layout.suit.floating),
+  Tag(" 4 ", awful.layout.suit.floating),
+  Tag(" 5 ", awful.layout.suit.floating),
 }
 screen_0_panel.tags.key_bindings = awful.util.table.join(
   awful.button({}, 1, awful.tag.viewonly),
@@ -119,7 +119,11 @@ local brightness = function(step, increase)
   awful.spawn(command, false)
 end
 
--- volume
+-- Volume
+
+local mute = function()
+  awful.spawn("amixer -D pulse set Master 1+ toggle", false)
+end
 
 local volume = function(step, increase)
   local command = "amixer set Master " .. step .. "%";
@@ -132,7 +136,25 @@ local volume = function(step, increase)
   vicious.force({ volume_widget.icon })
 end
 
--- keyboard layout
+-- Audio
+
+local audio_previous = function()
+  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous", false)
+end
+
+local audio_next = function()
+  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next", false)
+end
+
+local audio_toggle_play_pause = function()
+  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause", false)
+end
+
+local audio_stop = function()
+  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop", false)
+end
+
+-- Keyboard layout
 
 local current_keyboard_layout = "us";
 local toggle_keyboard_layout = function()
@@ -237,18 +259,22 @@ local global_keys = awful.util.table.join(
   awful.key({ "Control" }, "XF86MonBrightnessUp", function () brightness(10, true) end, { description="Increase brightness by 10", group="Brightness" }),
   awful.key({ "Control" }, "XF86MonBrightnessDown", function () brightness(10, false) end, { description="Decrease brightness by 10", group="Brightness" }),
 
+  awful.key({}, "XF86AudioMute", function () mute() end, { description="Toggle sound volume", group="Volume" }),
+
   awful.key({}, "XF86AudioRaiseVolume", function () volume(5, true) end, { description="Raise volume by 5", group="Volume" }),
   awful.key({}, "XF86AudioLowerVolume", function () volume(5, false) end, { description="Lower volume by 5", group="Volume" }),
 
   awful.key({ "Control" }, "XF86AudioRaiseVolume", function () volume(10, true) end, { description="Raise volume by 10", group="Volume" }),
   awful.key({ "Control" }, "XF86AudioLowerVolume", function () volume(10, false) end, { description="Lower volume by 10", group="Volume" }),
 
+  awful.key({}, "XF86AudioPrev", function () audio_previous() end, { description="Previous audio", group="Audio" }),
+  awful.key({}, "XF86AudioPlay", function () audio_toggle_play_pause() end, { description="Play/Pause audio", group="Audio" }),
+  awful.key({}, "XF86AudioNext", function () audio_next() end, { description="Next audio", group="Audio" }),
+  awful.key({}, "XF86AudioStop", function () audio_stop() end, { description="Stop audio", group="Audio" }),
+
   -- Applications running
   awful.key({ "Mod4", "Control", "Shift" }, "b", function() awful.spawn(browser) end, { description="Execute default web browser(" .. browser .. ")", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_i", function() awful.spawn(browser) end),
-
-  awful.key({ "Mod4", "Control", "Shift" }, "g", function() awful.spawn("google-chrome-stable") end, { description="Execute Google Chrome", group="Application" }),
-  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_pe", function() awful.spawn("google-chrome-stable") end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "t", function() awful.spawn("telegram-desktop") end, { description="Execute Telegram", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_ie", function() awful.spawn("telegram-desktop") end),
@@ -279,8 +305,8 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control", "Shift" }, "]", function() awful.spawn("obs") end, { description="Execute OBS Studio", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_hardsign", function() awful.spawn("obs") end),
 
-  awful.key({ "Mod4", "Control", "Shift" }, "s", function() awful.spawn("deepin-screenshot --no-notification") end, { description="Execute Deepin Screenshot", group="Application" }),
-  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_yeru", function() awful.spawn("deepin-screenshot --no-notification") end),
+  awful.key({ "Mod4", "Control", "Shift" }, "s", function() awful.spawn("deepin-screen-recorder --no-notification") end, { description="Execute Deepin Screen Capture", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_yeru", function() awful.spawn("deepin-screen-recorder --no-notification") end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "v", function() awful.spawn("viber") end, { description="Execute Viber", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_em", function() awful.spawn("viber") end),
@@ -293,6 +319,9 @@ local global_keys = awful.util.table.join(
 
   awful.key({ "Mod4", "Control", "Shift" }, "k", function() awful.spawn("gitkraken") end, { description="Execute GitKraken", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_el", function() awful.spawn("gitkraken") end),
+
+  awful.key({ "Mod4", "Control", "Shift" }, "c", function() awful.spawn("code") end, { description="Execute VSCode", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_es", function() awful.spawn("code") end),
 
   awful.key({}, "Alt_R", toggle_keyboard_layout, { description="Toggle keyboard layout", group="Keyboard" }),
 
@@ -348,49 +377,7 @@ awful.rules.rules = {
     }
   },
   {
-    rule = { class = "dde-file-manager" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "Deepin-terminal" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "deepin-menu" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "deepin-music" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
     rule = { class = "Ulauncher" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "deepin-calculator" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "deepin-picker" },
     properties = {
       border_width = 0,
       titlebars_enabled = false
@@ -418,21 +405,7 @@ awful.rules.rules = {
     }
   },
   {
-    rule = { class = "deepin-movie" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "deepin-boot-maker" },
-    properties = {
-      border_width = 0,
-      titlebars_enabled = false
-    }
-  },
-  {
-    rule = { class = "deepin-system-monitor" },
+    rule = { class = "code-oss" },
     properties = {
       border_width = 0,
       titlebars_enabled = false
@@ -496,10 +469,16 @@ end)
 
 executer.execute_commands({
   "wmname LG3D",
-  "compton -D 0",
+  "xfce4-power-manager",
+  "picom",
   "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1",
-  "kbdd",
+  --"kbdd",
+  "phonesim -p 12345 /usr/share/phonesim/default.xml",
+  "systemctl restart ofono",
+  "dbus-send --print-reply --system --dest=org.ofono /phonesim org.ofono.Modem.SetProperty string:'Powered' variant:boolean:true",
+  "dbus-send --print-reply --system --dest=org.ofono /phonesim org.ofono.Modem.SetProperty string:'Online' variant:boolean:true",
   "pulseaudio --start",
   "xfce4-clipman",
+  "nm-applet",
   "ulauncher"
 })
