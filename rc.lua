@@ -305,8 +305,8 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control", "Shift" }, "]", function() awful.spawn("obs") end, { description="Execute OBS Studio", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_hardsign", function() awful.spawn("obs") end),
 
-  awful.key({ "Mod4", "Control", "Shift" }, "s", function() awful.spawn("deepin-screen-recorder --no-notification") end, { description="Execute Deepin Screen Capture", group="Application" }),
-  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_yeru", function() awful.spawn("deepin-screen-recorder --no-notification") end),
+  awful.key({ "Mod4", "Control", "Shift" }, "s", function() awful.spawn("deepin-screenshot --no-notification") end, { description="Execute Deepin Screen Capture", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_yeru", function() awful.spawn("deepin-screenshot --no-notification") end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "v", function() awful.spawn("viber") end, { description="Execute Viber", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_em", function() awful.spawn("viber") end),
@@ -471,13 +471,7 @@ executer.execute_commands({
   "wmname LG3D",
   "xfce4-power-manager",
   "picom",
-  "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1",
-  --"kbdd",
-  "phonesim -p 12345 /usr/share/phonesim/default.xml",
-  "systemctl restart ofono",
-  "dbus-send --print-reply --system --dest=org.ofono /phonesim org.ofono.Modem.SetProperty string:'Powered' variant:boolean:true",
-  "dbus-send --print-reply --system --dest=org.ofono /phonesim org.ofono.Modem.SetProperty string:'Online' variant:boolean:true",
-  "pulseaudio --start",
+  "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
   "xfce4-clipman",
   "nm-applet",
   "ulauncher"
