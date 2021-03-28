@@ -472,6 +472,7 @@ executer.execute_commands({
   "xfce4-power-manager",
   "picom",
   "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
+  "setxkbmap -option compose:paus",
   "xfce4-clipman",
   "nm-applet",
   "ulauncher"
