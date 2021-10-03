@@ -21,7 +21,7 @@ theme.bg_urgent = theme.background_color
 
 theme.bg_systray = theme.background_color
 
-theme.systray_icon_spacing = 4
+theme.systray_icon_spacing = 8
 
 theme.tooltip_bg = theme.background_color
 theme.tooltip_fg = theme.text_color
@@ -81,9 +81,8 @@ theme.taglist_shape = gears.shape.rounded_bar
 
 -- | Tasklist | --
 
-theme.tasklist_spacing = 8
-theme.tasklist_font = "Noto Sans Mono Regular 8"
-theme.tasklist_font_focus = "Noto Sans Mono Bold 8"
+theme.tasklist_font = "Droid Sans Mono Regular 9"
+theme.tasklist_font_focus = "Droid Sans Mono Bold 9"
 theme.tasklist_disable_task_name = true
 theme.tasklist_plain_task_name = true
 theme.tasklist_bg_normal = theme.background_color

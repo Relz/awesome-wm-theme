@@ -72,21 +72,23 @@ end
 local function create_middle_layout(screen_index, panel)
   local middle_layout = create_fixed_layout(panel.position)
 
-  local tasklist = awful.widget.tasklist(
-    screen_index,
-    awful.widget.tasklist.filter.currenttags,
-    panel.tasks.key_bindings,
-    {},
-    nil,
-    middle_layout
-  )
+  local tasklist = awful.widget.tasklist {
+    screen = screen_index,
+    filter = awful.widget.tasklist.filter.currenttags,
+    buttons = tasklist_buttons,
+    layout = {
+      spacing = 8,
+      layout  = wibox.layout.fixed.horizontal
+    },
+    base_widget = middle_layout
+  }
   local tasklist_margin_container = wibox.container.margin(tasklist)
   if is_horizontal_position(panel.position) then
-    tasklist_margin_container.left = 16
+    tasklist_margin_container.left = 32
     tasklist_margin_container.top = 4
     tasklist_margin_container.bottom = 4
   else
-    tasklist_margin_container.top = 16
+    tasklist_margin_container.top = 32
     tasklist_margin_container.right = 4
   end
 
@@ -94,11 +96,11 @@ local function create_middle_layout(screen_index, panel)
 end
 
 local function get_widget_horizontal_margin(panel_position)
-  return is_horizontal_position(panel_position) and 4 or 0
+  return is_horizontal_position(panel_position) and 8 or 0
 end
 
 local function get_widget_vertical_margin(panel_position)
-  return is_horizontal_position(panel_position) and 0 or 4
+  return is_horizontal_position(panel_position) and 0 or 8
 end
 
 local function create_right_layout(screen_index, panel)
