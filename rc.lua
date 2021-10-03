@@ -106,17 +106,36 @@ screen.connect_signal("property::geometry", awesome.restart)
 
 -- | Functions | --
 
+-- Common
+
+local run_command = function(command)
+  local command_subprocess = io.popen(command)
+  local result = command_subprocess:read('*all')
+  command_subprocess:close()
+
+  return result
+end
+
+local read_file_content = function(file_name)
+  return run_command("cat " .. file_name)
+end
+
 -- Brightness
 
-local brightness = function(step, increase)
-  local command = "xbacklight ";
+local brightness = function(step_percent, increase)
+  local max_brightness = tonumber(read_file_content("/sys/class/backlight/intel_backlight/max_brightness"))
+  local current_brightness = tonumber(read_file_content("/sys/class/backlight/intel_backlight/brightness"))
+  local step = math.floor(step_percent * max_brightness / 100)
+
+  local new_brightness = 0
   if increase then
-    command = command .. "-inc ";
+   new_brightness = current_brightness + step;
   else
-    command = command .. "-dec ";
+   new_brightness = current_brightness - step;
   end
-  command = command .. step;
-  awful.spawn(command, false)
+  local new_brightness = math.min(math.max(new_brightness, 0), max_brightness)
+
+  run_command("pkexec xfpm-power-backlight-helper --set-brightness=" .. new_brightness)
 end
 
 -- Volume
