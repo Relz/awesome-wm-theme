@@ -6,7 +6,8 @@ require("modules/widgets/cpu_widget")
 require("modules/widgets/memory_widget")
 require("modules/widgets/network_widget")
 require("modules/widgets/battery_widget")
-require("modules/widgets/clock_calendar_widget")
+require("modules/widgets/calendar_widget")
+require("modules/widgets/clock_widget")
 require("modules/widgets/power_off_widget")
 require("modules/widgets/keyboard_layout_widget")
 require("modules/widgets/volume_widget")
@@ -41,7 +42,8 @@ beautiful.init(config_path .. "/themes/relz/theme.lua")
 local cpu_widget = CpuWidget(beautiful.widget_cpu, beautiful.mode)
 local memory_widget = MemoryWidget(beautiful.widget_memory, beautiful.mode)
 local battery_widget = BatteryWidget(beautiful.widget_battery_default, beautiful.mode)
-local clock_calendar_widget = ClockCalendarWidget(beautiful.widget_clock, beautiful.widget_calendar, beautiful.text_color)
+local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color)
+local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color)
 local power_off_widget = PowerOffWidget(beautiful.widget_power_off, session_lock_command)
 local network_widget = NetworkWidget(beautiful.widget_network_default, beautiful.mode)
 local volume_widget = VolumeWidget(beautiful.widget_volume_default, beautiful.mode)
@@ -84,7 +86,8 @@ screen_0_panel.widgets = {
   network_widget,
   volume_widget,
   keyboard_layout_widget,
-  clock_calendar_widget,
+  calendar_widget,
+  clock_widget,
   power_off_widget
 }
 
