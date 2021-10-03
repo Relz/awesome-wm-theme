@@ -410,6 +410,27 @@ awful.rules.rules = {
       border_width = 0,
       titlebars_enabled = false
     }
+  },
+  {
+    rule = { class = "Code" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
+    rule = { class = "TelegramDesktop" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
+    rule = { class = "Org.gnome.Nautilus" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
   }
 }
 
