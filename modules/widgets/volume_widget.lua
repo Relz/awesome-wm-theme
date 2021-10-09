@@ -57,7 +57,7 @@ VolumeWidget_prototype = function()
     end
   }
 
-  this.__construct = function(icon_path, mode)
+  this.__construct = function(icon_path, mute_command, mode)
     -- Constructor
     this.__public.icon.image = icon_path
     this.__public.icon.resize = false
@@ -72,13 +72,25 @@ VolumeWidget_prototype = function()
     vicious.register(this.__public.icon, vicious.widgets.volume,
       function (widget, args)
         this.__private.volume_value = args[1]
-        this.__private.is_muted = args[2] == "♩"
+        this.__private.is_muted = args[2] == "🔈"
         this.__public.icon.image = this.__private_static.config_path .. "/themes/relz/icons/panel/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. "_" .. this.__private.mode .. ".png"
         this.__private.textbox.text = string.rep(" ", 3 - this.__private.get_number_digits_count(this.__private.volume_value)) .. this.__private.get_volume_value_string() .. " "
       end,
       2^22,
       "Master"
     )
+
+    this.__public.icon:buttons(awful.util.table.join(awful.button({}, 1,
+        function ()
+            awful.spawn(mute_command)
+            vicious.force({ this.__public.icon })
+        end)))
+
+    this.__public.value:buttons(awful.util.table.join(awful.button({}, 1,
+        function ()
+            awful.spawn(mute_command)
+            vicious.force({ this.__public.icon })
+        end)))
   end
 
   return this

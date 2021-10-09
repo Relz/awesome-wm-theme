@@ -35,6 +35,8 @@ local music_player         = "spotify"
 local session_lock_command = "dm-tool lock"
 local calendar_command     = "/opt/google/chrome/google-chrome --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
 
+local mute_command         = "amixer -D pulse set Master 1+ toggle"
+
 -- | Widgets | --
 
 local config_path = awful.util.getdir("config")
@@ -47,7 +49,7 @@ local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local power_off_widget = PowerOffWidget(beautiful.widget_power_off, session_lock_command)
 local network_widget = NetworkWidget(beautiful.widget_network_default, beautiful.mode)
-local volume_widget = VolumeWidget(beautiful.widget_volume_default, beautiful.mode)
+local volume_widget = VolumeWidget(beautiful.widget_volume_default, mute_command, beautiful.mode)
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
 -- | Panels | --
@@ -145,7 +147,8 @@ end
 -- Volume
 
 local mute = function()
-  awful.spawn("amixer -D pulse set Master 1+ toggle", false)
+  awful.spawn(mute_command, false)
+  awful.spawn.easy_async(mute_command, function() vicious.force({ volume_widget.icon }) end)
 end
 
 local volume = function(step, increase)
@@ -155,8 +158,7 @@ local volume = function(step, increase)
   else
     command = command .. "-";
   end
-  awful.spawn(command, false)
-  vicious.force({ volume_widget.icon })
+  awful.spawn.easy_async(command, function() vicious.force({ volume_widget.icon }) end)
 end
 
 -- Audio
