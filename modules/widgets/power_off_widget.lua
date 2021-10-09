@@ -41,8 +41,7 @@ PowerOffWidget_prototype = function()
     }})
     this.__public.icon.resize = false
     this.__public.icon:buttons(awful.util.table.join(
-      awful.button({}, 1, function() this.__private.mainmenu:toggle() end),
-      awful.button({}, 3, function() this.__private.show_launchpad() end)
+      awful.button({}, 1, function() this.__private.mainmenu:toggle() end)
     ))
   end
 

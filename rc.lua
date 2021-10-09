@@ -33,6 +33,7 @@ local file_manager         = "nautilus"
 local graphic_text_editor  = "subl"
 local music_player         = "spotify"
 local session_lock_command = "dm-tool lock"
+local calendar_command     = "/opt/google/chrome/google-chrome --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
 
 -- | Widgets | --
 
@@ -42,8 +43,8 @@ beautiful.init(config_path .. "/themes/relz/theme.lua")
 local cpu_widget = CpuWidget(beautiful.widget_cpu, beautiful.mode)
 local memory_widget = MemoryWidget(beautiful.widget_memory, beautiful.mode)
 local battery_widget = BatteryWidget(beautiful.widget_battery_default, beautiful.mode)
-local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color)
-local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color)
+local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
+local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local power_off_widget = PowerOffWidget(beautiful.widget_power_off, session_lock_command)
 local network_widget = NetworkWidget(beautiful.widget_network_default, beautiful.mode)
 local volume_widget = VolumeWidget(beautiful.widget_volume_default, beautiful.mode)
@@ -449,6 +450,13 @@ awful.rules.rules = {
   },
   {
     rule = { class = "Org.gnome.Nautilus" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
+    rule = { class = "Xfce4-power-manager-settings" },
     properties = {
       border_width = 0,
       titlebars_enabled = false

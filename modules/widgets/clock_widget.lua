@@ -27,7 +27,7 @@ ClockWidget_prototype = function()
     -- Private Funcs
   }
 
-  this.__construct = function(clock_icon_path, text_color)
+  this.__construct = function(clock_icon_path, text_color, calendar_command)
     -- Constructor
     this.__public.icon.resize = false
 
@@ -35,6 +35,14 @@ ClockWidget_prototype = function()
 
     this.__public.value.widget = time
     this.__public.icon.image = clock_icon_path
+
+    this.__public.icon:buttons(awful.util.table.join(
+      awful.button({}, 1, function() awful.spawn(calendar_command) end)
+    ))
+
+    this.__public.value:buttons(awful.util.table.join(
+      awful.button({}, 1, function() awful.spawn(calendar_command) end)
+    ))
   end
 
   return this
