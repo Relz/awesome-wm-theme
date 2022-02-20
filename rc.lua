@@ -523,7 +523,7 @@ end)
 executer.execute_commands({
   "wmname LG3D",
   "xfce4-power-manager",
-  "picom",
+  "picom --experimental-backends --backend glx",
   "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
   "setxkbmap -option compose:paus",
   "xfce4-clipman",

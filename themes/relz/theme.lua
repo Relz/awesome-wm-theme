@@ -47,18 +47,10 @@ end
 
 -- | Menu | --
 
-theme.menu_height = 32
+theme.menu_height = 24
 theme.menu_width = 180
-
--- | Layout | --
-
-theme.layout_floating = theme.icons .. "/panel/layouts/floating.png"
-theme.layout_tile = theme.icons .. "/panel/layouts/tile.png"
-theme.layout_fairv = theme.icons .. "/panel/layouts/fair.svg"
-theme.layout_max = theme.icons .. "/panel/layouts/max.svg"
-theme.layout_tileleft = theme.icons .. "/panel/layouts/tileleft.png"
-theme.layout_tilebottom = theme.icons .. "/panel/layouts/tilebottom.png"
-theme.layout_tiletop = theme.icons .. "/panel/layouts/tiletop.png"
+theme.menu_bg_normal = theme.background_color .. "66"
+theme.menu_bg_focus = theme.text_color .. "bb"
 
 -- | Taglist | --
 
@@ -96,10 +88,6 @@ theme.tasklist_sticky = ""
 theme.tasklist_ontop = ""
 theme.tasklist_maximized_horizontal = ""
 theme.tasklist_maximized_vertical = ""
-
--- | CPU | --
-
-theme.widget_cpu = theme.icons .. "/panel/widgets/cpu/cpu_" .. mode .. "_zero.png"
 
 -- | Memory | --
 

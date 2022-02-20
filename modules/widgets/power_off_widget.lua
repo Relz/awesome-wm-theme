@@ -1,5 +1,6 @@
 local awful = require("awful")
 local wibox = require("wibox")
+local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 
 PowerOffWidget_prototype = function()
@@ -33,12 +34,15 @@ PowerOffWidget_prototype = function()
     this.__private.mainmenu = awful.menu({ items = {
       { "Show hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
       { "Awesome restart", awesome.restart },
-      { "Awesome quit",  function() awesome.quit() end },
-      { "Session lock", session_lock_command },
-      { "Notebook suspend", "systemctl -q --no-block suspend" },
-      { "Notebook reboot", "systemctl -q --no-block reboot" },
-      { "Notebook poweroff", "systemctl -q --no-block poweroff" }
+      { "Log out",  function() awesome.quit() end },
+      { "Lock", session_lock_command },
+      { "Suspend", "systemctl -q --no-block suspend" },
+      { "Reboot", "systemctl -q --no-block reboot" },
+      { "Power Off", "systemctl -q --no-block poweroff" }
     }})
+    this.__private.mainmenu.wibox.shape = function (cr, w, h)
+      gears.shape.partially_rounded_rect(cr, w, h, false, false, true, true, 8)
+    end
     this.__public.icon.resize = false
     this.__public.icon:buttons(awful.util.table.join(
       awful.button({}, 1, function() this.__private.mainmenu:toggle() end)
