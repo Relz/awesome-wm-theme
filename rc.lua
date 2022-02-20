@@ -38,6 +38,8 @@ local calendar_command     = "/opt/google/chrome/google-chrome --profile-directo
 
 local mute_command         = "amixer -D pulse set Master 1+ toggle"
 
+local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
+
 -- | Widgets | --
 
 local config_path = awful.util.getdir("config")
@@ -136,9 +138,9 @@ local brightness = function(step_percent, increase)
 
   local new_brightness = 0
   if increase then
-   new_brightness = current_brightness + step;
+    new_brightness = current_brightness + step;
   else
-   new_brightness = current_brightness - step;
+    new_brightness = current_brightness - step;
   end
   local new_brightness = math.min(math.max(new_brightness, 0), max_brightness)
 
@@ -210,7 +212,7 @@ end
 -- Minimize client
 
 local minimize_client = function(c)
-  c.minimized = true  
+  c.minimized = true
 end
 
 -- Maximize client
@@ -263,6 +265,84 @@ local toogle_minimize_restore_clients = function()
     restore_clients()
   end
 end
+
+-- Apply snap edge feature to client
+
+local snap_edge = function(client, where)
+  local screen_workarea = screen[client.screen].workarea
+  local workarea = {
+    x_min = screen_workarea.x,
+    x_max = screen_workarea.x + screen_workarea.width,
+    y_min = screen_workarea.y,
+    y_max = screen_workarea.y + screen_workarea.height,
+    width = screen_workarea.width,
+    height = screen_workarea.height,
+    half_width = screen_workarea.width * 0.5,
+    half_height = screen_workarea.height * 0.5
+  }
+  local client_geometry = client:geometry()
+  local axis_border_width = client.border_width * 2
+
+  if where == 'top' then
+    client_geometry.width  = workarea.width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_min
+    client_geometry.y = workarea.y_min
+    awful.placement.center_horizontal(client)
+  elseif where == 'top_right' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_max - client_geometry.width
+    client_geometry.y = workarea.y_min
+  elseif where == 'right' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.height
+    client_geometry.x = workarea.x_max - client_geometry.width
+    client_geometry.y = workarea.y_min
+  elseif where == 'bottom_right' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_max - client_geometry.width
+    client_geometry.y = workarea.y_max - client_geometry.height
+  elseif where == 'bottom' then
+    client_geometry.width  = workarea.width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_min
+    client_geometry.y = workarea.y_max - client_geometry.height
+    awful.placement.center_horizontal(client)
+  elseif where == 'bottom_left' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_min
+    client_geometry.y = workarea.y_max - client_geometry.height
+  elseif where == 'left' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.height
+    client_geometry.x = workarea.x_min
+    client_geometry.y = workarea.y_min
+  elseif where == 'top_left' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_min
+    client_geometry.y = workarea.y_min
+  elseif where == 'centered' then
+    client_geometry.width  = workarea.half_width - axis_border_width
+    client_geometry.height = workarea.half_height - axis_border_width
+    client_geometry.x = workarea.x_min + (workarea.x_max - workarea.x_min - client_geometry.width) * 0.5
+    client_geometry.y = workarea.y_min + (workarea.y_max - workarea.y_min - client_geometry.height) * 0.5
+  elseif where == nil then
+    client:geometry(client_geometry)
+    return
+  end
+
+  client.floating = true
+  if client.maximized then
+    client.maximized = false
+  end
+  client:geometry(client_geometry)
+  awful.placement.no_offscreen(client)
+end
+
 
 -- | Key bindings | --
 
@@ -339,6 +419,9 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control", "Shift" }, "]", function() awful.spawn("obs") end, { description="Execute OBS Studio", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_hardsign", function() awful.spawn("obs") end),
 
+  awful.key({ }, "Print", function() awful.spawn("deepin-screenshot --no-notification --fullscreen") end, { description="Take a screenshot the whole screen", group="Application" }),
+  awful.key({ "Mod4" }, "Print", function() awful.util.spawn_with_shell("sleep 2 && deepin-screenshot --no-notification --fullscreen") end, { description="Take a screenshot the whole screen after 2 seconds", group="Application" }),
+
   awful.key({ "Mod4", "Control", "Shift" }, "s", function() awful.spawn("deepin-screenshot --no-notification") end, { description="Execute Deepin Screen Capture", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_yeru", function() awful.spawn("deepin-screenshot --no-notification") end),
 
@@ -347,9 +430,6 @@ local global_keys = awful.util.table.join(
 
   awful.key({ "Mod4", "Control", "Shift" }, "`", function() awful.spawn("deepin-system-monitor") end, { description="Execute Deepin System Monitor", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_io", function() awful.spawn("deepin-system-monitor") end),
-
-  awful.key({ "Mod4" }, "w", function() awful.spawn("connman-gtk") end, { description="Execute Connman", group="Application" }),
-  awful.key({ "Mod4" }, "Cyrillic_tse", function() awful.spawn("connman-gtk") end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "k", function() awful.spawn("gitkraken") end, { description="Execute GitKraken", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_el", function() awful.spawn("gitkraken") end),
@@ -373,7 +453,24 @@ local client_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "Cyrillic_te", minimize_client),
 
   awful.key({ "Mod4" }, "m", maximize_client, { description="Maximize client", group="Client" }),
-  awful.key({ "Mod4" }, "Cyrillic_softsign", maximize_client)
+  awful.key({ "Mod4" }, "Cyrillic_softsign", maximize_client),
+
+  -- Snap to edge/corner - Use arrow keys
+  awful.key({ "Mod4", "Shift" }, "Down",  function (c) snap_edge(c, 'bottom') end),
+  awful.key({ "Mod4", "Shift" }, "Left",  function (c) snap_edge(c, 'left') end),
+  awful.key({ "Mod4", "Shift" }, "Right", function (c) snap_edge(c, 'right') end),
+  awful.key({ "Mod4", "Shift" }, "Up",    function (c) snap_edge(c, 'top') end),
+
+  -- Snap to edge/corner - Use numpad
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[1], function (c) snap_edge(c, 'bottom_left') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[2], function (c) snap_edge(c, 'bottom') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[3], function (c) snap_edge(c, 'bottom_right') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[4], function (c) snap_edge(c, 'left') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[5], function (c) snap_edge(c, 'centered') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[6], function (c) snap_edge(c, 'right') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[7], function (c) snap_edge(c, 'top_left') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[8], function (c) snap_edge(c, 'top') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[9], function (c) snap_edge(c, 'top_right') end)
 )
 
 for i = 1, 9 do
