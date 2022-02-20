@@ -19,6 +19,7 @@ local wibox           = require("wibox")
 local gears           = require("gears")
 local vicious         = require("vicious")
 local beautiful       = require("beautiful")
+local hotkeys_popup   = require("awful.hotkeys_popup")
 
 require("modules/error_handling")
 
@@ -193,6 +194,11 @@ local toggle_keyboard_layout = function()
   end
   awful.spawn(command, false)
 end
+-- Show help
+
+local show_help = function()
+  hotkeys_popup.show_help(nil, awful.screen.focused())
+end
 
 -- Change focused client
 
@@ -261,6 +267,9 @@ end
 -- | Key bindings | --
 
 local global_keys = awful.util.table.join(
+  awful.key({ "Mod4" }, "/", show_help, { description="Show hotkeys", group="Awesome" }),
+  awful.key({ "Mod4" }, ".", show_help),
+
   awful.key({ "Mod4" }, "Tab", function () change_focused_client(1) end, { description="Change focused client to next", group="Client" }),
   awful.key({ "Mod4", "Shift" }, "Tab", function () change_focused_client(-1) end, { description="Change focused client to previous", group="Client" }),
 
@@ -368,10 +377,15 @@ local client_keys = awful.util.table.join(
 )
 
 for i = 1, 9 do
+  client_keys = awful.util.table.join(client_keys,
+    awful.key({ "Mod4", "Shift"   }, "#" .. i + 9, function (c) do_for_tag(i, function (tag) c:move_to_tag(tag) end) end, { description="Move focused client to tag #", group="Client" })
+  )
+end
+
+for i = 1, 9 do
   global_keys = awful.util.table.join(global_keys,
     awful.key({ "Mod4"            }, "#" .. i + 9, function () do_for_tag(i, function(tag) tag:view_only() end) end, { description="View only tag #", group="Tag" }),
-    awful.key({ "Mod4", "Control" }, "#" .. i + 9, function () do_for_tag(i, function(tag) awful.tag.viewtoggle(tag) end) end, { description="Add view tag #", group="Tag" }),
-    awful.key({ "Mod4", "Shift"   }, "#" .. i + 9, function () do_for_tag(i, function(tag) client.focus:move_to_tag(tag) end) end, { description="Move client to tag #", group="Tag" })
+    awful.key({ "Mod4", "Control" }, "#" .. i + 9, function () do_for_tag(i, function(tag) awful.tag.viewtoggle(tag) end) end, { description="Add view tag #", group="Tag" })
   )
 end
 

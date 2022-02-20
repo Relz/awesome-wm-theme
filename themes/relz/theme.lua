@@ -36,13 +36,22 @@ theme.border_normal = theme.background_color .. "ee"
 theme.border_focus = theme.background_color .. "ee"
 theme.border_marked = theme.background_color .. "ee"
 
+-- | Hotkeys popup | --
+theme.hotkeys_bg = theme.background_color .. "bb"
+theme.hotkeys_font = "Droid Sans Mono Bold 11"
+theme.hotkeys_description_font = "Droid Sans Mono Regular 10"
+theme.hotkeys_group_margin = 32
+theme.hotkeys_shape = function(cr, width, height)
+  gears.shape.rounded_rect(cr, width, height, 8)
+end
+
 -- | Notifications | --
 
 theme.notification_font = "Noto Sans Regular 10"
 theme.notification_bg = theme.background_color
 theme.notification_border_width = 0
 theme.notification_shape = function(cr, width, height)
-	gears.shape.rounded_rect(cr, width, height, 3)
+  gears.shape.rounded_rect(cr, width, height, 3)
 end
 
 -- | Menu | --
@@ -130,6 +139,6 @@ theme.titlebar_minimize_button_focus_hover = theme.icons .. "/titlebar/minimize_
 
 theme.titlebar_fg = theme.text_color .. "88"
 theme.titlebar_fg_focus = theme.text_color .. "ee"
-theme.titlebar_bg = theme.background_color .. "ee"
+theme.titlebar_bg = theme.background_color .. "cc"
 
 return theme
