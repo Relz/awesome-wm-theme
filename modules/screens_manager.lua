@@ -152,9 +152,9 @@ local function apply_panels(screen_index, panels)
     wibar.opacity = panel.opacity
     wibar:struts {
       top = panel.position == "top" and wibar.height or 0,
-      right = panel.position == "right" and wibar.height or 0,
+      right = panel.position == "right" and wibar.width or 0,
       bottom = panel.position == "bottom" and wibar.height or 0,
-      left = panel.position == "left" and wibar.height or 0
+      left = panel.position == "left" and wibar.width or 0
     }
   end
 end

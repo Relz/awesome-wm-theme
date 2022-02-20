@@ -5,44 +5,36 @@ A theme for the Awesome window manager 4.x.
 
 ## Light mode
 
-![clear_desktop](https://user-images.githubusercontent.com/15068331/65374092-87018000-dc8e-11e9-8b0a-c68f16d5f604.png)
-![cpu_tooltip](https://user-images.githubusercontent.com/15068331/65374803-bfa55780-dc96-11e9-8c6e-2b48fff8cda4.png)
-![memory_tooltip](https://user-images.githubusercontent.com/15068331/65374810-caf88300-dc96-11e9-87a5-0aef2d0bd354.png)
-![battery_tooltip](https://user-images.githubusercontent.com/15068331/65374834-13b03c00-dc97-11e9-8f41-0224689e1495.png)
-![wireless_tooltip](https://user-images.githubusercontent.com/15068331/65374846-20349480-dc97-11e9-93e1-62cc2674db5c.png)
-![power_off_menu](https://user-images.githubusercontent.com/15068331/65374851-29256600-dc97-11e9-925b-5a9a39330ee2.png)
-![clion_loading_titlebar](https://user-images.githubusercontent.com/15068331/65374885-8f11ed80-dc97-11e9-83b4-225fa622c844.png)
-![clion_titlebar](https://user-images.githubusercontent.com/15068331/65374799-b4522c00-dc96-11e9-8049-53e857ead6ca.png)
-![git_kraken_titlebar](https://user-images.githubusercontent.com/15068331/65374897-a4871780-dc97-11e9-917b-fb892873f968.png)
-![libreoffice_titlebar](https://user-images.githubusercontent.com/15068331/65374904-b1a40680-dc97-11e9-897e-adc0c0f8fc07.png)
-![panel_bottom](https://user-images.githubusercontent.com/15068331/65374920-d7311000-dc97-11e9-9f42-f1e066a6da8b.png)
-![panel_left](https://user-images.githubusercontent.com/15068331/65374921-d8623d00-dc97-11e9-9321-42facaad9dd6.png)
-![panel_right](https://user-images.githubusercontent.com/15068331/65374922-db5d2d80-dc97-11e9-91e2-3721d7bf9040.png)
+![clear_desktop](https://user-images.githubusercontent.com/15068331/154843667-11603245-25a2-425e-802d-2147bff8bedb.png)
+![power_off_menu](https://user-images.githubusercontent.com/15068331/154843753-2479f2bb-8c08-4529-b736-6dd49b6c9b9e.png)
+![hotkeys_popup](https://user-images.githubusercontent.com/15068331/154843771-451e975c-8b2a-4b52-bb1f-2628433f3cc0.png)
+![clion_titlebar](https://user-images.githubusercontent.com/15068331/154844068-c2ee99bf-641a-47b5-8459-9ac4ae40c64c.png)
+![panel_bottom](https://user-images.githubusercontent.com/15068331/154844476-3367c8ed-8e76-400c-87d9-807340a2d19d.png)
+![panel_left](https://user-images.githubusercontent.com/15068331/154844669-c16061b8-b9b4-4ae2-80e8-81f2d08e0a80.png)
+![panel_right](https://user-images.githubusercontent.com/15068331/154844687-64089518-1c0f-4472-9227-3c4b8416bb7c.png)
+![panel_widgets](https://user-images.githubusercontent.com/15068331/154843949-d98b269f-5d5d-4f0c-9fe9-bdbbae9c6953.gif)
 
 
 ## Dark mode
 
-![clear_desktop_dark](https://user-images.githubusercontent.com/15068331/65374863-4fe39c80-dc97-11e9-93ee-413251eca201.png)
-![cpu_tooltip_dark](https://user-images.githubusercontent.com/15068331/65374873-71dd1f00-dc97-11e9-9d63-7c1cca7fb3f2.png)
-![memory_tooltip_dark](https://user-images.githubusercontent.com/15068331/65374866-596d0480-dc97-11e9-889c-7e5bc2a7d6ab.png)
-![battery_tooltip_dark](https://user-images.githubusercontent.com/15068331/65374857-40645380-dc97-11e9-8985-832892d7cc2b.png)
-![wireless_tooltip_dark](https://user-images.githubusercontent.com/15068331/65374868-612ca900-dc97-11e9-8c9b-8c2103a35426.png)
-![power_off_menu_dark](https://user-images.githubusercontent.com/15068331/65374877-83262b80-dc97-11e9-853e-d62c6d0caa53.png)
-![clion_loading_titlebar_dark](https://user-images.githubusercontent.com/15068331/65374894-9afdaf80-dc97-11e9-811c-14c8faf1b645.png)
-![clion_titlebar_dark](https://user-images.githubusercontent.com/15068331/65374892-989b5580-dc97-11e9-9f7b-b2a11e3dc431.png)
-![libreoffice_titlebar_dark](https://user-images.githubusercontent.com/15068331/65374907-b963ab00-dc97-11e9-97ab-4806b4a4a192.png)
+![clear_desktop_dark](https://user-images.githubusercontent.com/15068331/154844205-361cbaed-20fd-4758-96eb-1cc85244bb2b.png)
+![power_off_menu_dark](https://user-images.githubusercontent.com/15068331/154844237-49b03c82-0957-4a84-b905-beeb625e80fa.png)
+![hotkeys_popup](https://user-images.githubusercontent.com/15068331/154844315-c7596597-156f-4d0a-8d2d-83264d9da8a9.png)
+![clion_titlebar_dark](https://user-images.githubusercontent.com/15068331/154844274-2570186b-53c1-47a9-9a64-64996f3cfd1a.png)
+
 
 # Customization
 
 ## Default applications and tools
 
 In rc.lua in section "Variable definitions" you can set some variables:
-+ *terminal*. You can execute default terminal by pressing `<Mod4> + <Return>`. Default value: "deepin-terminal".
-+ *browser*. You can execute default browser by pressing `<Mod4> + b`. Default value: "firefox".
-+ *file_manager*. You can execute default file manager by pressing `<Mod4> + f`. Default value: "dde-file-manager".
-+ *graphic_text_editor*. You can execute default graphic text editor by pressing `<Mod4> + e`. Default value: "subl3".
-+ *music_player*. You can execute default music player by pressing `<Mod4> + m`. Default value: "deepin-music".
++ *terminal*. You can execute default terminal by pressing `<Mod4> + <Return>`. Default value: "alacritty".
++ *browser*. You can execute default browser by pressing `<Mod4> + b`. Default value: "google-chrome-stable".
++ *file_manager*. You can execute default file manager by pressing `<Mod4> + f`. Default value: "nautilus".
++ *graphic_text_editor*. You can execute default graphic text editor by pressing `<Mod4> + e`. Default value: "subl".
++ *music_player*. You can execute default music player by pressing `<Mod4> + m`. Default value: "spotify".
 + *session_lock_command*. You can lock your session by pressing `<Mod4> + l`. Also if you choose "Session lock" power off menu item, this command will be executed. Default value: "dm-tool lock".
++ *calendar_command*. Calendar will be executed by clicking on calendar and time widgets. Google calendar is used by default.
 
 ## Panels
 
