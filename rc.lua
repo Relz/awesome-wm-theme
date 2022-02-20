@@ -34,7 +34,7 @@ local file_manager         = "nautilus"
 local graphic_text_editor  = "subl"
 local music_player         = "spotify"
 local session_lock_command = "dm-tool lock"
-local calendar_command     = "/opt/google/chrome/google-chrome --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
+local calendar_command     = "/opt/google/chrome/google-chrome --profile-directory='Profile 2' --app=https://calendar.google.com/calendar"
 
 local mute_command         = "amixer -D pulse set Master 1+ toggle"
 
