@@ -26,13 +26,6 @@ VolumeWidget_prototype = function()
   this.__private = {
     -- Private Variables
     mode = "",
-    tooltip = awful.tooltip({
-      objects = { this.__public.icon },
-      timer_function = function()
-        return this.__private.get_volume_value_string()
-      end,
-      mode = "outside"
-    }),
     volume_value = 0,
     is_muted = true,
     textbox = wibox.widget.textbox(),
@@ -63,8 +56,6 @@ VolumeWidget_prototype = function()
     this.__public.icon.resize = false
 
     this.__private.mode = mode
-
-    this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     this.__private.textbox.font = "Droid Sans Mono Bold 9"
     this.__public.value.widget = this.__private.textbox
