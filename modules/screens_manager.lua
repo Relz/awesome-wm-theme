@@ -118,8 +118,9 @@ local function create_right_layout(screen_index, panel)
     if widget.icon or widget.value then
       if widget.icon then
         local widget_margin_container = wibox.container.margin(widget.icon)
-        widget_margin_container.left = get_widget_horizontal_margin(panel.position)
-        widget_margin_container.top = get_widget_vertical_margin(panel.position)
+        widget_margin_container.margins = 1
+        widget_margin_container.left = widget_margin_container.left + get_widget_horizontal_margin(panel.position)
+        widget_margin_container.top = widget_margin_container.top + get_widget_vertical_margin(panel.position)
         right_layout:add(widget_margin_container)
       end
       if widget.value then

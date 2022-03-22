@@ -5,11 +5,13 @@ mode = "light" -- "dark" | "light"
 theme = {}
 theme.mode = mode
 theme.icons = require("awful").util.getdir("config") .. "/themes/relz/icons/"
-theme.panel = "png:" .. theme.icons .. "/panel/panel_" .. mode .. ".png" -- size does not make anything
 theme.font = "Droid Sans Mono Regular 10"
 
 theme.text_color = mode == "dark" and "#f4feff" or "#1e293d"
 theme.background_color = mode == "dark" and "#1e293d" or "#f4feff"
+
+theme.danger_background = "#db5853"
+theme.danger_foreground = "#751d1a"
 
 theme.fg_normal = theme.text_color
 theme.fg_focus = theme.background_color
@@ -37,6 +39,7 @@ theme.border_focus = theme.background_color .. "ee"
 theme.border_marked = theme.background_color .. "ee"
 
 -- | Hotkeys popup | --
+
 theme.hotkeys_bg = theme.background_color .. "bb"
 theme.hotkeys_font = "Droid Sans Mono Bold 11"
 theme.hotkeys_description_font = "Droid Sans Mono Regular 10"
@@ -47,9 +50,15 @@ end
 
 -- | Notifications | --
 
-theme.notification_font = "Noto Sans Regular 10"
+theme.notification_max_width = 640
+theme.notification_max_height = 160
+theme.notification_font = "Noto Sans Regular 11"
 theme.notification_bg = theme.background_color
-theme.notification_border_width = 0
+theme.notification_fg = theme.text_color
+theme.notification_border_width = 1
+theme.notification_border_color = theme.background_color
+theme.notification_opacity = 0.8
+theme.notification_icon_size = 48
 theme.notification_shape = function(cr, width, height)
   gears.shape.rounded_rect(cr, width, height, 3)
 end
@@ -100,42 +109,42 @@ theme.tasklist_maximized_vertical = ""
 
 -- | Memory | --
 
-theme.widget_memory = theme.icons .. "/panel/widgets/memory/memory_0_" .. mode .. ".png"
+theme.widget_memory = theme.icons .. "/widgets/memory/memory_0_" .. mode .. ".png"
 
 -- | Network | --
 
-theme.widget_network_default = theme.icons .. "/panel/widgets/wifi/wifi_off_" .. mode .. ".png"
+theme.widget_network_default = theme.icons .. "/widgets/wifi/wifi_off_" .. mode .. ".png"
 
 -- | Battery | --
 
-theme.widget_battery_default = theme.icons .. "/panel/widgets/battery/battery_100_" .. mode .. ".png"
+theme.widget_battery_default = gears.color.recolor_image(theme.icons .. "/widgets/battery/battery_alert.svg", theme.text_color)
 
 -- | Network | --
 
-theme.widget_volume_default = theme.icons .. "/panel/widgets/volume/volume_muted_" .. mode .. ".png"
+theme.widget_volume_default = theme.icons .. "/widgets/volume/volume_muted_" .. mode .. ".png"
 
 -- | Clock / Calendar | --
 
-theme.widget_clock = theme.icons .. "/panel/widgets/time_" .. mode .. ".png"
-theme.widget_calendar = theme.icons .. "/panel/widgets/calendar_" .. mode .. ".png"
+theme.widget_clock = gears.color.recolor_image(theme.icons .. "/widgets/time.svg", theme.text_color)
+theme.widget_calendar = gears.color.recolor_image(theme.icons .. "/widgets/calendar.svg", theme.text_color)
 
--- | Power off | --
+-- | Menu | --
 
-theme.widget_power_off = theme.icons .. "/panel/widgets/power_off_" .. mode .. ".png"
+theme.widget_menu = gears.color.recolor_image(theme.icons .. "/widgets/menu.svg", theme.text_color)
 
 -- | Client's titlebar | --
 
-theme.titlebar_close_button_focus       = theme.icons .. "/titlebar/close_" .. mode .. ".png"
-theme.titlebar_close_button_focus_hover = theme.icons .. "/titlebar/close_hover_" .. mode .. ".png"
+theme.titlebar_close_button_focus       = gears.color.recolor_image(theme.icons .. "/titlebar/close.svg", theme.text_color)
+theme.titlebar_close_button_focus_hover = gears.color.recolor_image(theme.icons .. "/titlebar/close_hover.svg", theme.text_color)
 
-theme.titlebar_maximized_button_focus_active       = theme.icons .. "/titlebar/maximize_" .. mode .. ".png"
-theme.titlebar_maximized_button_focus_active_hover = theme.icons .. "/titlebar/maximize_hover_" .. mode .. ".png"
+theme.titlebar_maximized_button_focus_active       = gears.color.recolor_image(theme.icons .. "/titlebar/maximize.svg", theme.text_color)
+theme.titlebar_maximized_button_focus_active_hover = gears.color.recolor_image(theme.icons .. "/titlebar/maximize_hover.svg", theme.text_color)
 
-theme.titlebar_maximized_button_focus_inactive       = theme.icons .. "/titlebar/maximize_" .. mode .. ".png"
-theme.titlebar_maximized_button_focus_inactive_hover = theme.icons .. "/titlebar/maximize_hover_" .. mode .. ".png"
+theme.titlebar_maximized_button_focus_inactive       = gears.color.recolor_image(theme.icons .. "/titlebar/maximize.svg", theme.text_color)
+theme.titlebar_maximized_button_focus_inactive_hover = gears.color.recolor_image(theme.icons .. "/titlebar/maximize_hover.svg", theme.text_color)
 
-theme.titlebar_minimize_button_focus       = theme.icons .. "/titlebar/minimize_" .. mode .. ".png"
-theme.titlebar_minimize_button_focus_hover = theme.icons .. "/titlebar/minimize_hover_" .. mode .. ".png"
+theme.titlebar_minimize_button_focus       = gears.color.recolor_image(theme.icons .. "/titlebar/minimize.svg", theme.text_color)
+theme.titlebar_minimize_button_focus_hover = gears.color.recolor_image(theme.icons .. "/titlebar/minimize_hover.svg", theme.text_color)
 
 theme.titlebar_fg = theme.text_color .. "88"
 theme.titlebar_fg_focus = theme.text_color .. "ee"

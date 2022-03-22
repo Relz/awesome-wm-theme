@@ -29,8 +29,6 @@ CalendarWidget_prototype = function()
 
   this.__construct = function(calendar_icon_path, text_color, calendar_command)
     -- Constructor
-    this.__public.icon.resize = false
-
     date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b"))
 
     this.__public.value.widget = date

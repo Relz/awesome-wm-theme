@@ -8,7 +8,7 @@ require("modules/widgets/network_widget")
 require("modules/widgets/battery_widget")
 require("modules/widgets/calendar_widget")
 require("modules/widgets/clock_widget")
-require("modules/widgets/power_off_widget")
+require("modules/widgets/menu_widget")
 require("modules/widgets/keyboard_layout_widget")
 require("modules/widgets/volume_widget")
 
@@ -45,14 +45,14 @@ local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 local config_path = awful.util.getdir("config")
 beautiful.init(config_path .. "/themes/relz/theme.lua")
 
-local cpu_widget = CpuWidget(beautiful.widget_cpu, beautiful.mode)
+local cpu_widget = CpuWidget(beautiful.widget_cpu)
 local memory_widget = MemoryWidget(beautiful.widget_memory, beautiful.mode)
 local battery_widget = BatteryWidget(beautiful.widget_battery_default, beautiful.mode)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
-local power_off_widget = PowerOffWidget(beautiful.widget_power_off, session_lock_command)
-local network_widget = NetworkWidget(beautiful.widget_network_default, beautiful.mode)
-local volume_widget = VolumeWidget(beautiful.widget_volume_default, mute_command, beautiful.mode)
+local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
+local network_widget = NetworkWidget(beautiful.widget_network_default)
+local volume_widget = VolumeWidget(beautiful.widget_volume_default, mute_command)
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
 -- | Panels | --
@@ -94,7 +94,7 @@ screen_0_panel.widgets = {
   keyboard_layout_widget,
   calendar_widget,
   clock_widget,
-  power_off_widget
+  menu_widget
 }
 
 -- | Screens | --

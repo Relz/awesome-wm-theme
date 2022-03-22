@@ -1,6 +1,8 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
+local gears = require("gears")
+local beautiful = require("beautiful")
 
 CpuWidget_prototype = function()
   local this = {}
@@ -25,7 +27,6 @@ CpuWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
-    mode = "",
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
       timer_function = function()
@@ -36,41 +37,47 @@ CpuWidget_prototype = function()
     cpu_usage = 0,
     -- Private Funcs
     compute_usage_level = function(usage_value)
-      if usage_value == 100 then
-        return "full"
+      if usage_value > 90 then
+        return "100"
       end
       if usage_value > 80 then
-        return "high"
+        return "90"
+      end
+      if usage_value > 70 then
+        return "80"
       end
       if usage_value > 60 then
-        return "pretty_high"
+        return "70"
+      end
+      if usage_value > 50 then
+        return "60"
       end
       if usage_value > 40 then
-        return "normal"
+        return "50"
+      end
+      if usage_value > 30 then
+        return "40"
       end
       if usage_value > 20 then
-        return "pretty_low"
+        return "30"
       end
-      if usage_value > 5 then
-        return "low"
+      if usage_value > 10 then
+        return "20"
       end
-      return "zero"
+      return "10"
     end
   }
 
-  this.__construct = function(icon_path, mode)
+  this.__construct = function(icon_path)
     -- Constructor
     this.__public.icon.image = icon_path
-    this.__public.icon.resize = false
 
-    this.__private.mode = mode
-    
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(this.__public.icon, vicious.widgets.cpu,
       function (widget, args)
         this.__private.cpu_usage = args[1]
-        widget.image = this.__private_static.config_path .. "/themes/relz/icons/panel/widgets/cpu/cpu_" .. this.__private.compute_usage_level(this.__private.cpu_usage) .. "_" .. this.__private.mode .. ".png"
+        widget.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/cpu/cpu_" .. this.__private.compute_usage_level(this.__private.cpu_usage) .. ".svg", beautiful.text_color)
       end,
       2^2
     )

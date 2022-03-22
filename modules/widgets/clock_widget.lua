@@ -29,8 +29,6 @@ ClockWidget_prototype = function()
 
   this.__construct = function(clock_icon_path, text_color, calendar_command)
     -- Constructor
-    this.__public.icon.resize = false
-
     time = wibox.widget.textclock(lain.util.markup(text_color, "%H:%M "))
 
     this.__public.value.widget = time

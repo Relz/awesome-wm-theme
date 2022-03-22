@@ -30,7 +30,6 @@ ClockCalendarWidget_prototype = function()
   this.__construct = function(clock_icon_path, calendar_icon_path, text_color)
     -- Constructor
     this.__public.icon.image = clock_icon_path
-    this.__public.icon.resize = false
 
     time = wibox.widget.textclock(lain.util.markup(text_color, "%H:%M "))
     date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b"))

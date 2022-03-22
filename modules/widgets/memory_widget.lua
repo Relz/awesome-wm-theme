@@ -1,6 +1,8 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
+local gears = require("gears")
+local beautiful = require("beautiful")
 
 MemoryWidget_prototype = function()
   local this = {}
@@ -15,20 +17,35 @@ MemoryWidget_prototype = function()
     config_path = awful.util.getdir("config"),
     -- Private Static Funcs
     compute_used_level = function(used_percentage)
-      if used_percentage > 80 then
+      if used_percentage > 95 then
         return "100"
       end
-      if used_percentage > 70 then
+      if used_percentage > 90 then
+        return "90"
+      end
+      if used_percentage > 80 then
         return "80"
       end
-      if used_percentage > 45 then
+      if used_percentage > 70 then
+        return "70"
+      end
+      if used_percentage > 60 then
         return "60"
       end
-      if used_percentage > 25 then
+      if used_percentage > 50 then
+        return "50"
+      end
+      if used_percentage > 40 then
         return "40"
       end
-      if used_percentage > 10 then
+      if used_percentage > 30 then
+        return "30"
+      end
+      if used_percentage > 20 then
         return "20"
+      end
+      if used_percentage > 10 then
+        return "10"
       end
       return "0"
     end
@@ -43,7 +60,6 @@ MemoryWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
-    mode = "",
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
       timer_function = function()
@@ -55,13 +71,10 @@ MemoryWidget_prototype = function()
     -- Private Funcs
   }
 
-  this.__construct = function(icon_path, mode)
+  this.__construct = function(icon_path)
     -- Constructor
     this.__public.icon.image = icon_path
-    this.__public.icon.resize = false
 
-    this.__private.mode = mode
-    
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(this.__public.icon, vicious.widgets.mem,
@@ -69,7 +82,7 @@ MemoryWidget_prototype = function()
         local mem_used = args[2];
         local used_percentage = args[1];
         this.__private.memory_used = mem_used .. "MB"
-        widget.image = this.__private_static.config_path .. "/themes/relz/icons/panel/widgets/memory/memory_" .. this.__private_static.compute_used_level(used_percentage) .. "_" .. this.__private.mode .. ".png"
+        widget.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/memory/memory_" .. this.__private_static.compute_used_level(used_percentage) .. ".svg", beautiful.text_color)
       end,
       2^2
     )

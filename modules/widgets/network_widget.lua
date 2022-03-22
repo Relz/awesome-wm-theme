@@ -2,6 +2,8 @@ local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
 local naughty = require("naughty")
+local gears = require("gears")
+local beautiful = require("beautiful")
 
 NetworkWidget_prototype = function()
   local this = {}
@@ -28,19 +30,22 @@ NetworkWidget_prototype = function()
       if linp == nil then
         return "off"
       end
-      if linp > 80 then
+      if linp > 90 then
         return "perfect"
       end
-      if linp > 60 then
+      if linp > 70 then
         return "excellent"
       end
-      if linp > 40 then
+      if linp > 50 then
         return "good"
       end
-      if linp > 20 then
+      if linp > 30 then
         return "normal"
       end
-      return "bad"
+      if linp > 10 then
+        return "bad"
+      end
+      return "terrible"
     end
   }
 
@@ -58,7 +63,6 @@ NetworkWidget_prototype = function()
     ssid = "",
     linp = 0,
     is_wired_connected = false,
-    mode = "",
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
       timer_function = function()
@@ -77,13 +81,10 @@ NetworkWidget_prototype = function()
     end
   }
 
-  this.__construct = function(icon_path, mode)
+  this.__construct = function(icon_path)
     -- Constructor
     this.__public.icon.image = icon_path
-    this.__public.icon.resize = false
 
-    this.__private.mode = mode
-    
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(this.__public.icon, vicious.widgets.wifi,
@@ -96,11 +97,11 @@ NetworkWidget_prototype = function()
         end
         this.__private.is_wired_connected = wired_connection_state == "1\n"
         if this.__private.is_wired_connected then
-          this.__public.icon.image = this.__private_static.config_path .. "/themes/relz/icons/panel/widgets/network/wired/ethernet_" .. this.__private.mode .. ".png"
+          this.__public.icon.image = this.__private_static.config_path .. "/themes/relz/icons/widgets/network/wired.svg"
         else
           local icon_file_name_suffix = this.__private_static.compute_linp_level(this.__private.linp)
 
-          this.__public.icon.image = this.__private_static.config_path .. "/themes/relz/icons/panel/widgets/network/wireless/wifi_" .. icon_file_name_suffix .. "_" .. this.__private.mode .. ".png"
+          this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/network/wireless/wifi_" .. icon_file_name_suffix .. ".svg", beautiful.text_color)
         end
       end,
       2^4,

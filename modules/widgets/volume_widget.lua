@@ -1,6 +1,8 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
+local gears = require("gears")
+local beautiful = require("beautiful")
 
 VolumeWidget_prototype = function()
   local this = {}
@@ -25,7 +27,6 @@ VolumeWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
-    mode = "",
     volume_value = 0,
     is_muted = true,
     textbox = wibox.widget.textbox(),
@@ -50,12 +51,9 @@ VolumeWidget_prototype = function()
     end
   }
 
-  this.__construct = function(icon_path, mute_command, mode)
+  this.__construct = function(icon_path, mute_command)
     -- Constructor
     this.__public.icon.image = icon_path
-    this.__public.icon.resize = false
-
-    this.__private.mode = mode
 
     this.__private.textbox.font = "Droid Sans Mono Bold 9"
     this.__public.value.widget = this.__private.textbox
@@ -64,7 +62,7 @@ VolumeWidget_prototype = function()
       function (widget, args)
         this.__private.volume_value = args[1]
         this.__private.is_muted = args[2] == "🔈"
-        this.__public.icon.image = this.__private_static.config_path .. "/themes/relz/icons/panel/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. "_" .. this.__private.mode .. ".png"
+        this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. ".svg", beautiful.text_color)
         this.__private.textbox.text = string.rep(" ", 3 - this.__private.get_number_digits_count(this.__private.volume_value)) .. this.__private.get_volume_value_string() .. " "
       end,
       2^22,
