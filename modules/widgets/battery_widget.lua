@@ -142,10 +142,8 @@ BatteryWidget_prototype = function()
     end
   }
 
-  this.__construct = function(icon_path, mode)
+  this.__construct = function(mode)
     -- Constructor
-    this.__public.icon.image = icon_path
-
     this.__private.mode = mode
 
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}

@@ -27,12 +27,13 @@ ClockWidget_prototype = function()
     -- Private Funcs
   }
 
-  this.__construct = function(clock_icon_path, text_color, calendar_command)
+  this.__construct = function(icon_path, text_color, calendar_command)
     -- Constructor
     time = wibox.widget.textclock(lain.util.markup(text_color, "%H:%M "))
+    time.font = "Droid Sans Mono Bold 10"
 
     this.__public.value.widget = time
-    this.__public.icon.image = clock_icon_path
+    this.__public.icon.image = icon_path
 
     this.__public.icon:buttons(awful.util.table.join(
       awful.button({}, 1, function() awful.spawn(calendar_command) end)

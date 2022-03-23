@@ -5,6 +5,7 @@ require("modules/panel")
 require("modules/widgets/cpu_widget")
 require("modules/widgets/memory_widget")
 require("modules/widgets/network_widget")
+require("modules/widgets/brightness_widget")
 require("modules/widgets/battery_widget")
 require("modules/widgets/calendar_widget")
 require("modules/widgets/clock_widget")
@@ -45,14 +46,15 @@ local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 local config_path = awful.util.getdir("config")
 beautiful.init(config_path .. "/themes/relz/theme.lua")
 
-local cpu_widget = CpuWidget(beautiful.widget_cpu)
-local memory_widget = MemoryWidget(beautiful.widget_memory, beautiful.mode)
-local battery_widget = BatteryWidget(beautiful.widget_battery_default, beautiful.mode)
+local cpu_widget = CpuWidget()
+local memory_widget = MemoryWidget()
+local brightness_widget = BrightnessWidget(100)
+local battery_widget = BatteryWidget(beautiful.mode)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
-local network_widget = NetworkWidget(beautiful.widget_network_default)
-local volume_widget = VolumeWidget(beautiful.widget_volume_default, mute_command)
+local network_widget = NetworkWidget()
+local volume_widget = VolumeWidget(mute_command)
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
 -- | Panels | --
@@ -88,6 +90,7 @@ screen_0_panel.tasks.key_bindings = awful.util.table.join(
 screen_0_panel.widgets = {
   cpu_widget,
   memory_widget,
+  brightness_widget,
   battery_widget,
   network_widget,
   volume_widget,
@@ -131,9 +134,17 @@ end
 
 -- Brightness
 
+local get_current_brightness = function()
+  return tonumber(read_file_content("/sys/class/backlight/intel_backlight/brightness"))
+end
+
+local get_max_brightness = function()
+  return tonumber(read_file_content("/sys/class/backlight/intel_backlight/max_brightness"))
+end
+
 local brightness = function(step_percent, increase)
-  local max_brightness = tonumber(read_file_content("/sys/class/backlight/intel_backlight/max_brightness"))
-  local current_brightness = tonumber(read_file_content("/sys/class/backlight/intel_backlight/brightness"))
+  local max_brightness = get_max_brightness()
+  local current_brightness = get_current_brightness()
   local step = math.floor(step_percent * max_brightness / 100)
 
   local new_brightness = 0
@@ -145,6 +156,7 @@ local brightness = function(step_percent, increase)
   local new_brightness = math.min(math.max(new_brightness, 0), max_brightness)
 
   run_command("pkexec xfpm-power-backlight-helper --set-brightness=" .. new_brightness)
+  brightness_widget.update(math.floor(new_brightness / max_brightness * 100))
 end
 
 -- Volume
@@ -628,6 +640,10 @@ client.connect_signal("manage", function (c, startup)
     awful.placement.no_offscreen(c)
   end
 end)
+
+-- | Initialization | --
+
+brightness_widget.update(math.floor(get_current_brightness() / get_max_brightness() * 100))
 
 -- | Autostart | --
 

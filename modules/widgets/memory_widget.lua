@@ -71,10 +71,8 @@ MemoryWidget_prototype = function()
     -- Private Funcs
   }
 
-  this.__construct = function(icon_path)
+  this.__construct = function()
     -- Constructor
-    this.__public.icon.image = icon_path
-
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(this.__public.icon, vicious.widgets.mem,

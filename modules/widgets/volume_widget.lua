@@ -51,10 +51,8 @@ VolumeWidget_prototype = function()
     end
   }
 
-  this.__construct = function(icon_path, mute_command)
+  this.__construct = function(mute_command)
     -- Constructor
-    this.__public.icon.image = icon_path
-
     this.__private.textbox.font = "Droid Sans Mono Bold 9"
     this.__public.value.widget = this.__private.textbox
 

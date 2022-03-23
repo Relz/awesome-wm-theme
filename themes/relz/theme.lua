@@ -107,22 +107,6 @@ theme.tasklist_ontop = ""
 theme.tasklist_maximized_horizontal = ""
 theme.tasklist_maximized_vertical = ""
 
--- | Memory | --
-
-theme.widget_memory = theme.icons .. "/widgets/memory/memory_0_" .. mode .. ".png"
-
--- | Network | --
-
-theme.widget_network_default = theme.icons .. "/widgets/wifi/wifi_off_" .. mode .. ".png"
-
--- | Battery | --
-
-theme.widget_battery_default = gears.color.recolor_image(theme.icons .. "/widgets/battery/battery_alert.svg", theme.text_color)
-
--- | Network | --
-
-theme.widget_volume_default = theme.icons .. "/widgets/volume/volume_muted_" .. mode .. ".png"
-
 -- | Clock / Calendar | --
 
 theme.widget_clock = gears.color.recolor_image(theme.icons .. "/widgets/time.svg", theme.text_color)
