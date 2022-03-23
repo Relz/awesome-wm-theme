@@ -22,7 +22,7 @@ end
 local function get_direction_by_position(panel_position)
   if is_horizontal_position(panel_position) then
     return "north"
-  else 
+  else
     if panel_position == "left" then
       return "east"
     else
@@ -173,5 +173,5 @@ local screens_manager = {}
 
 screens_manager.set_screens = set_screens
 screens_manager.apply_screens = apply_screens
- 
+
 return screens_manager

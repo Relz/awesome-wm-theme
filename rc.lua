@@ -210,6 +210,12 @@ local change_focused_client = function(direction)
   if client.focus then client.focus:raise() end
 end
 
+-- Move client to next screen
+
+local move_client_to_next_screen = function(c)
+  c:move_to_screen()
+end
+
 -- Minimize client
 
 local minimize_client = function(c)
@@ -354,9 +360,6 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "Tab", function () change_focused_client(1) end, { description="Change focused client to next", group="Client" }),
   awful.key({ "Mod4", "Shift" }, "Tab", function () change_focused_client(-1) end, { description="Change focused client to previous", group="Client" }),
 
-  awful.key({ "Mod4" }, "o", awful.client.movetoscreen, { description="Move to another screen", group="Client" }),
-  awful.key({ "Mod4" }, "Cyrillic_shcha", awful.client.movetoscreen),
-
   awful.key({ "Mod4", "Control" }, "r", awesome.restart, { description="Restart awesome", group="Awesome" }),
   awful.key({ "Mod4", "Control" }, "Cyrillic_ka", awesome.restart),
 
@@ -449,6 +452,9 @@ local client_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "Cyrillic_a", toggle_fullscreen),
 
   awful.key({ "Mod4" }, "F4", function (c) c:kill() end, { description="Kill focused client", group="Client" }),
+
+  awful.key({ "Mod4" }, "o", move_client_to_next_screen, { description="Move to next screen", group="Client" }),
+  awful.key({ "Mod4" }, "Cyrillic_shcha", move_client_to_next_screen),
 
   awful.key({ "Mod4" }, "n", minimize_client, { description="Minimize client", group="Client" }),
   awful.key({ "Mod4" }, "Cyrillic_te", minimize_client),
