@@ -1,10 +1,16 @@
-local gears   = require("gears")
+local awful = require("awful")
+local gears = require("gears")
 
-mode = "light" -- "dark" | "light"
+local theme_path = awful.util.getdir("config") .. "themes/relz/"
+local icons_path = theme_path .. "icons/"
+local theme_mode_file_path = theme_path .. "mode"
+
+mode_file = io.open(theme_mode_file_path, "r")
+local mode = mode_file:read("*all")
+mode_file:close()
 
 theme = {}
 theme.mode = mode
-theme.icons = require("awful").util.getdir("config") .. "/themes/relz/icons/"
 theme.font = "Droid Sans Mono Regular 10"
 
 theme.text_color = mode == "dark" and "#f4feff" or "#1e293d"
@@ -109,26 +115,26 @@ theme.tasklist_maximized_vertical = ""
 
 -- | Clock / Calendar | --
 
-theme.widget_clock = gears.color.recolor_image(theme.icons .. "/widgets/time.svg", theme.text_color)
-theme.widget_calendar = gears.color.recolor_image(theme.icons .. "/widgets/calendar.svg", theme.text_color)
+theme.widget_clock    = gears.color.recolor_image(icons_path .. "/widgets/time.svg", theme.text_color)
+theme.widget_calendar = gears.color.recolor_image(icons_path .. "/widgets/calendar.svg", theme.text_color)
 
 -- | Menu | --
 
-theme.widget_menu = gears.color.recolor_image(theme.icons .. "/widgets/menu.svg", theme.text_color)
+theme.widget_menu = gears.color.recolor_image(icons_path .. "/widgets/menu.svg", theme.text_color)
 
 -- | Client's titlebar | --
 
-theme.titlebar_close_button_focus       = gears.color.recolor_image(theme.icons .. "/titlebar/close.svg", theme.text_color)
-theme.titlebar_close_button_focus_hover = gears.color.recolor_image(theme.icons .. "/titlebar/close_hover.svg", theme.text_color)
+theme.titlebar_close_button_focus       = gears.color.recolor_image(icons_path .. "/titlebar/close.svg", theme.text_color)
+theme.titlebar_close_button_focus_hover = gears.color.recolor_image(icons_path .. "/titlebar/close_hover.svg", theme.text_color)
 
-theme.titlebar_maximized_button_focus_active       = gears.color.recolor_image(theme.icons .. "/titlebar/maximize.svg", theme.text_color)
-theme.titlebar_maximized_button_focus_active_hover = gears.color.recolor_image(theme.icons .. "/titlebar/maximize_hover.svg", theme.text_color)
+theme.titlebar_maximized_button_focus_active       = gears.color.recolor_image(icons_path .. "/titlebar/maximize.svg", theme.text_color)
+theme.titlebar_maximized_button_focus_active_hover = gears.color.recolor_image(icons_path .. "/titlebar/maximize_hover.svg", theme.text_color)
 
-theme.titlebar_maximized_button_focus_inactive       = gears.color.recolor_image(theme.icons .. "/titlebar/maximize.svg", theme.text_color)
-theme.titlebar_maximized_button_focus_inactive_hover = gears.color.recolor_image(theme.icons .. "/titlebar/maximize_hover.svg", theme.text_color)
+theme.titlebar_maximized_button_focus_inactive       = gears.color.recolor_image(icons_path .. "/titlebar/maximize.svg", theme.text_color)
+theme.titlebar_maximized_button_focus_inactive_hover = gears.color.recolor_image(icons_path .. "/titlebar/maximize_hover.svg", theme.text_color)
 
-theme.titlebar_minimize_button_focus       = gears.color.recolor_image(theme.icons .. "/titlebar/minimize.svg", theme.text_color)
-theme.titlebar_minimize_button_focus_hover = gears.color.recolor_image(theme.icons .. "/titlebar/minimize_hover.svg", theme.text_color)
+theme.titlebar_minimize_button_focus       = gears.color.recolor_image(icons_path .. "/titlebar/minimize.svg", theme.text_color)
+theme.titlebar_minimize_button_focus_hover = gears.color.recolor_image(icons_path .. "/titlebar/minimize_hover.svg", theme.text_color)
 
 theme.titlebar_fg = theme.text_color .. "88"
 theme.titlebar_fg_focus = theme.text_color .. "ee"

@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
+local beautiful = require("beautiful")
 
 MenuWidget_prototype = function()
   local this = {}
@@ -25,7 +26,17 @@ MenuWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
-    mainmenu = nil
+    mainmenu = nil,
+    -- Private Funcs
+    switch_theme_mode = function()
+      local new_mode = beautiful.mode == "light" and "dark" or "light"
+      local theme_path = awful.util.getdir("config") .. "themes/relz/"
+      local theme_mode_file_path = theme_path .. "mode"
+      mode_file = io.open(theme_mode_file_path, "w")
+      mode_file:write(new_mode)
+      mode_file:close()
+      awesome.restart()
+    end
   }
 
   this.__construct = function(icon_path, session_lock_command)
@@ -33,6 +44,7 @@ MenuWidget_prototype = function()
     this.__public.icon.image = icon_path
     this.__private.mainmenu = awful.menu({ items = {
       { "Show hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
+      { "Switch theme mode", this.__private.switch_theme_mode },
       { "Awesome restart", awesome.restart },
       { "Log out",  function() awesome.quit() end },
       { "Lock", session_lock_command },
