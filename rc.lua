@@ -120,49 +120,38 @@ screen.connect_signal("property::geometry", awesome.restart)
 
 -- Common
 
-local run_command = function(command)
-  local command_subprocess = io.popen(command)
-  local result = command_subprocess:read('*all')
-  command_subprocess:close()
-
-  return result
-end
-
-local read_file_content = function(file_name)
-  return run_command("cat " .. file_name)
+local read_file_content = function(file_name, callback)
+  awful.spawn.easy_async("cat " .. file_name, callback)
 end
 
 -- Brightness
 
-local get_current_brightness = function()
-  return tonumber(read_file_content("/sys/class/backlight/intel_backlight/brightness"))
-end
-
-local get_max_brightness = function()
-  return tonumber(read_file_content("/sys/class/backlight/intel_backlight/max_brightness"))
-end
-
 local brightness = function(step_percent, increase)
-  local max_brightness = get_max_brightness()
-  local current_brightness = get_current_brightness()
-  local step = math.floor(step_percent * max_brightness / 100)
+  read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
+    read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
+      local current_brightness = tonumber(current_brightness_string)
+      local max_brightness = tonumber(max_brightness_string)
 
-  local new_brightness = 0
-  if increase then
-    new_brightness = current_brightness + step;
-  else
-    new_brightness = current_brightness - step;
-  end
-  local new_brightness = math.min(math.max(new_brightness, 0), max_brightness)
+      local step = math.floor(step_percent * max_brightness / 100)
 
-  run_command("pkexec xfpm-power-backlight-helper --set-brightness=" .. new_brightness)
-  brightness_widget.update(math.floor(new_brightness / max_brightness * 100))
+      local new_brightness = 0
+      if increase then
+        new_brightness = current_brightness + step;
+      else
+        new_brightness = current_brightness - step;
+      end
+      local new_brightness = math.min(math.max(new_brightness, 0), max_brightness)
+
+      awful.spawn.easy_async("pkexec xfpm-power-backlight-helper --set-brightness=" .. new_brightness, function()
+        brightness_widget.update(math.floor(new_brightness / max_brightness * 100))
+      end)
+    end)
+  end)
 end
 
 -- Volume
 
 local mute = function()
-  awful.spawn(mute_command, false)
   awful.spawn.easy_async(mute_command, function() vicious.force({ volume_widget.icon }) end)
 end
 
@@ -643,7 +632,14 @@ end)
 
 -- | Initialization | --
 
-brightness_widget.update(math.floor(get_current_brightness() / get_max_brightness() * 100))
+read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
+  read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
+    local current_brightness = tonumber(current_brightness_string)
+    local max_brightness = tonumber(max_brightness_string)
+
+    brightness_widget.update(math.floor(get_current_brightness() / get_max_brightness() * 100))
+  end)
+end)
 
 -- | Autostart | --
 
