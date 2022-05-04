@@ -148,7 +148,9 @@ BatteryWidget_prototype = function()
 
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
-    vicious.register(this.__public.icon, vicious.widgets.bat,
+    vicious.register(
+      this.__public.icon,
+      vicious.widgets.bat,
       function (widget, args)
         this.__private.is_charging = args[1] == "+"
         this.__private.capacity = args[2]
@@ -156,7 +158,7 @@ BatteryWidget_prototype = function()
         this.__private.wear_level = args[4]
         this.__private.update()
       end,
-      2^5,
+      2^8,
       "BAT0"
     )
 

@@ -75,7 +75,9 @@ MemoryWidget_prototype = function()
     -- Constructor
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
-    vicious.register(this.__public.icon, vicious.widgets.mem,
+    vicious.register(
+      this.__public.icon,
+      vicious.widgets.mem,
       function(widget, args)
         local mem_used = args[2];
         local used_percentage = args[1];

@@ -72,7 +72,9 @@ CpuWidget_prototype = function()
     -- Constructor
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
-    vicious.register(this.__public.icon, vicious.widgets.cpu,
+    vicious.register(
+      this.__public.icon,
+      vicious.widgets.cpu,
       function (widget, args)
         this.__private.cpu_usage = args[1]
         widget.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/cpu/cpu_" .. this.__private.compute_usage_level(this.__private.cpu_usage) .. ".svg", beautiful.text_color)

@@ -56,7 +56,9 @@ VolumeWidget_prototype = function()
     this.__private.textbox.font = "Droid Sans Mono Bold 9"
     this.__public.value.widget = this.__private.textbox
 
-    vicious.register(this.__public.icon, vicious.widgets.volume,
+    vicious.register(
+      this.__public.icon,
+      vicious.widgets.volume,
       function (widget, args)
         this.__private.volume_value = args[1]
         this.__private.is_muted = args[2] == "🔈"

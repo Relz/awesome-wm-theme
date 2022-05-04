@@ -85,7 +85,9 @@ NetworkWidget_prototype = function()
     -- Constructor
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
-    vicious.register(this.__public.icon, vicious.widgets.wifi,
+    vicious.register(
+      this.__public.icon,
+      vicious.widgets.wifi,
       function (widget, args)
         this.__private.ssid = args["{ssid}"]
         this.__private.linp = args["{linp}"]
