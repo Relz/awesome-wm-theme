@@ -19,12 +19,13 @@ BrightnessWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "BrightnessWidget",
     icon = wibox.widget.imagebox(),
     value = wibox.container.background(),
     -- Public Funcs
     update = function(brightness_percentage)
       this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/brightness/brightness_" .. this.__private.compute_brightness_level(brightness_percentage) .. ".svg", beautiful.text_color)
-      this.__private.textbox.text = string.rep(" ", 3 - this.__private.get_number_digits_count(brightness_percentage)) ..  brightness_percentage .. "%"
+      this.__private.textbox.text = string.rep(" ", 3 - this.__private.get_number_digits_count(brightness_percentage)) ..  brightness_percentage .. "% "
     end
   }
 

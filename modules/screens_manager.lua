@@ -1,6 +1,7 @@
 local gears = require("gears")
 local awful = require("awful")
 local wibox = require("wibox")
+local beautiful = require("beautiful")
 
 local _screens = {}
 
@@ -35,8 +36,11 @@ local function create_aligned_layout(panel_position)
   return is_horizontal_position(panel_position) and wibox.layout.align.horizontal() or wibox.layout.align.vertical()
 end
 
-local function create_fixed_layout(panel_position)
-  return is_horizontal_position(panel_position) and wibox.layout.fixed.horizontal() or wibox.layout.fixed.vertical()
+local function create_fixed_layout(panel_position, widgets)
+  if widgets == nil then
+    widgets = {}
+  end
+  return is_horizontal_position(panel_position) and wibox.layout.fixed.horizontal(table.unpack(widgets)) or wibox.layout.fixed.vertical(table.unpack(widgets))
 end
 
 local function create_left_layout(screen_index, panel)
@@ -95,16 +99,9 @@ local function create_middle_layout(screen_index, panel)
   return tasklist_margin_container
 end
 
-local function get_widget_horizontal_margin(panel_position)
-  return is_horizontal_position(panel_position) and 8 or 0
-end
-
-local function get_widget_vertical_margin(panel_position)
-  return is_horizontal_position(panel_position) and 0 or 8
-end
-
 local function create_right_layout(screen_index, panel)
   local right_layout = create_fixed_layout(panel.position)
+  right_layout.spacing = 8
 
   if panel.show_tray then
     local tray = wibox.widget.systray()
@@ -114,20 +111,54 @@ local function create_right_layout(screen_index, panel)
     right_layout:add(tray_margin_container)
   end
 
-  for _,widget in ipairs(panel.widgets) do
-    if widget.icon or widget.value then
-      if widget.icon then
-        local widget_margin_container = wibox.container.margin(widget.icon)
-        widget_margin_container.margins = 1
-        widget_margin_container.left = widget_margin_container.left + get_widget_horizontal_margin(panel.position)
-        widget_margin_container.top = widget_margin_container.top + get_widget_vertical_margin(panel.position)
-        right_layout:add(widget_margin_container)
+  for _,widget_or_widget_group in ipairs(panel.widgets) do
+    local is_widget_group = #widget_or_widget_group ~= 0
+    local widgets = is_widget_group and widget_or_widget_group or { widget_or_widget_group }
+    local containers = {}
+
+    for i,widget in ipairs(widgets) do
+      if widget.icon or widget.value then
+        if widget.icon then
+          local widget_icon_margin_container = wibox.container.margin(widget.icon)
+          widget_icon_margin_container.margins = 1
+          table.insert(containers, widget_icon_margin_container)
+        end
+        if widget.value then
+          local widget_value_rotate_container = wibox.container.rotate(widget.value, get_direction_by_position(panel.position))
+          table.insert(containers, widget_value_rotate_container)
+        end
       end
-      if widget.value then
-        local widget_rotate_container = wibox.container.rotate(widget.value, get_direction_by_position(panel.position))
-        local widget_margin_container = wibox.container.margin(widget_rotate_container)
-        widget_margin_container.top = get_widget_vertical_margin(panel.position)
-        right_layout:add(widget_margin_container)
+    end
+
+    local top_level_container
+
+    if #containers == 1 then
+      top_level_container = containers[1]
+    else
+      local widget_fixed_container = create_fixed_layout(panel.position, containers)
+
+      local widgets_margin_container = wibox.container.margin(widget_fixed_container)
+      widgets_margin_container.margins = 2
+
+      local widget_background_container = wibox.container.background(
+        widgets_margin_container,
+        nil,
+        function (cr, width, height)
+          gears.shape.rounded_rect(cr, width, height, 4)
+        end
+      )
+      widget_background_container.shape_border_width = 1
+      widget_background_container.shape_border_color = beautiful.multi_widget_border_color
+
+      top_level_container = wibox.container.margin(widget_background_container)
+      top_level_container.margins = 2
+    end
+
+    right_layout:add(top_level_container)
+
+    for _,widget in ipairs(widgets) do
+      if widget.on_container_created ~= nil then
+        widget.on_container_created(top_level_container, panel.position)
       end
     end
   end

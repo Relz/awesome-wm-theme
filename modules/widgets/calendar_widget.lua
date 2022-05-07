@@ -17,6 +17,7 @@ CalendarWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "CalendarWidget",
     icon = wibox.widget.imagebox(),
     value = wibox.container.background()
     -- Public Funcs
@@ -29,7 +30,7 @@ CalendarWidget_prototype = function()
 
   this.__construct = function(icon_path, text_color, calendar_command)
     -- Constructor
-    date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b"))
+    date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b "))
     date.font = "Droid Sans Mono Bold 10"
 
     this.__public.value.widget = date

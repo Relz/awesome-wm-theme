@@ -17,7 +17,6 @@ require("awful.autofocus")
 
 local awful           = require("awful")
 local wibox           = require("wibox")
-local gears           = require("gears")
 local vicious         = require("vicious")
 local beautiful       = require("beautiful")
 local hotkeys_popup   = require("awful.hotkeys_popup")
@@ -95,8 +94,10 @@ screen_0_panel.widgets = {
   network_widget,
   volume_widget,
   keyboard_layout_widget,
-  calendar_widget,
-  clock_widget,
+  {
+    calendar_widget,
+    clock_widget,
+  },
   menu_widget
 }
 
@@ -506,6 +507,12 @@ root.keys(global_keys)
 
 -- | Rules | --
 
+local client_buttons = awful.util.table.join(
+  awful.button({ }, 1, menu_widget.hide),
+  awful.button({ }, 2, menu_widget.hide),
+  awful.button({ }, 3, menu_widget.hide)
+)
+
 awful.rules.rules = {
   {
     rule = { },
@@ -515,6 +522,7 @@ awful.rules.rules = {
       focus = awful.client.focus.filter,
       raise = true,
       keys = client_keys,
+      buttons = client_buttons,
       titlebars_enabled = true,
       placement = awful.placement.no_overlap+awful.placement.no_offscreen
     }

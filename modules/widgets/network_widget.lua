@@ -51,6 +51,7 @@ NetworkWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "NetworkWidget",
     wired_path = "/sys/class/net/" .. this.__private_static.wired_interface_name .. "/carrier",
 
     icon = wibox.widget.imagebox(),

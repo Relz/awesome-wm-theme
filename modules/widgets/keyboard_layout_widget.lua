@@ -18,6 +18,7 @@ KeyboardLayoutWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "KeyboardLayoutWidget",
     icon = nil,
     value = nil
     -- Public Funcs
@@ -36,8 +37,8 @@ KeyboardLayoutWidget_prototype = function()
     inner_margin_container.bottom = 1
 
     local background_container = wibox.container.background(inner_margin_container)
-    background_container.bg = theme.text_color
-    background_container.fg = theme.background_color
+    background_container.bg = beautiful.text_color
+    background_container.fg = beautiful.background_color
     background_container.shape = gears.shape.rounded_rect
     background_container.shape_border_color = background_container.fg
 
@@ -46,15 +47,15 @@ KeyboardLayoutWidget_prototype = function()
     margin_container.bottom = 5
 
     this.__private.keyboard_layout:connect_signal("mouse::enter", function()
-      background_container.bg = theme.background_color
-      background_container.fg = theme.text_color
+      background_container.bg = beautiful.background_color
+      background_container.fg = beautiful.text_color
       background_container.shape_border_width = 2
       background_container.shape_border_color = background_container.fg
     end)
 
     this.__private.keyboard_layout:connect_signal("mouse::leave", function()
-      background_container.bg = theme.text_color
-      background_container.fg = theme.background_color
+      background_container.bg = beautiful.text_color
+      background_container.fg = beautiful.background_color
       background_container.shape_border_width = 0
       background_container.shape_border_color = background_container.fg
     end)

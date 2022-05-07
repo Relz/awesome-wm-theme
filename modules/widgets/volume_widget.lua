@@ -20,6 +20,7 @@ VolumeWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "VolumeWidget",
     icon = wibox.widget.imagebox(),
     value = wibox.container.background(),
     -- Public Funcs
@@ -48,7 +49,7 @@ VolumeWidget_prototype = function()
     end,
     get_volume_value_string = function()
       return this.__private.volume_value .. "%"
-    end
+    end,
   }
 
   this.__construct = function(mute_command)

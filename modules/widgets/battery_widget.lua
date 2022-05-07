@@ -21,6 +21,7 @@ BatteryWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "BatteryWidget",
     icon = wibox.widget.imagebox(),
     value = nil,
     -- Public Funcs

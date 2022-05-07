@@ -53,6 +53,7 @@ MemoryWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "MemoryWidget",
     icon = wibox.widget.imagebox(),
     value = nil
     -- Public Funcs

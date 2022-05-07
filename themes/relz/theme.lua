@@ -5,11 +5,16 @@ local theme_path = awful.util.getdir("config") .. "themes/relz/"
 local icons_path = theme_path .. "icons/"
 local theme_mode_file_path = theme_path .. "mode"
 
-mode_file = io.open(theme_mode_file_path, "r")
-local mode = mode_file:read("*all")
-mode_file:close()
+local mode = 'light'
 
-theme = {}
+local mode_file = io.open(theme_mode_file_path, "r")
+if mode_file ~= nil then
+  mode = mode_file:read("*all")
+  mode_file:close()
+end
+
+local theme = {}
+
 theme.mode = mode
 theme.font = "Droid Sans Mono Regular 10"
 
@@ -112,6 +117,10 @@ theme.tasklist_sticky = ""
 theme.tasklist_ontop = ""
 theme.tasklist_maximized_horizontal = ""
 theme.tasklist_maximized_vertical = ""
+
+-- | Widget | --
+
+theme.multi_widget_border_color = mode == "dark" and "#34455c" or "#bbd2d8"
 
 -- | Clock / Calendar | --
 

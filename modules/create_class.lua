@@ -4,8 +4,8 @@ createClass = function()
   creator.__private = {
     object_class = {},
   }
-  
-  creator.__oncall = function(class_creator)    
+
+  creator.__oncall = function(class_creator)
     -- Get the class definition so we can make needed variables private, static, etc.
     local this = class_creator()
     -- Initialize class from class definition
@@ -15,7 +15,7 @@ createClass = function()
       if (type(this.__public_static) == "table") then
         class = this.__public_static
       end
-      
+
       -- Init Object
       local thisClass = this
       local __constructor = function(...)
@@ -35,7 +35,9 @@ createClass = function()
         if (type(this.__construct) == "function") then
           this.__construct(...)
         end
-        
+
+        object.type = "class"
+
         -- Returning constructed object
         return object
       end

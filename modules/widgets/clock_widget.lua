@@ -17,6 +17,7 @@ ClockWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
+    name = "ClockWidget",
     icon = wibox.widget.imagebox(),
     value = wibox.container.background()
     -- Public Funcs
