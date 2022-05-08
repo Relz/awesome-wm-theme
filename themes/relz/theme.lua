@@ -32,9 +32,25 @@ theme.bg_normal = theme.background_color
 theme.bg_focus = theme.text_color
 theme.bg_urgent = theme.background_color
 
-theme.bg_systray = theme.background_color
+-- | Checkbox | --
 
+theme.checkbox_shape = gears.shape.circle
+
+theme.checkbox_bg = theme.background_color
+theme.checkbox_border_width = 1
+theme.checkbox_border_color = theme.text_color
+
+theme.checkbox_check_bg = theme.background_color
+theme.checkbox_check_border_width = 1
+theme.checkbox_check_border_color = theme.text_color
+theme.checkbox_color = theme.text_color
+
+-- | Systray | --
+
+theme.bg_systray = theme.background_color
 theme.systray_icon_spacing = 8
+
+-- | Tooltip | --
 
 theme.tooltip_bg = theme.background_color
 theme.tooltip_fg = theme.text_color

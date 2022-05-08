@@ -23,7 +23,7 @@ MenuWidget_prototype = function()
     icon = wibox.widget.imagebox(),
     value = nil,
     -- Public Funcs
-    hide = function()
+    hide_dropdown = function()
       this.__private.mainmenu:hide()
     end,
     on_container_created = function(container, panel_position)
@@ -84,24 +84,26 @@ MenuWidget_prototype = function()
     ))
 
     root.buttons(gears.table.join(root.buttons(),
-        awful.button({}, 1, function() this.__public.hide() end),
-        awful.button({}, 2, function() this.__public.hide() end),
-        awful.button({}, 3, function() this.__public.hide() end)
+        awful.button({}, 1, this.__public.hide_dropdown),
+        awful.button({}, 2, this.__public.hide_dropdown),
+        awful.button({}, 3, this.__public.hide_dropdown)
     ))
 
     this.__private.mainmenu.wibox:connect_signal("property::visible", function()
       local _key_grabber
       if this.__private.mainmenu.wibox.visible then
-          _key_grabber = awful.keygrabber.run(function(mod, key, event)
-            if event == "release" then
-              return false
-            end
-            if key == "Up" or key == "Right" or key == "Down" or key == "Left" or key == "Return" then
-              return false
-            end
-            this.__public.hide()
-            awful.keygrabber.stop(_key_grabber)
-          end)
+        _key_grabber = awful.keygrabber.run(function(mod, key, event)
+          if event == "release" then
+            return false
+          end
+          if key == "Up" or key == "Right" or key == "Down" or key == "Left" or key == "Return" then
+            return false
+          end
+          this.__public.hide_dropdown()
+          awful.keygrabber.stop(_key_grabber)
+        end)
+      else
+        awful.keygrabber.stop(_key_grabber)
       end
     end)
   end

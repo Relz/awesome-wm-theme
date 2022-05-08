@@ -53,7 +53,7 @@ local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
 local network_widget = NetworkWidget()
-local volume_widget = VolumeWidget(mute_command)
+local volume_widget = VolumeWidget()
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
 -- | Panels | --
@@ -103,11 +103,11 @@ screen_0_panel.widgets = {
 
 -- | Screens | --
 
-screen0 = Screen()
+local screen0 = Screen()
 screen0.wallpaper = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg"
 screen0.panels = { screen_0_panel }
 
-screen1 = Screen()
+local screen1 = Screen()
 screen1.wallpaper = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg"
 screen1.panels = { screen_0_panel }
 
@@ -507,10 +507,15 @@ root.keys(global_keys)
 
 -- | Rules | --
 
+function hide_dropdowns()
+  menu_widget.hide_dropdown()
+  volume_widget.hide_dropdown()
+end
+
 local client_buttons = awful.util.table.join(
-  awful.button({ }, 1, menu_widget.hide),
-  awful.button({ }, 2, menu_widget.hide),
-  awful.button({ }, 3, menu_widget.hide)
+  awful.button({ }, 1, hide_dropdowns),
+  awful.button({ }, 2, hide_dropdowns),
+  awful.button({ }, 3, hide_dropdowns)
 )
 
 awful.rules.rules = {
