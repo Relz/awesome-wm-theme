@@ -226,18 +226,19 @@ VolumeWidget_prototype = function()
 
       return devices
     end,
-    get_device_name = function(device)
-      local port = nil
-      if device.active_port ~= nil and device.ports[device.active_port] ~= nil then
-        port = device.ports[device.active_port]
-      end
-
-      local device_name = device.properties.device_description
-      if port ~= nil then
-        device_name = device_name .. " · " .. port.name
-      end
-
-      return device_name
+    build_popup_header_row = function(text)
+      return wibox.widget{
+        {
+          {
+            markup = "<b>" .. text .. "</b>",
+            align = "center",
+            widget = wibox.widget.textbox
+          },
+          widget = wibox.container.background,
+        },
+        margins = 8,
+        widget = wibox.container.margin
+      }
     end,
     build_popup_devices_rows = function(devices, on_checkbox_click, device_type)
       local device_rows  = { layout = wibox.layout.fixed.vertical }
@@ -246,7 +247,7 @@ VolumeWidget_prototype = function()
 
         local checkbox = wibox.widget {
           checked = device.is_default,
-          paddings = 2,
+          paddings = 3,
           forced_width = 16,
           forced_height = 16,
           widget = wibox.widget.checkbox
@@ -266,13 +267,12 @@ VolumeWidget_prototype = function()
                   align = "left",
                   widget = wibox.widget.textbox
                 },
-                left = 10,
+                left = 8,
                 layout = wibox.container.margin
               },
-              spacing = 8,
               layout = wibox.layout.align.horizontal
             },
-            margins = 4,
+            margins = 8,
             layout = wibox.container.margin
           },
           widget = wibox.container.background
@@ -302,15 +302,18 @@ VolumeWidget_prototype = function()
 
       return device_rows
     end,
-    build_popup_header_row = function(text)
-      return wibox.widget{
-        {
-          markup = "<b>" .. text .. "</b>",
-          align = "center",
-          widget = wibox.widget.textbox
-        },
-        widget = wibox.container.background
-      }
+    get_device_name = function(device)
+      local port = nil
+      if device.active_port ~= nil and device.ports[device.active_port] ~= nil then
+        port = device.ports[device.active_port]
+      end
+
+      local device_name = device.properties.device_description
+      if port ~= nil then
+        device_name = device_name .. " · " .. port.name
+      end
+
+      return device_name
     end,
     rebuild_popup = function ()
       local rows  = { layout = wibox.layout.fixed.vertical }
