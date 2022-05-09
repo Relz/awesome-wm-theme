@@ -79,6 +79,13 @@ VolumeWidget_prototype = function()
     get_volume_value_string = function()
       return this.__private.volume_value .. "%"
     end,
+    update = function()
+      this.__private.rebuild_popup()
+      awful.spawn.easy_async(
+        "amixer set Master " .. this.__private.volume_value .. "%",
+        function() vicious.force({ this.__public.icon }) end
+      )
+    end,
     get_devices = function(pacmd_output)
       local devices = {}
 
@@ -323,14 +330,14 @@ VolumeWidget_prototype = function()
         local sinks = this.__private.get_devices(get_sinks_stdout)
 
         table.insert(rows, this.__private.build_popup_header_row("OUTPUTS"))
-        table.insert(rows, this.__private.build_popup_devices_rows(sinks, this.__private.rebuild_popup, "sink"))
+        table.insert(rows, this.__private.build_popup_devices_rows(sinks, this.__private.update, "sink"))
 
         awful.spawn.easy_async("pacmd list-sources", function(get_sources_stdout)
 
           local sources = this.__private.get_devices(get_sources_stdout)
 
           table.insert(rows, this.__private.build_popup_header_row("INPUTS"))
-          table.insert(rows, this.__private.build_popup_devices_rows(sources, this.__private.rebuild_popup, "source"))
+          table.insert(rows, this.__private.build_popup_devices_rows(sources, this.__private.update, "source"))
 
           this.__private.settings_popup:setup(rows)
         end)
