@@ -36,6 +36,7 @@ local music_player = "spotify"
 local session_lock_command = "dm-tool lock"
 local calendar_command = "/opt/google/chrome/google-chrome --profile-directory='Profile 2' --app=https://calendar.google.com/calendar"
 local power_manager_settings_command = "xfce4-power-manager-settings"
+local system_monitor_command = "gnome-system-monitor"
 local mute_command = "amixer -D pulse set Master 1+ toggle"
 
 local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
@@ -45,7 +46,7 @@ local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 local config_path = awful.util.getdir("config")
 beautiful.init(config_path .. "/themes/relz/theme.lua")
 
-local cpu_widget = CpuWidget()
+local cpu_widget = CpuWidget(system_monitor_command)
 local memory_widget = MemoryWidget()
 local brightness_widget = BrightnessWidget(100)
 local battery_widget = BatteryWidget(power_manager_settings_command)
@@ -592,6 +593,13 @@ awful.rules.rules = {
   },
   {
     rule = { class = "Xfce4-power-manager-settings" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
+    rule = { class = "Gnome-system-monitor" },
     properties = {
       border_width = 0,
       titlebars_enabled = false

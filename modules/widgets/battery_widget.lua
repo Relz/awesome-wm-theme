@@ -26,10 +26,10 @@ BatteryWidget_prototype = function()
     value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
-      if this.__private.power_manager_settings_command ~= nil then
+      if this.__private.on_click_command ~= nil then
         container:buttons(
           awful.util.table.join(
-            awful.button({}, 1, function() awful.spawn(this.__private.power_manager_settings_command) end)
+            awful.button({}, 1, function() awful.spawn(this.__private.on_click_command) end)
           )
         )
       end
@@ -44,7 +44,7 @@ BatteryWidget_prototype = function()
     remaining_time = 0,
     wear_level = 0,
     tooltip_mode = 0,
-    power_manager_settings_command = nil,
+    on_click_command = nil,
     notification = nil;
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
@@ -152,9 +152,9 @@ BatteryWidget_prototype = function()
     end
   }
 
-  this.__construct = function(power_manager_settings_command)
+  this.__construct = function(on_click_command)
     -- Constructor
-    this.__private.power_manager_settings_command = power_manager_settings_command
+    this.__private.on_click_command = on_click_command
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(
