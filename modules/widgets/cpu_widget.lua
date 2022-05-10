@@ -37,6 +37,7 @@ CpuWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
+    on_click_command = nil,
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
       timer_function = function()

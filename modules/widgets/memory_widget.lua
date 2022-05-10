@@ -55,12 +55,22 @@ MemoryWidget_prototype = function()
     -- Public Variables
     name = "MemoryWidget",
     icon = wibox.widget.imagebox(),
-    value = nil
+    value = nil,
     -- Public Funcs
+    on_container_created = function(container, panel_position)
+      if this.__private.on_click_command ~= nil then
+        container:buttons(
+          awful.util.table.join(
+            awful.button({}, 1, function() awful.spawn(this.__private.on_click_command) end)
+          )
+        )
+      end
+    end
   }
 
   this.__private = {
     -- Private Variables
+    on_click_command = nil,
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
       timer_function = function()
@@ -68,12 +78,13 @@ MemoryWidget_prototype = function()
       end,
       mode = "outside"
     }),
-    memory_used = ""
+    memory_used = "",
     -- Private Funcs
   }
 
-  this.__construct = function()
+  this.__construct = function(on_click_command)
     -- Constructor
+    this.__private.on_click_command = on_click_command
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(

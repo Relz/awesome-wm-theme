@@ -47,7 +47,7 @@ local config_path = awful.util.getdir("config")
 beautiful.init(config_path .. "/themes/relz/theme.lua")
 
 local cpu_widget = CpuWidget(system_monitor_command)
-local memory_widget = MemoryWidget()
+local memory_widget = MemoryWidget(system_monitor_command)
 local brightness_widget = BrightnessWidget(100)
 local battery_widget = BatteryWidget(power_manager_settings_command)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
