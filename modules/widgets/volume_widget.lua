@@ -22,7 +22,7 @@ VolumeWidget_prototype = function()
     -- Public Variables
     name = "VolumeWidget",
     icon = wibox.widget.imagebox(),
-    value = wibox.container.background(),
+    value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
       local is_top_panel_position = panel_position == "top"
@@ -66,7 +66,6 @@ VolumeWidget_prototype = function()
     -- Private Variables
     volume_value = 0,
     is_muted = true,
-    textbox = wibox.widget.textbox(),
     -- Private Funcs
     compute_volume_level = function(is_muted, volume_value)
       if (is_muted or volume_value == 0) then
@@ -536,10 +535,14 @@ VolumeWidget_prototype = function()
     end,
   }
 
-  this.__construct = function()
+  this.__construct = function(show_text)
     -- Constructor
-    this.__private.textbox.font = "Droid Sans Mono Bold 9"
-    this.__public.value = this.__private.textbox
+    this.__private.show_text = show_text
+
+    if this.__private.show_text then
+      this.__public.value = wibox.widget.textbox()
+      this.__public.value.font = "Droid Sans Mono Bold 9"
+    end
 
     vicious.register(
       this.__public.icon,
@@ -548,7 +551,10 @@ VolumeWidget_prototype = function()
         this.__private.volume_value = args[1]
         this.__private.is_muted = args[2] == "🔈"
         this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. ".svg", beautiful.text_color)
-        this.__private.textbox.text = string.rep(" ", 3 - get_percent_number_digits_count(this.__private.volume_value)) .. this.__private.volume_value .. "% "
+
+        if this.__private.show_text then
+          this.__public.value.text = string.rep(" ", 3 - get_percent_number_digits_count(this.__private.volume_value)) .. this.__private.volume_value .. "% "
+        end
       end,
       2^22,
       "Master"

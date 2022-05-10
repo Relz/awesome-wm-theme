@@ -56,7 +56,7 @@ local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
 local network_widget = NetworkWidget(false, network_configuration_command)
-local volume_widget = VolumeWidget()
+local volume_widget = VolumeWidget(true)
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
 -- | Panels | --
