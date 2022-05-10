@@ -91,10 +91,10 @@ screen_0_panel.tasks.key_bindings = awful.util.table.join(
 screen_0_panel.widgets = {
   cpu_widget,
   memory_widget,
-  brightness_widget,
-  battery_widget,
   network_widget,
   volume_widget,
+  brightness_widget,
+  battery_widget,
   keyboard_layout_widget,
   {
     calendar_widget,
