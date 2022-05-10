@@ -152,16 +152,18 @@ end
 
 -- Volume
 
-local mute = function()
+mute = function()
   awful.spawn.easy_async(mute_command, function() vicious.force({ volume_widget.icon }) end)
 end
 
-local volume = function(step, increase)
+set_volume = function(step, increase)
   local command = "amixer set Master " .. step .. "%";
-  if increase then
-    command = command .. "+";
-  else
-    command = command .. "-";
+  if increase ~= nil then
+    if increase then
+      command = command .. "+";
+    else
+      command = command .. "-";
+    end
   end
   awful.spawn.easy_async(command, function() vicious.force({ volume_widget.icon }) end)
 end
@@ -380,11 +382,11 @@ local global_keys = awful.util.table.join(
 
   awful.key({}, "XF86AudioMute", function () mute() end, { description="Toggle sound volume", group="Volume" }),
 
-  awful.key({}, "XF86AudioRaiseVolume", function () volume(5, true) end, { description="Raise volume by 5", group="Volume" }),
-  awful.key({}, "XF86AudioLowerVolume", function () volume(5, false) end, { description="Lower volume by 5", group="Volume" }),
+  awful.key({}, "XF86AudioRaiseVolume", function () set_volume(5, true) end, { description="Raise volume by 5", group="Volume" }),
+  awful.key({}, "XF86AudioLowerVolume", function () set_volume(5, false) end, { description="Lower volume by 5", group="Volume" }),
 
-  awful.key({ "Control" }, "XF86AudioRaiseVolume", function () volume(10, true) end, { description="Raise volume by 10", group="Volume" }),
-  awful.key({ "Control" }, "XF86AudioLowerVolume", function () volume(10, false) end, { description="Lower volume by 10", group="Volume" }),
+  awful.key({ "Control" }, "XF86AudioRaiseVolume", function () set_volume(10, true) end, { description="Raise volume by 10", group="Volume" }),
+  awful.key({ "Control" }, "XF86AudioLowerVolume", function () set_volume(10, false) end, { description="Lower volume by 10", group="Volume" }),
 
   awful.key({}, "XF86AudioPrev", function () audio_previous() end, { description="Previous audio", group="Audio" }),
   awful.key({}, "XF86AudioPlay", function () audio_toggle_play_pause() end, { description="Play/Pause audio", group="Audio" }),

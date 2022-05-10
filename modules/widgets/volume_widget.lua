@@ -49,6 +49,13 @@ VolumeWidget_prototype = function()
           end
         end
       )
+
+      container:buttons(
+        awful.util.table.join(
+          awful.button({}, 4, function() set_volume(5, true) end),
+          awful.button({}, 5, function() set_volume(5, false) end)
+        )
+      )
     end,
     hide_dropdown = function()
       this.__private.settings_popup.visible = false
@@ -81,10 +88,7 @@ VolumeWidget_prototype = function()
     end,
     update = function()
       this.__private.rebuild_popup()
-      awful.spawn.easy_async(
-        "amixer set Master " .. this.__private.volume_value .. "%",
-        function() vicious.force({ this.__public.icon }) end
-      )
+      set_volume(this.__private.volume_value)
     end,
     get_devices = function(pacmd_output)
       local devices = {}
