@@ -47,7 +47,7 @@ local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 local config_path = awful.util.getdir("config")
 beautiful.init(config_path .. "/themes/relz/theme.lua")
 
-local cpu_widget = CpuWidget(system_monitor_command)
+local cpu_widget = CpuWidget(false, system_monitor_command)
 local memory_widget = MemoryWidget(system_monitor_command)
 local brightness_widget = BrightnessWidget(100)
 local battery_widget = BatteryWidget(true, power_manager_settings_command)
