@@ -127,7 +127,7 @@ end
 
 -- Brightness
 
-local brightness = function(step_percent, increase)
+set_brightness = function(step_percent, increase)
   read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
     read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
       local current_brightness = tonumber(current_brightness_string)
@@ -374,11 +374,11 @@ local global_keys = awful.util.table.join(
 
   awful.key({ "Mod4" }, "Return", function () awful.spawn(terminal) end, { description="Execute default terminal(" .. terminal .. ")", group="Application" }),
 
-  awful.key({}, "XF86MonBrightnessUp", function () brightness(5, true) end, { description="Increase brightness by 5", group="Brightness" }),
-  awful.key({}, "XF86MonBrightnessDown", function () brightness(5, false) end, { description="Decrease brightness by 5", group="Brightness" }),
+  awful.key({}, "XF86MonBrightnessUp", function () set_brightness(5, true) end, { description="Increase brightness by 5", group="Brightness" }),
+  awful.key({}, "XF86MonBrightnessDown", function () set_brightness(5, false) end, { description="Decrease brightness by 5", group="Brightness" }),
 
-  awful.key({ "Control" }, "XF86MonBrightnessUp", function () brightness(10, true) end, { description="Increase brightness by 10", group="Brightness" }),
-  awful.key({ "Control" }, "XF86MonBrightnessDown", function () brightness(10, false) end, { description="Decrease brightness by 10", group="Brightness" }),
+  awful.key({ "Control" }, "XF86MonBrightnessUp", function () set_brightness(10, true) end, { description="Increase brightness by 10", group="Brightness" }),
+  awful.key({ "Control" }, "XF86MonBrightnessDown", function () set_brightness(10, false) end, { description="Decrease brightness by 10", group="Brightness" }),
 
   awful.key({}, "XF86AudioMute", function () mute() end, { description="Toggle sound volume", group="Volume" }),
 
