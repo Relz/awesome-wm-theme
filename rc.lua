@@ -38,6 +38,7 @@ local session_lock_command = "dm-tool lock"
 local calendar_command = "/opt/google/chrome/google-chrome --profile-directory='Profile 2' --app=https://calendar.google.com/calendar"
 local power_manager_settings_command = "xfce4-power-manager-settings"
 local system_monitor_command = "gnome-system-monitor"
+local network_configuration_command = "nm-connection-editor"
 local mute_command = "amixer -D pulse set Master 1+ toggle"
 
 local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
@@ -54,7 +55,7 @@ local battery_widget = BatteryWidget(true, power_manager_settings_command)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
-local network_widget = NetworkWidget()
+local network_widget = NetworkWidget(false, network_configuration_command)
 local volume_widget = VolumeWidget()
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
