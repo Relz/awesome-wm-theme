@@ -15,28 +15,28 @@ require("modules/widgets/volume_widget")
 
 require("awful.autofocus")
 
-local awful           = require("awful")
-local wibox           = require("wibox")
-local vicious         = require("vicious")
-local beautiful       = require("beautiful")
-local hotkeys_popup   = require("awful.hotkeys_popup")
+local awful = require("awful")
+local wibox = require("wibox")
+local vicious = require("vicious")
+local beautiful = require("beautiful")
+local hotkeys_popup = require("awful.hotkeys_popup")
 
 require("modules/error_handling")
 
-local executer        = require("modules/executer")
+local executer = require("modules/executer")
 local screens_manager = require("modules/screens_manager")
 
 -- | Variable definitions | --
 
-local terminal             = "alacritty"
-local browser              = "google-chrome-stable"
-local file_manager         = "nautilus"
-local graphic_text_editor  = "subl"
-local music_player         = "spotify"
+local terminal = "alacritty"
+local browser = "google-chrome-stable"
+local file_manager = "nautilus"
+local graphic_text_editor = "subl"
+local music_player = "spotify"
 local session_lock_command = "dm-tool lock"
-local calendar_command     = "/opt/google/chrome/google-chrome --profile-directory='Profile 2' --app=https://calendar.google.com/calendar"
-
-local mute_command         = "amixer -D pulse set Master 1+ toggle"
+local calendar_command = "/opt/google/chrome/google-chrome --profile-directory='Profile 2' --app=https://calendar.google.com/calendar"
+local power_manager_settings_command = "xfce4-power-manager-settings"
+local mute_command = "amixer -D pulse set Master 1+ toggle"
 
 local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 
@@ -48,7 +48,7 @@ beautiful.init(config_path .. "/themes/relz/theme.lua")
 local cpu_widget = CpuWidget()
 local memory_widget = MemoryWidget()
 local brightness_widget = BrightnessWidget(100)
-local battery_widget = BatteryWidget(beautiful.mode)
+local battery_widget = BatteryWidget(power_manager_settings_command)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
 local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)

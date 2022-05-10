@@ -25,6 +25,15 @@ BatteryWidget_prototype = function()
     icon = wibox.widget.imagebox(),
     value = nil,
     -- Public Funcs
+    on_container_created = function(container, panel_position)
+      if this.__private.power_manager_settings_command ~= nil then
+        container:buttons(
+          awful.util.table.join(
+            awful.button({}, 1, function() awful.spawn(this.__private.power_manager_settings_command) end)
+          )
+        )
+      end
+    end
   }
 
   this.__private = {
@@ -35,7 +44,7 @@ BatteryWidget_prototype = function()
     remaining_time = 0,
     wear_level = 0,
     tooltip_mode = 0,
-    mode = "",
+    power_manager_settings_command = nil,
     notification = nil;
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
@@ -89,7 +98,7 @@ BatteryWidget_prototype = function()
 
       local icon_file_name_suffix = this.__private.compute_icon_file_name_suffix()
       local icon_color = is_low_capacity and beautiful.danger_background or beautiful.text_color
-      local possible_mode = this.__private.is_charging and "_" .. this.__private.mode or ""
+      local possible_mode = this.__private.is_charging and "_" .. beautiful.mode or ""
       local icon_path = this.__private_static.config_path .. "/themes/relz/icons/widgets/battery/battery_" .. icon_file_name_suffix .. possible_mode .. ".svg"
 
       this.__public.icon.image = this.__private.is_charging and icon_path or gears.color.recolor_image(icon_path, icon_color)
@@ -143,10 +152,9 @@ BatteryWidget_prototype = function()
     end
   }
 
-  this.__construct = function(mode)
+  this.__construct = function(power_manager_settings_command)
     -- Constructor
-    this.__private.mode = mode
-
+    this.__private.power_manager_settings_command = power_manager_settings_command
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(
