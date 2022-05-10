@@ -38,13 +38,14 @@ BatteryWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
+    show_text = nil,
+    on_click_command = nil,
     capacity = 0,
     previous_capacity = 0,
     is_charging = false,
     remaining_time = 0,
     wear_level = 0,
     tooltip_mode = 0,
-    on_click_command = nil,
     notification = nil;
     tooltip = awful.tooltip({
       objects = { this.__public.icon },
@@ -102,6 +103,9 @@ BatteryWidget_prototype = function()
       local icon_path = this.__private_static.config_path .. "/themes/relz/icons/widgets/battery/battery_" .. icon_file_name_suffix .. possible_mode .. ".svg"
 
       this.__public.icon.image = this.__private.is_charging and icon_path or gears.color.recolor_image(icon_path, icon_color)
+      if this.__private.show_text then
+        this.__public.value.text = string.rep(" ", 3 - get_percent_number_digits_count(this.__private.capacity)) .. this.__private.capacity .. "% "
+      end
     end,
     compute_possible_charging = function()
       return this.__private.is_charging and "charging_" or ""
@@ -152,9 +156,16 @@ BatteryWidget_prototype = function()
     end
   }
 
-  this.__construct = function(on_click_command)
+  this.__construct = function(show_text, on_click_command)
     -- Constructor
+    this.__private.show_text = show_text
     this.__private.on_click_command = on_click_command
+
+    if this.__private.show_text then
+      this.__public.value = wibox.widget.textbox()
+      this.__public.value.font = "Droid Sans Mono Bold 9"
+    end
+
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(

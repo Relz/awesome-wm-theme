@@ -80,12 +80,6 @@ VolumeWidget_prototype = function()
       end
       return "muted"
     end,
-    get_number_digits_count = function(number)
-      return number < 10 and 1 or (number < 100 and 2 or 3)
-    end,
-    get_volume_value_string = function()
-      return this.__private.volume_value .. "%"
-    end,
     update = function()
       this.__private.rebuild_popup()
       set_volume(this.__private.volume_value)
@@ -545,7 +539,7 @@ VolumeWidget_prototype = function()
   this.__construct = function()
     -- Constructor
     this.__private.textbox.font = "Droid Sans Mono Bold 9"
-    this.__public.value.widget = this.__private.textbox
+    this.__public.value = this.__private.textbox
 
     vicious.register(
       this.__public.icon,
@@ -554,7 +548,7 @@ VolumeWidget_prototype = function()
         this.__private.volume_value = args[1]
         this.__private.is_muted = args[2] == "🔈"
         this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. ".svg", beautiful.text_color)
-        this.__private.textbox.text = string.rep(" ", 3 - this.__private.get_number_digits_count(this.__private.volume_value)) .. this.__private.get_volume_value_string() .. " "
+        this.__private.textbox.text = string.rep(" ", 3 - get_percent_number_digits_count(this.__private.volume_value)) .. this.__private.volume_value .. "% "
       end,
       2^22,
       "Master"
