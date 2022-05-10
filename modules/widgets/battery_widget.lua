@@ -26,19 +26,45 @@ BatteryWidget_prototype = function()
     value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
+      this.__private.tooltip:add_to_object(container)
+
+      local buttons = awful.util.table.join(
+        awful.button(
+          {},
+          4,
+          function()
+            this.__private.tooltip_mode = this.__private.tooltip_mode + 1
+            if this.__private.tooltip_mode == 3 then
+              this.__private.tooltip_mode = 0
+            end
+          end
+        ),
+        awful.button(
+          {},
+          5,
+          function()
+            this.__private.tooltip_mode = this.__private.tooltip_mode - 1
+            if this.__private.tooltip_mode == -1 then
+              this.__private.tooltip_mode = 2
+            end
+          end
+        )
+      )
+
       if this.__private.on_click_command ~= nil then
-        container:buttons(
-          awful.util.table.join(
-            awful.button({}, 1, function() awful.spawn(this.__private.on_click_command) end)
-          )
+        buttons = awful.util.table.join(
+          buttons,
+          awful.button({}, 1, function() awful.spawn(this.__private.on_click_command) end)
         )
       end
+
+      container:buttons(buttons)
     end
   }
 
   this.__private = {
     -- Private Variables
-    show_text = nil,
+    show_text = false,
     on_click_command = nil,
     capacity = 0,
     previous_capacity = 0,
@@ -48,7 +74,6 @@ BatteryWidget_prototype = function()
     tooltip_mode = 0,
     notification = nil;
     tooltip = awful.tooltip({
-      objects = { this.__public.icon },
       timer_function = function()
         return this.__private.compute_tooltip_text()
       end,
@@ -181,13 +206,6 @@ BatteryWidget_prototype = function()
       2^8,
       "BAT0"
     )
-
-    this.__public.icon:connect_signal("button::press", function()
-      this.__private.tooltip_mode = this.__private.tooltip_mode + 1
-      if this.__private.tooltip_mode == 3 then
-        this.__private.tooltip_mode = 0
-      end
-    end)
   end
 
   return this
