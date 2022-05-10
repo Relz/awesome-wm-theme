@@ -91,6 +91,9 @@ VolumeWidget_prototype = function()
 
       local device
       local properties
+      local profiles
+      local sinks
+      local sources
       local ports
       local port
       local port_properties
@@ -98,6 +101,9 @@ VolumeWidget_prototype = function()
       local in_device = false
       local in_properties = false
       local in_ports = false
+      local in_profiles = false
+      local in_sinks = false
+      local in_sources = false
       local in_port_properties = false
 
       local matches = pacmd_output:gmatch("[^\r\n]+")
@@ -122,6 +128,9 @@ VolumeWidget_prototype = function()
           in_device = true
           in_properties = false
           in_ports = false
+          in_profiles = false
+          in_sinks = false
+          in_sources = false
           in_port_properties = false
           device = {
             id = line:match(": (%d+)"),
@@ -135,9 +144,63 @@ VolumeWidget_prototype = function()
           in_device = false
           in_properties = true
           in_ports = false
+          in_profiles = false
+          in_sinks = false
+          in_sources = false
           in_port_properties = false
           properties = {}
           device.properties = properties
+          goto continue
+        end
+
+        if string.match(line, "^\tprofiles:") then
+          in_device = false
+          in_properties = false
+          in_ports = false
+          in_profiles = true
+          in_sinks = false
+          in_sources = false
+          in_port_properties = false
+          profiles = {}
+          device.profiles = profiles
+          goto continue
+        end
+
+        if string.match(line, "active profile:") then
+          in_device = false
+          in_properties = false
+          in_ports = false
+          in_profiles = false
+          in_sinks = false
+          in_sources = false
+          in_port_properties = false
+          device.active_profile = line:match(": (.+)"):gsub("<",""):gsub(">","")
+          goto continue
+        end
+
+        if string.match(line, "^\tsinks:") then
+          in_device = false
+          in_properties = false
+          in_ports = false
+          in_profiles = false
+          in_sinks = true
+          in_sources = false
+          in_port_properties = false
+          sinks = {}
+          device.sinks = sinks
+          goto continue
+        end
+
+        if string.match(line, "^\tsources:") then
+          in_device = false
+          in_properties = false
+          in_ports = false
+          in_profiles = false
+          in_sinks = false
+          in_sources = true
+          in_port_properties = false
+          sources = {}
+          device.sources = sources
           goto continue
         end
 
@@ -145,6 +208,9 @@ VolumeWidget_prototype = function()
           in_device = false
           in_properties = false
           in_ports = true
+          in_profiles = false
+          in_sinks = false
+          in_sources = false
           in_port_properties = false
           ports = {}
           device.ports = ports
@@ -155,6 +221,9 @@ VolumeWidget_prototype = function()
           in_device = false
           in_properties = false
           in_ports = false
+          in_profiles = false
+          in_sinks = false
+          in_sources = false
           in_port_properties = true
           port_properties = {}
           ports[port].properties = port_properties
@@ -165,6 +234,9 @@ VolumeWidget_prototype = function()
           in_device = false
           in_properties = false
           in_ports = false
+          in_profiles = false
+          in_sinks = false
+          in_sources = false
           in_port_properties = false
           device.active_port = line:match(": (.+)"):gsub("<",""):gsub(">","")
           goto continue
@@ -192,6 +264,27 @@ VolumeWidget_prototype = function()
           end
 
           properties[key] = value
+        end
+
+        if in_profiles then
+          local key = line:match("\t+(%S+):")
+          local value = line:match(": (.+) %(")
+
+          profiles[key] = value
+        end
+
+        if in_sinks then
+          local key = line:match("\t+(%S+):")
+          local value = line:match(": (.+) %(")
+
+          sinks[key] = value
+        end
+
+        if in_sources then
+          local key = line:match("\t+(%S+):")
+          local value = line:match(": (.+) %(")
+
+          sources[key] = value
         end
 
         if in_port_properties and string.match(line, ":") then
@@ -247,7 +340,7 @@ VolumeWidget_prototype = function()
         widget = wibox.container.margin
       }
     end,
-    build_popup_devices_rows = function(devices, on_checkbox_click, device_type)
+    build_popup_devices_rows = function(devices, on_checkbox_click, command)
       local device_rows  = { layout = wibox.layout.fixed.vertical }
 
       for _, device in pairs(devices) do
@@ -300,8 +393,10 @@ VolumeWidget_prototype = function()
           end
         )
 
+        local profile_name = device.profile_name and device.profile_name or ""
+
         row:connect_signal("button::press", function()
-          awful.spawn.easy_async(string.format([[pacmd set-default-%s "%s"]], device_type, device.name), on_checkbox_click)
+          awful.spawn.easy_async(string.format([[pacmd %s "%s" %s]], command, device.name, profile_name), on_checkbox_click)
         end)
 
         table.insert(device_rows, row)
@@ -316,30 +411,128 @@ VolumeWidget_prototype = function()
       end
 
       local device_name = device.properties.device_description
-      if port ~= nil then
-        device_name = device_name .. " · " .. port.name
+
+      if device.profile_short_description ~= nil then
+        device_name = device_name .. " · " .. device.profile_short_description
+      else
+        if port ~= nil then
+          device_name = device_name .. " · " .. port.name
+        end
       end
 
       return device_name
     end,
     rebuild_popup = function ()
       local rows  = { layout = wibox.layout.fixed.vertical }
+      awful.spawn.easy_async("pacmd list-cards", function(get_cards_stdout)
 
-      awful.spawn.easy_async("pacmd list-sinks", function(get_sinks_stdout)
+        local cards = this.__private.get_devices(get_cards_stdout)
 
-        local sinks = this.__private.get_devices(get_sinks_stdout)
+        awful.spawn.easy_async("pacmd list-sinks", function(get_sinks_stdout)
 
-        table.insert(rows, this.__private.build_popup_header_row("OUTPUTS"))
-        table.insert(rows, this.__private.build_popup_devices_rows(sinks, this.__private.update, "sink"))
+          local sinks = this.__private.get_devices(get_sinks_stdout)
 
-        awful.spawn.easy_async("pacmd list-sources", function(get_sources_stdout)
+          local other_profiles_sinks = {}
+          local other_profiles_sources = {}
 
-          local sources = this.__private.get_devices(get_sources_stdout)
+          for _,card in ipairs(cards) do
+            local card_sink
 
-          table.insert(rows, this.__private.build_popup_header_row("INPUTS"))
-          table.insert(rows, this.__private.build_popup_devices_rows(sources, this.__private.update, "source"))
+            for _,sink in ipairs(sinks) do
+              if card.properties.device_description == sink.properties.device_description then
+                card_sink = sink
+              end
+            end
 
-          this.__private.settings_popup:setup(rows)
+            if card_sink == nil then
+              goto continue
+            end
+
+            local switch_profile_name
+            local profile_short_description
+            local switch_profile_short_description
+
+            for profile_name, profile_description in pairs(card.profiles) do
+              if card_sink.properties.bluetooth_protocol == profile_name then
+                profile_short_description = profile_description:match("^(.+) %(")
+              else
+                if string.match(profile_description, "High Fidelity Playback %(A2DP Sink%)") then
+                  switch_profile_name = profile_name
+                  switch_profile_short_description = profile_description:match("^(.+) %(")
+                end
+              end
+            end
+
+            if switch_profile_name ~= nil then
+              table.insert(
+                other_profiles_sinks,
+                {
+                  is_default = false,
+                  name = card.name,
+                  profile_name = switch_profile_name,
+                  profile_short_description = switch_profile_short_description,
+                  properties = {
+                    device_description = card_sink.properties.device_description
+                  },
+                  ports = card_sink.ports,
+                  active_port = card_sink.active_port
+                }
+              )
+
+              card_sink.profile_short_description = profile_short_description
+            end
+
+            switch_profile_name = nil
+            profile_short_description = nil
+            switch_profile_short_description = nil
+
+            for profile_name, profile_description in pairs(card.profiles) do
+              if card_sink.properties.bluetooth_protocol == profile_name then
+                profile_short_description = profile_description:match("^(.+) %(")
+              else
+                if string.match(profile_description, "Handsfree Head Unit %(HFP%)") then
+                  switch_profile_name = profile_name
+                  switch_profile_short_description = profile_description:match("^(.+) %(")
+                end
+              end
+            end
+
+            if switch_profile_name ~= nil then
+              table.insert(
+                other_profiles_sources,
+                {
+                  is_default = false,
+                  name = card.name,
+                  profile_name = switch_profile_name,
+                  profile_short_description = switch_profile_short_description,
+                  properties = {
+                    device_description = card_sink.properties.device_description
+                  },
+                  ports = card_sink.ports,
+                  active_port = card_sink.active_port
+                }
+              )
+
+              card_sink.profile_short_description = profile_short_description
+            end
+
+            ::continue::
+          end
+
+          table.insert(rows, this.__private.build_popup_header_row("OUTPUTS"))
+          table.insert(rows, this.__private.build_popup_devices_rows(sinks, this.__private.update, "set-default-sink"))
+          table.insert(rows, this.__private.build_popup_devices_rows(other_profiles_sinks, this.__private.update, "set-card-profile"))
+
+          awful.spawn.easy_async("pacmd list-sources", function(get_sources_stdout)
+
+            local sources = this.__private.get_devices(get_sources_stdout)
+
+            table.insert(rows, this.__private.build_popup_header_row("INPUTS"))
+            table.insert(rows, this.__private.build_popup_devices_rows(sources, this.__private.update, "set-default-source"))
+            table.insert(rows, this.__private.build_popup_devices_rows(other_profiles_sources, this.__private.update, "set-card-profile"))
+
+            this.__private.settings_popup:setup(rows)
+          end)
         end)
       end)
     end,
