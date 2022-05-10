@@ -58,6 +58,8 @@ MemoryWidget_prototype = function()
     value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
+      this.__private.tooltip:add_to_object(container)
+
       if this.__private.on_click_command ~= nil then
         container:buttons(
           awful.util.table.join(
@@ -72,7 +74,6 @@ MemoryWidget_prototype = function()
     -- Private Variables
     on_click_command = nil,
     tooltip = awful.tooltip({
-      objects = { this.__public.icon },
       timer_function = function()
         return this.__private.memory_used
       end,
@@ -82,9 +83,16 @@ MemoryWidget_prototype = function()
     -- Private Funcs
   }
 
-  this.__construct = function(on_click_command)
+  this.__construct = function(show_text, on_click_command)
     -- Constructor
+    this.__private.show_text = show_text
     this.__private.on_click_command = on_click_command
+
+    if this.__private.show_text then
+      this.__public.value = wibox.widget.textbox()
+      this.__public.value.font = "Droid Sans Mono Bold 9"
+    end
+
     this.__private.tooltip.preferred_alignments = {"middle", "back", "front"}
 
     vicious.register(
@@ -94,7 +102,10 @@ MemoryWidget_prototype = function()
         local mem_used = args[2];
         local used_percentage = args[1];
         this.__private.memory_used = mem_used .. "MB"
-        widget.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/memory/memory_" .. this.__private_static.compute_used_level(used_percentage) .. ".svg", beautiful.text_color)
+        this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/memory/memory_" .. this.__private_static.compute_used_level(used_percentage) .. ".svg", beautiful.text_color)
+        if this.__private.show_text then
+          this.__public.value.text = string.rep(" ", 3 - get_percent_number_digits_count(used_percentage)) .. used_percentage .. "% "
+        end
       end,
       2^2
     )
