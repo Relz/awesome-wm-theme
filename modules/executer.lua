@@ -1,8 +1,8 @@
 local awful = require("awful")
 
 local function execute_once(command)
-  command_program_name = command
-  first_space_position = command:find(" ")
+  local command_program_name = command
+  local first_space_position = command:find(" ")
   if first_space_position ~= nil then
     command_program_name = command:sub(0, first_space_position - 1)
   end
@@ -18,5 +18,5 @@ end
 local executer = {}
 
 executer.execute_commands = execute_commands
- 
+
 return executer

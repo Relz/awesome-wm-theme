@@ -5,11 +5,19 @@ local beautiful = require("beautiful")
 
 local _screens = {}
 
+local function get_screen_count()
+  return #_screens
+end
+
 local function set_screens(screens)
   _screens = {}
   for _,screen in ipairs(screens) do
     table.insert(_screens, screen)
   end
+end
+
+local function add_screen(screen)
+  table.insert(_screens, screen)
 end
 
 local function apply_wallpaper(screen_index, wallpaper)
@@ -200,9 +208,20 @@ local function apply_screens()
   end
 end
 
+local function apply_screen(screen_index)
+  if screen_index <= #_screens and screen_index <= screen.count() then
+    s = _screens[screen_index]
+    apply_wallpaper(screen_index, s.wallpaper)
+    apply_panels(screen_index, s.panels)
+  end
+end
+
 local screens_manager = {}
 
+screens_manager.get_screen_count = get_screen_count
 screens_manager.set_screens = set_screens
+screens_manager.add_screen = add_screen
 screens_manager.apply_screens = apply_screens
+screens_manager.apply_screen = apply_screen
 
 return screens_manager

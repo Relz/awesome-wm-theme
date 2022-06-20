@@ -20,12 +20,13 @@ local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
 local beautiful = require("beautiful")
-local hotkeys_popup = require("awful.hotkeys_popup")
 
 require("modules/error_handling")
 
 local executer = require("modules/executer")
 local screens_manager = require("modules/screens_manager")
+
+local config_path = awful.util.getdir("config")
 
 -- | Variable definitions | --
 
@@ -39,13 +40,14 @@ local calendar_command = "/opt/google/chrome/google-chrome --profile-directory='
 local power_manager_settings_command = "xfce4-power-manager-settings"
 local system_monitor_command = "gnome-system-monitor"
 local network_configuration_command = "nm-connection-editor"
-local mute_command = "amixer -D pulse set Master 1+ toggle"
+
+local wallpaper_image_path = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg";
+local current_keyboard_layout = "us";
 
 local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 
 -- | Widgets | --
 
-local config_path = awful.util.getdir("config")
 beautiful.init(config_path .. "/themes/relz/theme.lua")
 
 local cpu_widget = CpuWidget(false, system_monitor_command)
@@ -59,7 +61,9 @@ local network_widget = NetworkWidget(false, network_configuration_command)
 local volume_widget = VolumeWidget(true)
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
 
--- | Panels | --
+-- | Functions | --
+
+-- Panels
 
 local task_left_button_press_action = function(c)
   if c == client.focus then
@@ -72,6 +76,51 @@ local task_left_button_press_action = function(c)
     )
   end
 end
+
+-- Brightness
+
+local set_brightness = function(step_percent, increase)
+  set_system_brightness(
+    step_percent,
+    increase,
+    function(new_value_percent)
+      brightness_widget.update(new_value_percent)
+    end
+  )
+end
+
+-- Volume
+
+local mute = function()
+  local command = "amixer -D pulse set Master 1+ toggle"
+  awful.spawn.easy_async(command, function() vicious.force({ volume_widget.icon }) end)
+end
+
+local set_volume = function(step, increase)
+  local command = "amixer set Master " .. step .. "%";
+  if increase ~= nil then
+      if increase then
+      command = command .. "+";
+      else
+      command = command .. "-";
+      end
+  end
+  awful.spawn.easy_async(command, function() vicious.force({ volume_widget.icon }) end)
+end
+
+-- Keyboard layout
+
+local toggle_keyboard_layout = function()
+  if current_keyboard_layout == "us" then
+    set_keyboard_layout("ru,us");
+    current_keyboard_layout = "ru";
+  else
+    set_keyboard_layout("us,ru");
+    current_keyboard_layout = "us";
+  end
+end
+
+-- | Panels | --
 
 local screen_0_panel = Panel()
 screen_0_panel.position = "top"
@@ -106,256 +155,64 @@ screen_0_panel.widgets = {
 
 -- | Screens | --
 
-local screen0 = Screen()
-screen0.wallpaper = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg"
-screen0.panels = { screen_0_panel }
+update_screens = function(card)
+  local xrandr_output = run_command_sync("xrandr")
+  local primary_output = xrandr_output:match("(eDP[0-9-]+) connected")
+  local primary_output_rect = xrandr_output:match("eDP[0-9-]+ connected[a-z ]* ([0-9x+]+) [(]")
+  local is_hdmi_in_use = string.match(xrandr_output, "HDMI[0-9-]+ connected [^(]") ~= nil
+  local unused_hdmi = xrandr_output:match("(HDMI[0-9-]+) connected [(]")
+  local used_hdmi = xrandr_output:match("(HDMI[0-9-]+) connected [^(]")
+  local used_hdmi_rect = xrandr_output:match("HDMI[0-9-]+ connected[a-z ]* ([0-9x+]+) [(]")
+  local disconnected_hdmi_rect = xrandr_output:match("HDMI[0-9-]+ disconnected[a-z ]* ([0-9x+]+) [(]")
+  local is_hdmi_disconnected = unused_hdmi == nil and used_hdmi == nil
+  local is_screen_duplicated = primary_output_rect == used_hdmi_rect
 
-local screen1 = Screen()
-screen1.wallpaper = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg"
-screen1.panels = { screen_0_panel }
 
-screens_manager.set_screens({ screen0, screen1 })
+  if (not is_hdmi_in_use and unused_hdmi) or is_screen_duplicated then
+    local hdmi = is_screen_duplicated and used_hdmi or unused_hdmi
 
-screens_manager.apply_screens()
-
-screen.connect_signal("property::geometry", awesome.restart)
-
--- | Functions | --
-
--- Common
-
-local read_file_content = function(file_name, callback)
-  awful.spawn.easy_async("cat " .. file_name, callback)
-end
-
--- Brightness
-
-set_brightness = function(step_percent, increase)
-  read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
-    read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
-      local current_brightness = tonumber(current_brightness_string)
-      local max_brightness = tonumber(max_brightness_string)
-
-      local step = math.floor(step_percent * max_brightness / 100)
-
-      local new_brightness = 0
-      if increase then
-        new_brightness = current_brightness + step;
-      else
-        new_brightness = current_brightness - step;
-      end
-      local new_brightness = math.min(math.max(new_brightness, 0), max_brightness)
-
-      awful.spawn.easy_async("pkexec xfpm-power-backlight-helper --set-brightness=" .. new_brightness, function()
-        brightness_widget.update(math.floor(new_brightness / max_brightness * 100))
-      end)
-    end)
-  end)
-end
-
--- Volume
-
-mute = function()
-  awful.spawn.easy_async(mute_command, function() vicious.force({ volume_widget.icon }) end)
-end
-
-set_volume = function(step, increase)
-  local command = "amixer set Master " .. step .. "%";
-  if increase ~= nil then
-    if increase then
-      command = command .. "+";
-    else
-      command = command .. "-";
+    run_command_sync(
+      "xrandr " ..
+      "--output " .. primary_output .. " --preferred --primary " ..
+      "--output " .. hdmi .. " --right-of " .. primary_output .. " --preferred "
+    )
+  else
+    if is_hdmi_disconnected and disconnected_hdmi_rect then
+      run_command_sync("xrandr --auto")
     end
   end
-  awful.spawn.easy_async(command, function() vicious.force({ volume_widget.icon }) end)
-end
 
--- Audio
+  if card == nil then
+    local screen0 = Screen()
+    screen0.wallpaper = wallpaper_image_path
+    screen0.panels = { screen_0_panel }
 
-local audio_previous = function()
-  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous", false)
-end
+    if is_hdmi_in_use and not is_screen_duplicated then
+      local screen1 = Screen()
+      screen1.wallpaper = wallpaper_image_path
+      screen1.panels = { screen_0_panel }
 
-local audio_next = function()
-  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next", false)
-end
+      screens_manager.set_screens({ screen0, screen1 })
+    else
+      screens_manager.set_screens({ screen0 })
+    end
 
-local audio_toggle_play_pause = function()
-  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause", false)
-end
-
-local audio_stop = function()
-  awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop", false)
-end
-
--- Keyboard layout
-
-local current_keyboard_layout = "us";
-local toggle_keyboard_layout = function()
-  local command = "setxkbmap -display :0 -layout ";
-  if current_keyboard_layout == "us" then
-    command = command .. "ru,us";
-    current_keyboard_layout = "ru";
-  else
-    command = command .. "us,ru";
-    current_keyboard_layout = "us";
-  end
-  awful.spawn(command, false)
-end
--- Show help
-
-local show_help = function()
-  hotkeys_popup.show_help(nil, awful.screen.focused())
-end
-
--- Change focused client
-
-local change_focused_client = function(direction)
-  awful.client.focus.byidx(direction)
-  if client.focus then client.focus:raise() end
-end
-
--- Move client to next screen
-
-local move_client_to_next_screen = function(c)
-  c:move_to_screen()
-end
-
--- Minimize client
-
-local minimize_client = function(c)
-  c.minimized = true
-end
-
--- Maximize client
-
-local maximize_client = function(c)
-  c.maximized_horizontal = not c.maximized_horizontal
-  c.maximized_vertical = not c.maximized_vertical
-end
-
--- Toggle client fullscreen
-
-local toggle_fullscreen = function(c)
-  c.fullscreen = not c.fullscreen
-end
-
--- Do action for tag by index if tag is defined
-
-local do_for_tag = function(tag_index, action)
-  local screen = awful.screen.focused()
-  local tag = screen.tags[tag_index]
-  if tag then
-    action(tag)
+    screens_manager.apply_screens()
   end
 end
 
--- Minimize all clients on focused tag
+update_screens()
 
-local minimize_clients = function()
-  local tag = awful.tag.selected()
-  for i = 1, #tag:clients() do
-    minimize_client(tag:clients()[i])
+screen.connect_signal("added", function()
+  if screen.count() > screens_manager.get_screen_count() then
+    local newScreen = Screen()
+    newScreen.wallpaper = wallpaper_image_path
+    newScreen.panels = { screen_0_panel }
+
+    screens_manager.add_screen(newScreen)
   end
-end
-
--- Restore all clients on focused tag
-
-local restore_clients = function()
-  local tag = awful.tag.selected()
-  for i = 1, #tag:clients() do
-    tag:clients()[i].minimized = false
-  end
-end
-
--- Toggle minimize/restore all clients on focused tag
-
-local toogle_minimize_restore_clients = function()
-  if client.focus then
-    minimize_clients()
-  else
-    restore_clients()
-  end
-end
-
--- Apply snap edge feature to client
-
-local snap_edge = function(client, where)
-  local screen_workarea = screen[client.screen].workarea
-  local workarea = {
-    x_min = screen_workarea.x,
-    x_max = screen_workarea.x + screen_workarea.width,
-    y_min = screen_workarea.y,
-    y_max = screen_workarea.y + screen_workarea.height,
-    width = screen_workarea.width,
-    height = screen_workarea.height,
-    half_width = screen_workarea.width * 0.5,
-    half_height = screen_workarea.height * 0.5
-  }
-  local client_geometry = client:geometry()
-  local axis_border_width = client.border_width * 2
-
-  if where == 'top' then
-    client_geometry.width  = workarea.width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_min
-    client_geometry.y = workarea.y_min
-    awful.placement.center_horizontal(client)
-  elseif where == 'top_right' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_max - client_geometry.width
-    client_geometry.y = workarea.y_min
-  elseif where == 'right' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.height
-    client_geometry.x = workarea.x_max - client_geometry.width
-    client_geometry.y = workarea.y_min
-  elseif where == 'bottom_right' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_max - client_geometry.width
-    client_geometry.y = workarea.y_max - client_geometry.height
-  elseif where == 'bottom' then
-    client_geometry.width  = workarea.width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_min
-    client_geometry.y = workarea.y_max - client_geometry.height
-    awful.placement.center_horizontal(client)
-  elseif where == 'bottom_left' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_min
-    client_geometry.y = workarea.y_max - client_geometry.height
-  elseif where == 'left' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.height
-    client_geometry.x = workarea.x_min
-    client_geometry.y = workarea.y_min
-  elseif where == 'top_left' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_min
-    client_geometry.y = workarea.y_min
-  elseif where == 'centered' then
-    client_geometry.width  = workarea.half_width - axis_border_width
-    client_geometry.height = workarea.half_height - axis_border_width
-    client_geometry.x = workarea.x_min + (workarea.x_max - workarea.x_min - client_geometry.width) * 0.5
-    client_geometry.y = workarea.y_min + (workarea.y_max - workarea.y_min - client_geometry.height) * 0.5
-  elseif where == nil then
-    client:geometry(client_geometry)
-    return
-  end
-
-  client.floating = true
-  if client.maximized then
-    client.maximized = false
-  end
-  client:geometry(client_geometry)
-  awful.placement.no_offscreen(client)
-end
-
+  screens_manager.apply_screen(screens_manager.get_screen_count())
+end)
 
 -- | Key bindings | --
 
@@ -467,6 +324,9 @@ local client_keys = awful.util.table.join(
 
   awful.key({ "Mod4" }, "m", maximize_client, { description="Maximize client", group="Client" }),
   awful.key({ "Mod4" }, "Cyrillic_softsign", maximize_client),
+
+  awful.key({ "Mod4", "Control" }, "m", maximize_client_to_multiple_monitor, { description="Maximize client to miltiple monitors", group="Client" }),
+  awful.key({ "Mod4", "Control" }, "Cyrillic_softsign", maximize_client_to_multiple_monitor),
 
   -- Snap to edge/corner - Use arrow keys
   awful.key({ "Mod4", "Shift" }, "Down",  function (c) snap_edge(c, 'bottom') end),
@@ -606,6 +466,13 @@ awful.rules.rules = {
       border_width = 0,
       titlebars_enabled = false
     }
+  },
+  {
+    rule = { class = "gnome-calculator" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
   }
 }
 
@@ -663,13 +530,8 @@ end)
 
 -- | Initialization | --
 
-read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
-  read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
-    local current_brightness = tonumber(current_brightness_string)
-    local max_brightness = tonumber(max_brightness_string)
-
-    brightness_widget.update(math.floor(get_current_brightness() / get_max_brightness() * 100))
-  end)
+get_system_brightness(function(value_percent)
+  brightness_widget.update(value_percent)
 end)
 
 -- | Autostart | --

@@ -1,7 +1,7 @@
 # Awesome WM theme
 A theme for the Awesome window manager 4.x.
 
-# Screenshots
+# Screenshots (outdated)
 
 ## Light mode
 
@@ -22,6 +22,21 @@ A theme for the Awesome window manager 4.x.
 ![hotkeys_popup](https://user-images.githubusercontent.com/15068331/154844315-c7596597-156f-4d0a-8d2d-83264d9da8a9.png)
 ![clion_titlebar_dark](https://user-images.githubusercontent.com/15068331/154844274-2570186b-53c1-47a9-9a64-64996f3cfd1a.png)
 
+# Prerequisites
+
++ Awesome WM 4.x
++ LightDM (if you use *dm-lock* as session lock tool)
++ wireless_tools (if you use NetworkWidget)
++ Lain for Awesome WM 4.x
++ Vicious widgets for the Awesome WM 4.x
++ Fonts: Droid, Noto (otherwise use another fonts in theme.lua instead)
+
+# Installation
+
+```
+> git clone https://github.com/Relz/awesome-wm-theme.git
+> mv -bv awesome-wm-theme/* ~/.config/awesome; rm -rf awesome-wm-theme
+```
 
 # Customization
 
@@ -34,7 +49,10 @@ In rc.lua in section "Variable definitions" you can set some variables:
 + *graphic_text_editor*. You can execute default graphic text editor by pressing `<Mod4> + e`. Default value: "subl".
 + *music_player*. You can execute default music player by pressing `<Mod4> + m`. Default value: "spotify".
 + *session_lock_command*. You can lock your session by pressing `<Mod4> + l`. Also if you choose "Session lock" power off menu item, this command will be executed. Default value: "dm-tool lock".
-+ *calendar_command*. Calendar will be executed by clicking on calendar and time widgets. Google calendar is used by default.
++ *calendar_command*. Calendar will be opened by clicking on calendar and time widgets. Google calendar is used by default.
++ *power_manager_settings_command*. Power manager settings will be opened by clicking on battery widget. Xfce4 Power Manager Settings is used by default.
++ *system_monitor_command*. System monitor will be opened by clicking on CPU and memory widget. Gnome System Monitor is used by default.
++ *network_configuration_command*. Network configuration will be opened by clicking on network widget. NetworkManager Connection Editor is used by default.
 
 ## Panels
 
@@ -47,10 +65,8 @@ In rc.lua in section "Panels" you can declare panel(s). Object of class "Panel" 
 
 In rc.lua in section "Screens" you can declare screen(s). Object of class "Screen" has properties:
 
-+ *wallpaper*. Path to wallpapaer.
++ *wallpaper*. Path to wallpaper.
 + *panels*. List of panels.
-
-Don't forget to add screens to *screens_manager*. Object *screens_manager* has *set_screens* method to pass list of screens. Multiple screens can be needed for multiple monitors.
 
 ## Key bindings
 
@@ -68,28 +84,46 @@ In rc.lua in section "Autostart" you can set commands to execute during Awesome 
 
 ## Theme mode
 
-In theme.lua you can set theme mode. Possible values: "light", "dark".
+You can switch theme mode in menu.
 
 PS: also in rc.lua and theme.lua you can make your own experiments, suggestions are appreciated. For example, you can create widget for bluetooth, add calendar popup to ClockCalendarWidget, extend theme modes. Let's make the world better together!
 
-# Prerequisites
+## Subscribe to Direct Rendering Manager change event
 
-+ Awesome WM 4.x
-+ LightDM (if you use *dm-lock* as session lock tool)
-+ wireless_tools (if you use NetworkWidget)
-+ Lain for Awesome WM 4.x
-+ Vicious widgets for the Awesome WM 4.x
-+ Fonts: Droid, Noto (otherwise use another fonts in theme.lua instead)
+There is `update_screens` function in rc.lua that configures _xrandr_ output. It's useful to call this function when external monitors is connected/disconnected.
 
-# Installation
-
+To make it happens, you need to add udev rule:
 ```
-> git clone https://github.com/Relz/awesome-wm-theme.git
-> mv -bv awesome-wm-theme/* ~/.config/awesome; rm -rf awesome-wm-theme
+ACTION=="change", SUBSYSTEM=="drm", RUN+="notify-awesome %k"
 ```
 
-# Donate
+Then add script which will be executed to _/lib/udev/notify-awesome_:
 
-Webmoney WMR: R120863502096<br>
-Webmoney WMZ: Z711863997489<br>
-Sberbank: 5469 3700 1107 4044<br>
+```bash
+#!/bin/sh
+
+_PID=$(pgrep -x awesome)
+_UID=$(ps -o uid= -p $_PID)
+USER=$(id -nu $_UID)
+DBUS_ADDRESS_VAR=$(cat /proc/$_PID/environ | grep -z "^DBUS_SESSION_BUS_ADDRESS=")
+
+notify() {
+    su - $USER -c "/bin/bash \
+        -c ' \
+            export DISPLAY=:0; \
+            export XAUTHORITY='/home/$USER/.Xauthority'; \
+            export $DBUS_ADDRESS_VAR; \
+            dbus-send --dest=org.awesomewm.awful --type=method_call \
+                / org.awesomewm.awful.Remote.Eval string:"update_screens\\\(\\\"$1\\\"\\\)" \
+        ' \
+    "
+}
+
+notify $1 &
+```
+
+Then reload udev rules:
+
+```
+# udevadm control --reload-rules
+```
