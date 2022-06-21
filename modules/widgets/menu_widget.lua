@@ -3,6 +3,8 @@ local wibox = require("wibox")
 local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local beautiful = require("beautiful")
+require("modules/confirm_dialog")
+require("utils")
 
 MenuWidget_prototype = function()
   local this = {}
@@ -61,6 +63,81 @@ MenuWidget_prototype = function()
         mode_file:close()
       end
       awesome.restart()
+    end,
+    log_out = function()
+      local clients_names = get_clients_names()
+
+      if next(clients_names) == nil then
+        awesome.quit()
+        return
+      end
+
+      local appliications_names = table_map(
+        clients_names,
+        function(client_name)
+          return string.match(client_name, "([^-]+)$"):gsub("^%s", "")
+        end)
+
+      ConfirmDialog.show(
+        "You have opened windows. Are you sure you want to log out anyway?",
+        table.concat(appliications_names, "\n"),
+        "Log out anyway",
+        "Cancel",
+        awesome.quit,
+        ConfirmDialog.close
+      )
+    end,
+    run_reboot_command = function()
+      awful.spawn("systemctl -q --no-block reboot")
+    end,
+    reboot = function()
+      local clients_names = get_clients_names()
+
+      if next(clients_names) == nil then
+        this.__private.run_reboot_command()
+        return
+      end
+
+      local appliications_names = table_map(
+        clients_names,
+        function(client_name)
+          return string.match(client_name, "([^-]+)$"):gsub("^%s", "")
+        end)
+
+      ConfirmDialog.show(
+        "You have opened windows. Are you sure you want to restart anyway?",
+        table.concat(appliications_names, "\n"),
+        "Restart anyway",
+        "Cancel",
+        this.__private.run_reboot_command,
+        ConfirmDialog.close
+      )
+    end,
+    run_power_off_command = function()
+      awful.spawn("systemctl -q --no-block poweroff")
+    end,
+    power_off = function()
+      local clients_names = get_clients_names()
+
+      if next(clients_names) == nil then
+        this.__private.run_power_off_command()
+        return
+      end
+
+      local appliications_names = table_map(
+        clients_names,
+        function(client_name)
+          return string.match(client_name, "([^-]+)$"):gsub("^%s", "")
+        end)
+
+      ConfirmDialog.show(
+        "You have opened windows. Are you sure you want to shut down anyway?",
+        table.concat(appliications_names, "\n"),
+        "Shut down anyway",
+        "Cancel",
+        this.__private.run_power_off_command,
+        ConfirmDialog.close
+      )
     end
   }
 
@@ -72,11 +149,11 @@ MenuWidget_prototype = function()
       { "Show hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
       { "Switch theme mode", this.__private.switch_theme_mode },
       { "Awesome restart", awesome.restart },
-      { "Log out",  function() awesome.quit() end },
+      { "Log out",  this.__private.log_out },
       { "Lock", session_lock_command },
       { "Suspend", "systemctl -q --no-block suspend" },
-      { "Reboot", "systemctl -q --no-block reboot" },
-      { "Power Off", "systemctl -q --no-block poweroff" }
+      { "Reboot", this.__private.reboot },
+      { "Power Off", this.__private.power_off }
     }})
 
     this.__public.icon:buttons(awful.util.table.join(

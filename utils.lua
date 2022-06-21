@@ -23,6 +23,31 @@ read_file_content = function(file_name, callback)
   awful.spawn.easy_async("cat " .. file_name, callback)
 end
 
+table_map = function(tbl, f)
+  local t = {}
+
+  for k,v in pairs(tbl) do
+      t[k] = f(v)
+  end
+
+  return t
+end
+
+get_clients_names = function()
+  local client_names = {}
+
+  for s in screen do
+    for _,t in pairs(s.tags) do
+      for _,c in pairs(t:clients()) do
+        table.insert(client_names, c.name)
+        break
+      end
+    end
+  end
+
+  return client_names
+end
+
 -- Brightness
 
 get_system_brightness = function(callback)
