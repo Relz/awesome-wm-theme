@@ -15,7 +15,7 @@ BatteryWidget_prototype = function()
 
   this.__private_static = {
     -- Private Static Variables
-    config_path = awful.util.getdir("config"),
+    config_path = gears.filesystem.get_configuration_dir(),
     -- Private Static Funcs
   }
 

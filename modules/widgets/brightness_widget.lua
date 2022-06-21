@@ -13,7 +13,7 @@ BrightnessWidget_prototype = function()
 
   this.__private_static = {
     -- Private Static Variables
-    config_path = awful.util.getdir("config")
+    config_path = gears.filesystem.get_configuration_dir()
     -- Private Static Funcs
   }
 
@@ -26,8 +26,8 @@ BrightnessWidget_prototype = function()
     on_container_created = function(container, panel_position)
       container:buttons(
         awful.util.table.join(
-          awful.button({}, 4, function() set_brightness(5, true) end),
-          awful.button({}, 5, function() set_brightness(5, false) end)
+          awful.button({}, 4, function() this.__private.set_brightness(5, true) end),
+          awful.button({}, 5, function() this.__private.set_brightness(5, false) end)
         )
       )
     end,
@@ -52,6 +52,15 @@ BrightnessWidget_prototype = function()
         return "medium"
       end
       return "low"
+    end,
+    set_brightness = function(step_percent, increase)
+      set_system_brightness(
+        step_percent,
+        increase,
+        function(new_value_percent)
+          this.__public.update(new_value_percent)
+        end
+      )
     end
   }
 

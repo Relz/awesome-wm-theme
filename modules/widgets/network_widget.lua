@@ -14,7 +14,7 @@ NetworkWidget_prototype = function()
 
   this.__private_static = {
     -- Private Static Variables
-    config_path = awful.util.getdir("config"),
+    config_path = gears.filesystem.get_configuration_dir(),
     wired_interface_name = "enp3s0",
     wireless_interface_name = "wlo1",
     -- Private Static Funcs

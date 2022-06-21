@@ -17,6 +17,7 @@ require("modules/widgets/volume_widget")
 require("awful.autofocus")
 
 local awful = require("awful")
+local gears = require("gears")
 local wibox = require("wibox")
 local vicious = require("vicious")
 local beautiful = require("beautiful")
@@ -26,7 +27,7 @@ require("modules/error_handling")
 local executer = require("modules/executer")
 local screens_manager = require("modules/screens_manager")
 
-local config_path = awful.util.getdir("config")
+local config_path = gears.filesystem.get_configuration_dir()
 
 -- | Variable definitions | --
 
