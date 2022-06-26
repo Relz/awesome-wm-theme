@@ -84,6 +84,20 @@ set_system_brightness = function(step_percent, increase, callback)
   end)
 end
 
+-- Volume
+
+set_system_volume = function(step, increase, callback)
+  local command = "amixer set Master " .. step .. "%";
+  if increase ~= nil then
+      if increase then
+      command = command .. "+";
+      else
+      command = command .. "-";
+      end
+  end
+  awful.spawn.easy_async(command, callback)
+end
+
 -- Audio
 
 audio_previous = function()

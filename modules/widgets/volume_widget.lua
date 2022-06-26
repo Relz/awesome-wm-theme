@@ -52,8 +52,8 @@ VolumeWidget_prototype = function()
 
       container:buttons(
         awful.util.table.join(
-          awful.button({}, 4, function() set_volume(5, true) end),
-          awful.button({}, 5, function() set_volume(5, false) end)
+          awful.button({}, 4, function() this.__private.set_volume(5, true) end),
+          awful.button({}, 5, function() this.__private.set_volume(5, false) end)
         )
       )
     end,
@@ -79,9 +79,12 @@ VolumeWidget_prototype = function()
       end
       return "muted"
     end,
+    set_volume = function(step, increase)
+      set_system_volume(step, increase, function() vicious.force({ this.__public.icon }) end)
+    end,
     update = function()
       this.__private.rebuild_popup()
-      set_volume(this.__private.volume_value)
+      this.__private.set_volume(this.__private.volume_value)
     end,
     get_devices = function(pacmd_output)
       local devices = {}

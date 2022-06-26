@@ -98,15 +98,7 @@ local mute = function()
 end
 
 local set_volume = function(step, increase)
-  local command = "amixer set Master " .. step .. "%";
-  if increase ~= nil then
-      if increase then
-      command = command .. "+";
-      else
-      command = command .. "-";
-      end
-  end
-  awful.spawn.easy_async(command, function() vicious.force({ volume_widget.icon }) end)
+  set_system_volume(step, increase, function() vicious.force({ volume_widget.icon }) end)
 end
 
 -- Keyboard layout
@@ -470,6 +462,13 @@ awful.rules.rules = {
   },
   {
     rule = { class = "gnome-calculator" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
+    rule = { class = "Gcm-viewer" },
     properties = {
       border_width = 0,
       titlebars_enabled = false
