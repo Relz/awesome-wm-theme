@@ -61,30 +61,7 @@ MenuWidget_prototype = function()
         mode_file:close()
       end
 
-      awful.spawn("gsettings set org.gnome.desktop.interface color-scheme prefer-" .. new_mode)
-
-      local gtk3_settings_file_path = gears.filesystem.get_xdg_config_home() .. "gtk-3.0/settings.ini"
-      local gtk3_settings_file = io.open(gtk3_settings_file_path, "r")
-      if gtk3_settings_file ~= nil then
-        local gtk3_settings_file_content = gtk3_settings_file:read("*all")
-        gtk3_settings_file:close()
-
-        local new_gtk3_settings_file_content = gtk3_settings_file_content
-
-        local pattern = "gtk[-]application[-]prefer[-]dark[-]theme=.+$"
-        local new_setting = "gtk-application-prefer-dark-theme=" .. tostring(new_mode == "dark")
-        if new_gtk3_settings_file_content:match(pattern) ~= nil then
-          new_gtk3_settings_file_content = new_gtk3_settings_file_content:gsub(pattern, new_setting)
-        else
-          new_gtk3_settings_file_content = new_gtk3_settings_file_content .. "\n" .. new_setting
-        end
-
-        local gtk3_settings_file = io.open(gtk3_settings_file_path, "w")
-        if gtk3_settings_file ~= nil then
-          gtk3_settings_file:write(new_gtk3_settings_file_content)
-          gtk3_settings_file:close()
-        end
-      end
+      set_gtk_theme_mode(new_mode)
 
       awesome.restart()
     end,

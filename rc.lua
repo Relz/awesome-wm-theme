@@ -454,6 +454,13 @@ awful.rules.rules = {
     }
   },
   {
+    rule = { class = "Xfce4-clipman-settings" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
     rule = { class = "Gnome-system-monitor" },
     properties = {
       border_width = 0,

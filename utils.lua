@@ -1,4 +1,5 @@
 local awful = require("awful")
+local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 
 -- Common
@@ -19,8 +20,28 @@ get_percent_number_digits_count = function(number)
   return number < 10 and 1 or (number < 100 and 2 or 3)
 end
 
-read_file_content = function(file_name, callback)
-  awful.spawn.easy_async("cat " .. file_name, callback)
+read_file_content_async = function(file_path, callback)
+  awful.spawn.easy_async("cat " .. file_path, callback)
+end
+
+read_file_content = function(file_path)
+  local file_content
+
+  local file = io.open(file_path, "r")
+  if file ~= nil then
+    file_content = file:read("*all")
+    file:close()
+  end
+
+  return file_content
+end
+
+write_file_content = function(file_path, content)
+  local file = io.open(file_path, "w")
+  if file ~= nil then
+    file:write(content)
+    file:close()
+  end
 end
 
 table_map = function(tbl, f)
@@ -48,11 +69,71 @@ get_clients_names = function()
   return client_names
 end
 
+set_gtk_theme_mode = function(theme_mode)
+  local is_dark_theme = theme_mode == "dark"
+  awful.spawn("gsettings set org.gnome.desktop.interface color-scheme prefer-" .. theme_mode)
+
+  local gtk2_settings_file_path = gears.filesystem.get_xdg_config_home() .. "../.gtkrc-2.0"
+  local gtk2_settings_file_content = read_file_content(gtk2_settings_file_path)
+  local new_gtk2_settings_file_content = gtk2_settings_file_content
+
+  local gtk3_settings_file_path = gears.filesystem.get_xdg_config_home() .. "gtk-3.0/settings.ini"
+  local gtk3_settings_file_content = read_file_content(gtk3_settings_file_path)
+
+  if gtk3_settings_file_content ~= nil then
+    local new_gtk3_settings_file_content = gtk3_settings_file_content
+
+    local pattern = "gtk[-]application[-]prefer[-]dark[-]theme=(.-)%c"
+    local new_setting = "gtk-application-prefer-dark-theme=" .. tostring(is_dark_theme) .. "\n"
+    if new_gtk3_settings_file_content:match(pattern) ~= nil then
+      new_gtk3_settings_file_content = new_gtk3_settings_file_content:gsub(pattern, new_setting)
+    else
+      new_gtk3_settings_file_content = new_gtk3_settings_file_content .. "\n" .. new_setting
+    end
+
+    local pattern = "gtk[-]theme[-]name=(.-)%c"
+    local gtk_theme_name = new_gtk3_settings_file_content:match(pattern)
+
+    if gears.filesystem.is_dir("/usr/share/themes/" .. gtk_theme_name) then
+      local gtk_theme_base_name = gtk_theme_name:gsub("-dark", "")
+      local gtk_theme_dark_name = gtk_theme_base_name .. "-dark"
+      local gtk_theme_new_name = is_dark_theme and gtk_theme_dark_name or gtk_theme_base_name
+      if gears.filesystem.is_dir("/usr/share/themes/" .. gtk_theme_new_name) then
+        local new_setting = "gtk-theme-name=" .. tostring(gtk_theme_new_name) .. "\n"
+        new_gtk3_settings_file_content = new_gtk3_settings_file_content:gsub(pattern, new_setting)
+        awful.spawn("gsettings set org.gnome.desktop.interface gtk-theme " .. gtk_theme_new_name)
+
+
+        local pattern = "include \"/usr/share/themes/.-/gtk[-]2.0/gtkrc\"%c"
+        local new_setting = "include \"/usr/share/themes/" .. gtk_theme_new_name .. "/gtk-2.0/gtkrc\"" .. "\n"
+        new_gtk2_settings_file_content = new_gtk2_settings_file_content:gsub(pattern, new_setting)
+      end
+    end
+
+    local pattern = "gtk[-]icon[-]theme[-]name=(.-)%c"
+    local gtk_icon_theme_name = new_gtk3_settings_file_content:match(pattern)
+
+    if gears.filesystem.is_dir("/usr/share/icons/" .. gtk_icon_theme_name) then
+      local gtk_icon_theme_base_name = gtk_icon_theme_name:gsub("-dark", "")
+      local gtk_icon_theme_dark_name = gtk_icon_theme_base_name .. "-dark"
+      local gtk_icon_theme_new_name = is_dark_theme and gtk_icon_theme_dark_name or gtk_icon_theme_base_name
+      if gears.filesystem.is_dir("/usr/share/icons/" .. gtk_icon_theme_new_name) then
+        local new_setting = "gtk-icon-theme-name=" .. tostring(gtk_icon_theme_new_name) .. "\n"
+        new_gtk3_settings_file_content = new_gtk3_settings_file_content:gsub(pattern, new_setting)
+        awful.spawn("gsettings set org.gnome.desktop.interface icon-theme " .. gtk_icon_theme_new_name)
+      end
+    end
+
+    write_file_content(gtk3_settings_file_path, new_gtk3_settings_file_content)
+    write_file_content(gtk2_settings_file_path, new_gtk2_settings_file_content)
+  end
+end
+
 -- Brightness
 
 get_system_brightness = function(callback)
-  read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
-    read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
+  read_file_content_async("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
+    read_file_content_async("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
       local current_brightness = tonumber(current_brightness_string)
       local max_brightness = tonumber(max_brightness_string)
 
@@ -62,8 +143,8 @@ get_system_brightness = function(callback)
 end
 
 set_system_brightness = function(step_percent, increase, callback)
-  read_file_content("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
-    read_file_content("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
+  read_file_content_async("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
+    read_file_content_async("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
       local current_brightness = tonumber(current_brightness_string)
       local max_brightness = tonumber(max_brightness_string)
 
