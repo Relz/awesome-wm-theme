@@ -62,6 +62,9 @@ MenuWidget_prototype = function()
       end
 
       set_gtk_theme_mode(new_mode)
+      set_ulauncher_theme_mode(new_mode)
+      set_obs_theme_mode(new_mode)
+      set_remmina_theme_mode(new_mode)
 
       awesome.restart()
     end,

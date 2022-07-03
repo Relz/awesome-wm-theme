@@ -129,6 +129,58 @@ set_gtk_theme_mode = function(theme_mode)
   end
 end
 
+set_ulauncher_theme_mode = function(theme_mode)
+  local is_dark_theme = theme_mode == "dark"
+  local ulauncher_settings_file_path = gears.filesystem.get_xdg_config_home() .. "ulauncher/settings.json"
+  local ulauncher_settings_file_content = read_file_content(ulauncher_settings_file_path)
+
+  if ulauncher_settings_file_content == nil then
+    return
+  end
+
+  local pattern = "\"theme[-]name\": \"(.-)\"%c"
+  local ulauncher_theme_name = ulauncher_settings_file_content:match(pattern)
+  local new_theme_name = ulauncher_theme_name:gsub(is_dark_theme and "light" or "dark", theme_mode)
+  local new_setting = "\"theme-name\": \"" .. new_theme_name .. "\"" .. "\n"
+  local new_ulauncher_settings_file_content = ulauncher_settings_file_content:gsub(pattern, new_setting)
+  write_file_content(ulauncher_settings_file_path, new_ulauncher_settings_file_content)
+  if new_theme_name ~= ulauncher_theme_name then
+    awful.spawn("pkill ulauncher")
+    awful.spawn("ulauncher --hide-window")
+  end
+end
+
+set_obs_theme_mode = function(theme_mode)
+  local is_dark_theme = theme_mode == "dark"
+  local obs_settings_file_path = gears.filesystem.get_xdg_config_home() .. "obs-studio/global.ini"
+  local obs_settings_file_content = read_file_content(obs_settings_file_path)
+
+  if obs_settings_file_content == nil then
+    return
+  end
+
+  local pattern = "CurrentTheme2=(.-)%c"
+  local new_theme_name = is_dark_theme and "Dark" or "System"
+  local new_setting = "CurrentTheme2=" .. new_theme_name .. "\n"
+  local new_obs_settings_file_content = obs_settings_file_content:gsub(pattern, new_setting)
+  write_file_content(obs_settings_file_path, new_obs_settings_file_content)
+end
+
+set_remmina_theme_mode = function(theme_mode)
+  local is_dark_theme = theme_mode == "dark"
+  local remmina_settings_file_path = gears.filesystem.get_xdg_config_home() .. "remmina/remmina.pref"
+  local remmina_settings_file_content = read_file_content(remmina_settings_file_path)
+
+  if remmina_settings_file_content == nil then
+    return
+  end
+
+  local pattern = "dark_theme=(.-)%c"
+  local new_setting = "dark_theme=" .. tostring(is_dark_theme) .. "\n"
+  local new_remmina_settings_file_content = remmina_settings_file_content:gsub(pattern, new_setting)
+  write_file_content(remmina_settings_file_path, new_remmina_settings_file_content)
+end
+
 -- Brightness
 
 get_system_brightness = function(callback)

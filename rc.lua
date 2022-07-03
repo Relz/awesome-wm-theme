@@ -480,6 +480,20 @@ awful.rules.rules = {
       border_width = 0,
       titlebars_enabled = false
     }
+  },
+  {
+    rule = { class = "org.remmina.Remmina" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
+  },
+  {
+    rule = { class = "Gnome-network-displays" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
   }
 }
 
@@ -548,7 +562,6 @@ executer.execute_commands({
   "xfce4-power-manager",
   "picom --experimental-backends --backend glx",
   "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
-  "setxkbmap -option compose:paus",
   "xfce4-clipman",
   "nm-applet",
   "ulauncher"
