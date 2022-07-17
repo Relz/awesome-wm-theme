@@ -40,15 +40,44 @@ local function get_direction_by_position(panel_position)
   end
 end
 
+local function get_aligned_layout(panel_position)
+  return is_horizontal_position(panel_position) and wibox.layout.align.horizontal or wibox.layout.align.vertical
+end
+
 local function create_aligned_layout(panel_position)
-  return is_horizontal_position(panel_position) and wibox.layout.align.horizontal() or wibox.layout.align.vertical()
+  return get_aligned_layout(panel_position)()
+end
+
+local function get_fixed_layout(panel_position)
+  return is_horizontal_position(panel_position) and wibox.layout.fixed.horizontal or wibox.layout.fixed.vertical
 end
 
 local function create_fixed_layout(panel_position, widgets)
   if widgets == nil then
     widgets = {}
   end
-  return is_horizontal_position(panel_position) and wibox.layout.fixed.horizontal(table.unpack(widgets)) or wibox.layout.fixed.vertical(table.unpack(widgets))
+  return get_fixed_layout(panel_position)(table.unpack(widgets))
+end
+
+local create_tasklist = function(screen_index, panel_position, tag)
+	return awful.widget.tasklist({
+		screen = screen_index,
+		filter = function(c) return is_client_in_tag(c, tag) end,
+    layout = {
+      spacing = 8,
+      layout = get_fixed_layout(panel_position)
+    },
+		widget_template = {
+			{
+				id = "client_icon",
+				widget = awful.widget.clienticon,
+			},
+			layout = wibox.layout.stack,
+			create_callback = function(self, c, _, _)
+				self:get_children_by_id("client_icon")[1].client = c
+			end
+		}
+	})
 end
 
 local function create_left_layout(screen_index, panel)
@@ -63,48 +92,66 @@ local function create_left_layout(screen_index, panel)
     )
   end
 
-  local tag_list = awful.widget.taglist(
-    screen_index,
-    awful.widget.taglist.filter.all,
-    panel.tags.key_bindings,
-    {},
-    nil,
-    create_fixed_layout(panel.position)
-  )
+  local screen = get_screen(screen_index)
+
+  local tag_list = awful.widget.taglist {
+    screen = screen,
+    filter = awful.widget.taglist.filter.all,
+    buttons = panel.tags.key_bindings,
+    layout = get_fixed_layout(panel.position),
+    widget_template = {
+      {
+        {
+          {
+            {
+              forced_width = is_horizontal_position(panel.position) and beautiful.menu_height - 6 or 0,
+              forced_height = is_horizontal_position(panel.position) and 0 or beautiful.menu_height - 6,
+              widget = wibox.container.constraint
+
+            },
+            {
+              {
+                id = "tasklist",
+                layout = get_fixed_layout(panel.position),
+              },
+              widget = wibox.container.place
+            },
+            layout = wibox.layout.stack,
+          },
+          top = is_horizontal_position(panel.position) and 2 or 8,
+          right = is_horizontal_position(panel.position) and 8 or 2,
+          left = is_horizontal_position(panel.position) and 8 or 2,
+          bottom = is_horizontal_position(panel.position) and 2 or 8,
+          widget = wibox.container.margin
+        },
+        id = "background_role",
+        widget = wibox.container.background,
+      },
+      shape = function (cr, width, height)
+        gears.shape.rounded_rect(cr, width, height, 4)
+      end,
+      shape_border_width = 1,
+      shape_border_color = beautiful.multi_widget_border_color,
+      widget = wibox.container.background,
+      create_callback = function(self, _, index, _)
+        local tag = screen.tags[index]
+        self:get_children_by_id("tasklist")[1]:add(create_tasklist(screen_index, panel.position, tag))
+      end,
+    }
+  }
 
   local taglist_margin_container = wibox.container.margin(tag_list)
-  taglist_margin_container.top = 3
-  taglist_margin_container.right = 3
-  taglist_margin_container.bottom = 3
-  taglist_margin_container.left = 3
-
-  return taglist_margin_container
-end
-
-local function create_middle_layout(screen_index, panel)
-  local middle_layout = create_fixed_layout(panel.position)
-
-  local tasklist = awful.widget.tasklist {
-    screen = screen_index,
-    filter = awful.widget.tasklist.filter.currenttags,
-    buttons = tasklist_buttons,
-    layout = {
-      spacing = 8,
-      layout  = wibox.layout.fixed.horizontal
-    },
-    base_widget = middle_layout
-  }
-  local tasklist_margin_container = wibox.container.margin(tasklist)
   if is_horizontal_position(panel.position) then
-    tasklist_margin_container.left = 32
-    tasklist_margin_container.top = 4
-    tasklist_margin_container.bottom = 4
+    taglist_margin_container.left = 4
+    taglist_margin_container.top = 2
+    taglist_margin_container.bottom = 2
   else
-    tasklist_margin_container.top = 32
-    tasklist_margin_container.right = 4
+    taglist_margin_container.top = 4
+    taglist_margin_container.left = 2
+    taglist_margin_container.right = 2
   end
 
-  return tasklist_margin_container
+  return taglist_margin_container
 end
 
 local function create_right_layout(screen_index, panel)
@@ -177,7 +224,6 @@ end
 local function create_main_layout(screen_index, panel)
   local main_layout = create_aligned_layout(panel.position)
   main_layout.first = create_left_layout(screen_index, panel)
-  main_layout.second = create_middle_layout(screen_index, panel)
   main_layout.third = create_right_layout(screen_index, panel)
 
   return main_layout

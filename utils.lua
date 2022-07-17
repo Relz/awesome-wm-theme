@@ -54,6 +54,16 @@ table_map = function(tbl, f)
   return t
 end
 
+get_screen = function(index)
+  for s in screen do
+    if s.index == index then
+      return s
+    end
+  end
+
+  return nil
+end
+
 get_clients_names = function()
   local client_names = {}
 
@@ -67,6 +77,16 @@ get_clients_names = function()
   end
 
   return client_names
+end
+
+is_client_in_tag = function(c, tag)
+  local ctags = c:tags()
+  for _, v in ipairs(ctags) do
+    if v == tag then
+      return true
+    end
+  end
+  return false
 end
 
 set_gtk_theme_mode = function(theme_mode)

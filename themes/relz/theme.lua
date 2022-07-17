@@ -102,22 +102,23 @@ theme.menu_bg_focus = theme.text_color .. "bb"
 theme.taglist_spacing = 4
 theme.taglist_font = "Noto Sans Mono Regular 11"
 
-theme.taglist_fg_empty = "#1e293d"
-theme.taglist_fg_focus = "#f4feff"
-theme.taglist_fg_occupied = "#f4feff"
-theme.taglist_fg_urgent = "#f4feff"
+theme.taglist_fg_empty = theme.text_color
+theme.taglist_fg_focus = theme.text_color
+theme.taglist_fg_occupied = theme.text_color
+theme.taglist_fg_urgent = theme.background_color
 
-theme.taglist_bg_empty = "#eceff1"
-theme.taglist_bg_focus = "#0d46a1"
-theme.taglist_bg_occupied = "#1e87e5"
-theme.taglist_bg_urgent = "#f44336"
+theme.taglist_bg_empty = theme.text_color .. "11"
+theme.taglist_bg_focus = theme.text_color .. "44"
+theme.taglist_bg_occupied = theme.text_color .. "11"
+theme.taglist_bg_urgent = theme.danger_background .. "66"
 
-theme.taglist_shape_border_width_empty = 1
-theme.taglist_shape_border_color_empty = "#1e293d"
-theme.taglist_shape = gears.shape.rounded_bar
+theme.taglist_shape = function (cr, width, height)
+  gears.shape.rounded_rect(cr, width, height, 4)
+end
 
 -- | Tasklist | --
 
+theme.tasklist_align = "center"
 theme.tasklist_font = "Droid Sans Mono Regular 9"
 theme.tasklist_font_focus = "Droid Sans Mono Bold 9"
 theme.tasklist_disable_task_name = true
@@ -128,11 +129,6 @@ theme.tasklist_bg_urgent = theme.background_color
 theme.tasklist_fg_focus = theme.text_color
 theme.tasklist_fg_urgent = theme.text_color
 theme.tasklist_fg_normal = theme.text_color
-theme.tasklist_floating = ""
-theme.tasklist_sticky = ""
-theme.tasklist_ontop = ""
-theme.tasklist_maximized_horizontal = ""
-theme.tasklist_maximized_vertical = ""
 
 -- | Widget | --
 
