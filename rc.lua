@@ -13,6 +13,7 @@ require("modules/widgets/clock_widget")
 require("modules/widgets/menu_widget")
 require("modules/widgets/keyboard_layout_widget")
 require("modules/widgets/volume_widget")
+require("modules/widgets/launch_widget")
 
 require("awful.autofocus")
 
@@ -41,6 +42,7 @@ local calendar_command = "/opt/google/chrome/google-chrome --profile-directory='
 local power_manager_settings_command = "xfce4-power-manager-settings"
 local system_monitor_command = "gnome-system-monitor"
 local network_configuration_command = "nm-connection-editor"
+local launch_command = "ulauncher"
 
 local wallpaper_image_path = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg";
 local current_keyboard_layout = "us";
@@ -61,6 +63,7 @@ local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
 local network_widget = NetworkWidget(false, network_configuration_command)
 local volume_widget = VolumeWidget(true)
 local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
+local launch_widget = LaunchWidget(beautiful.widget_launch, launch_command)
 
 -- | Functions | --
 
@@ -118,11 +121,11 @@ end
 local screen_0_panel = Panel()
 screen_0_panel.position = "top"
 screen_0_panel.tags.list = {
-  Tag(" 1 ", awful.layout.suit.fair),
-  Tag(" 2 ", awful.layout.suit.floating),
-  Tag(" 3 ", awful.layout.suit.floating),
-  Tag(" 4 ", awful.layout.suit.floating),
-  Tag(" 5 ", awful.layout.suit.floating),
+  Tag("1", awful.layout.suit.fair),
+  Tag("2", awful.layout.suit.floating),
+  Tag("3", awful.layout.suit.floating),
+  Tag("4", awful.layout.suit.floating),
+  Tag("5", awful.layout.suit.floating),
 }
 screen_0_panel.tags.key_bindings = awful.util.table.join(
   awful.button({}, 1, awful.tag.viewonly),
@@ -145,6 +148,7 @@ screen_0_panel.widgets = {
   },
   menu_widget
 }
+screen_0_panel.launcher = launch_widget
 
 -- | Screens | --
 

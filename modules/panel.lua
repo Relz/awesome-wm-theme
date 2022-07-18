@@ -1,3 +1,4 @@
+local wibox = require("wibox")
 require("modules/tags")
 require("modules/tasks")
 
@@ -22,7 +23,7 @@ Panel_prototype = function()
     tags = Tags(),
     tasks = Tasks(),
     widgets = {},
-    show_tray = true
+    launcher = wibox.widget.base
     -- Public Funcs
   }
 

@@ -143,6 +143,10 @@ theme.widget_calendar = gears.color.recolor_image(theme.icons_path .. "/widgets/
 
 theme.widget_menu = gears.color.recolor_image(theme.icons_path .. "/widgets/menu.svg", theme.text_color)
 
+-- | Launch | --
+
+theme.widget_launch = gears.color.recolor_image(theme.icons_path .. "/widgets/launch.svg", theme.text_color)
+
 -- | Client's titlebar | --
 
 theme.titlebar_close_button_focus       = gears.color.recolor_image(theme.icons_path .. "/titlebar/close.svg", theme.text_color)

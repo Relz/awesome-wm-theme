@@ -59,10 +59,11 @@ local function create_fixed_layout(panel_position, widgets)
   return get_fixed_layout(panel_position)(table.unpack(widgets))
 end
 
-local create_tasklist = function(screen_index, panel_position, tag)
+local create_tasklist = function(screen_index, panel_position, tag, tasks)
 	return awful.widget.tasklist({
 		screen = screen_index,
 		filter = function(c) return is_client_in_tag(c, tag) end,
+    buttons = tasks.key_bindings,
     layout = {
       spacing = 8,
       layout = get_fixed_layout(panel_position)
@@ -135,7 +136,7 @@ local function create_left_layout(screen_index, panel)
       widget = wibox.container.background,
       create_callback = function(self, _, index, _)
         local tag = screen.tags[index]
-        self:get_children_by_id("tasklist")[1]:add(create_tasklist(screen_index, panel.position, tag))
+        self:get_children_by_id("tasklist")[1]:add(create_tasklist(screen_index, panel.position, tag, panel.tasks))
       end,
     }
   }
@@ -151,14 +152,19 @@ local function create_left_layout(screen_index, panel)
     taglist_margin_container.right = 2
   end
 
-  return taglist_margin_container
+  local launcher_margin_container = wibox.container.margin(panel.launcher.icon)
+  launcher_margin_container.margins = 2
+
+  local left_layout_widgets = create_fixed_layout(panel.position, {launcher_margin_container, taglist_margin_container})
+
+  return left_layout_widgets
 end
 
 local function create_right_layout(screen_index, panel)
   local right_layout = create_fixed_layout(panel.position)
   right_layout.spacing = 8
 
-  if panel.show_tray then
+  if screen_index == 1 then
     local tray = wibox.widget.systray()
     tray:set_horizontal(is_horizontal_position(panel.position))
     local tray_margin_container = wibox.container.margin(tray)
