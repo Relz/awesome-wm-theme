@@ -70,6 +70,10 @@ local launch_widget = LaunchWidget(beautiful.widget_launch, launch_command)
 -- Panels
 
 local task_left_button_press_action = function(c)
+  if not is_client_in_tag(c, awful.tag.selected()) then
+    return
+  end
+
   if c == client.focus then
     c.minimized = true
   else
