@@ -224,6 +224,9 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "Tab", function () change_focused_client(1) end, { description="Change focused client to next", group="Client" }),
   awful.key({ "Mod4", "Shift" }, "Tab", function () change_focused_client(-1) end, { description="Change focused client to previous", group="Client" }),
 
+  awful.key({ "Mod4" }, "Left",  function () awful.tag.viewidx(-1) end),
+  awful.key({ "Mod4" }, "Right", function () awful.tag.viewidx(1) end),
+
   awful.key({ "Mod4", "Control" }, "r", awesome.restart, { description="Restart awesome", group="Awesome" }),
   awful.key({ "Mod4", "Control" }, "Cyrillic_ka", awesome.restart),
 
