@@ -75,8 +75,14 @@ local create_tasklist = function(screen_index, panel_position, tag, tasks)
 			},
 			layout = wibox.layout.stack,
 			create_callback = function(self, c, _, _)
-				self:get_children_by_id("client_icon")[1].client = c
-			end
+        local client_icon = self:get_children_by_id("client_icon")[1]
+				client_icon.client = c
+        client_icon.opacity = c.minimized and 0.4 or 1
+			end,
+      update_callback = function(self, c, _, _)
+        local client_icon = self:get_children_by_id("client_icon")[1]
+        client_icon.opacity = c.minimized and 0.4 or 1
+			end,
 		}
 	})
 end
