@@ -66,6 +66,7 @@ VolumeWidget_prototype = function()
     -- Private Variables
     volume_value = 0,
     is_muted = true,
+    settings_popup = nil,
     -- Private Funcs
     compute_volume_level = function(is_muted, volume_value)
       if (is_muted or volume_value == 0) then
@@ -329,12 +330,9 @@ VolumeWidget_prototype = function()
     build_popup_header_row = function(text)
       return wibox.widget{
         {
-          {
-            markup = "<b>" .. text .. "</b>",
-            align = "center",
-            widget = wibox.widget.textbox
-          },
-          widget = wibox.container.background,
+          markup = "<b>" .. text .. "</b>",
+          align = "center",
+          widget = wibox.widget.textbox
         },
         margins = 8,
         widget = wibox.container.margin

@@ -46,6 +46,10 @@ local launch_command = "ulauncher"
 
 local wallpaper_image_path = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg";
 local current_keyboard_layout = "us";
+local geolocation = {
+  latitude = 0,
+  longitude = 0
+}
 
 local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 
@@ -55,7 +59,7 @@ beautiful.init(config_path .. "/themes/relz/theme.lua")
 
 local cpu_widget = CpuWidget(false, system_monitor_command)
 local memory_widget = MemoryWidget(false, system_monitor_command)
-local brightness_widget = BrightnessWidget(100)
+local brightness_widget = BrightnessWidget(100, geolocation)
 local battery_widget = BatteryWidget(true, power_manager_settings_command)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
@@ -308,7 +312,7 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control", "Shift" }, "c", function() awful.spawn("code") end, { description="Execute VSCode", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_es", function() awful.spawn("code") end),
 
-  awful.key({}, "Alt_R", toggle_keyboard_layout, { description="Toggle keyboard layout", group="Keyboard" }),
+  awful.key({ "Mod1" }, "Shift_L", toggle_keyboard_layout, { description="Toggle keyboard layout", group="Keyboard" }),
 
   awful.key({ "Mod4" }, "d", toogle_minimize_restore_clients, { description="Toggle minimize restore clients", group="Client" }),
   awful.key({ "Mod4" }, "Cyrillic_ve", toogle_minimize_restore_clients)
@@ -376,9 +380,10 @@ root.keys(global_keys)
 
 -- | Rules | --
 
-function hide_dropdowns()
+local function hide_dropdowns()
   menu_widget.hide_dropdown()
   volume_widget.hide_dropdown()
+  brightness_widget.hide_dropdown()
 end
 
 local client_buttons = awful.util.table.join(
@@ -566,6 +571,24 @@ get_system_brightness(function(value_percent)
   brightness_widget.update(value_percent)
 end)
 
+if geolocation.latitude == 0 and geolocation.longitude == 0 then
+  local latitude_string = read_file_content(gears.filesystem.get_configuration_dir() .. "latitude")
+  local longitude_string = read_file_content(gears.filesystem.get_configuration_dir() .. "longitude")
+
+  geolocation.latitude = tonumber(latitude_string)
+  geolocation.longitude = tonumber(longitude_string)
+end
+
+if geolocation.latitude == 0 and geolocation.longitude == 0 then
+  get_geolocation(function(latitude, longitude)
+    geolocation.latitude = latitude
+    geolocation.longitude = longitude
+
+    write_file_content(gears.filesystem.get_configuration_dir() .. "latitude", geolocation.latitude)
+    write_file_content(gears.filesystem.get_configuration_dir() .. "longitude", geolocation.longitude)
+  end)
+end
+
 -- | Autostart | --
 
 executer.execute_commands({
@@ -573,6 +596,7 @@ executer.execute_commands({
   "xfce4-power-manager",
   "picom --experimental-backends --backend glx",
   "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
+  "/usr/lib/geoclue-2.0/demos/agent",
   "xfce4-clipman",
   "nm-applet",
   "ulauncher"

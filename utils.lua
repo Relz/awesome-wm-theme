@@ -4,6 +4,128 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 
 -- Common
 
+round_number = function(a)
+  return math.floor(a + 0.5)
+end
+
+math_clamp = function(value, min, max)
+  return math.max(min, math.min(value, max))
+end
+
+lpad_string = function(str, len, char)
+  if char == nil then
+    char = ' '
+  end
+
+  return string.rep(char, len - #str) .. str
+end
+
+rpad_string = function(str, len, char)
+  if char == nil then
+    char = ' '
+  end
+
+  return str .. string.rep(char, len - #str)
+end
+
+create_today = function()
+  local now = os.date("*t")
+  now.hour = 0
+  now.min = 0
+  now.sec = 0
+
+  return os.time(now)
+end
+
+create_local_datetime = function(year, month, day, hour, min, sec)
+  local now = os.date("*t")
+  if year ~= nil then
+    now.year = year
+  end
+  if month ~= nil then
+    now.month = month
+  end
+  if day ~= nil then
+    now.day = day
+  end
+  if hour ~= nil then
+    now.hour = hour
+  end
+  if min ~= nil then
+    now.min = min
+  end
+  if sec ~= nil then
+    now.sec = sec
+  end
+  now.isdst = false
+
+  return os.time(now) + get_timezone_offset()
+end
+
+get_timezone_offset = function()
+  local date_utc   = os.date("!*t")
+  local date_local = os.date("*t")
+  date_local.isdst = false
+
+  return os.difftime(os.time(date_local), os.time(date_utc))
+end
+
+get_color_between = function(color1Hex, color2Hex, weight)
+  if color1Hex:len() ~= 7 or color2Hex:len() ~= 7 then
+    return nil
+  end
+
+  local weight1 = 1 - weight
+  local weight2 = weight
+  local color1Rgb = hex_to_rgb(color1Hex)
+  local color2Rgb = hex_to_rgb(color2Hex)
+
+  return rgb_to_hex({
+    round_number(color1Rgb[1] * weight1 + color2Rgb[1] * weight2),
+    round_number(color1Rgb[2] * weight1 + color2Rgb[2] * weight2),
+    round_number(color1Rgb[3] * weight1 + color2Rgb[3] * weight2),
+  })
+end
+
+hex_to_rgb = function(hexColor)
+  if hexColor:len() ~= 7 or string.sub(hexColor, 1, 1) ~= "#" then
+    return nil
+  end
+
+  local redHex = string.sub(hexColor, 2, 3)
+  local greenHex = string.sub(hexColor, 4, 5)
+  local blueHex = string.sub(hexColor, 6, 7)
+  local red = tonumber(redHex, 16)
+  local green = tonumber(greenHex, 16)
+  local blue = tonumber(blueHex, 16)
+
+  return {red, green, blue}
+end
+
+rgb_to_hex = function(rgbColor)
+  local result = "#"
+
+  for _,value in pairs(rgbColor) do
+		local hex = ''
+
+		while (value > 0) do
+			local index = math.fmod(value, 16) + 1
+			value = math.floor(value / 16)
+			hex = string.sub('0123456789ABCDEF', index, index) .. hex
+		end
+
+		if (string.len(hex) == 0) then
+			hex = '00'
+		elseif (string.len(hex) == 1) then
+			hex = '0' .. hex
+		end
+
+		result = result .. hex
+	end
+
+	return result
+end
+
 run_command_sync = function(command)
   local result = ""
 
@@ -446,4 +568,172 @@ snap_edge = function(client, where)
   end
   client:geometry(client_geometry)
   awful.placement.no_offscreen(client)
+end
+
+get_geolocation = function (callback)
+  awful.spawn.easy_async("/usr/lib/geoclue-2.0/demos/where-am-i", function(geoclue_stdout)
+    local latitude_string = geoclue_stdout:match("Latitude:%s+(%S+)"):gsub(",", "."):gsub("°", "")
+    local longitude_string = geoclue_stdout:match("Longitude:%s+(%S+)"):gsub(",", "."):gsub("°", "")
+
+    local latitude = tonumber(latitude_string)
+    local longitude = tonumber(longitude_string)
+
+    callback(latitude, longitude)
+  end)
+end
+
+local get_days_count = function(year)
+  return os.date("%j", os.time({
+    year = year,
+    month = 12,
+    day = 31
+  }))
+end
+
+local get_fractional_year = function(hour)
+  local day_of_year = os.date("%j")
+  local current_year_days_count = get_days_count(os.date("%Y"))
+
+  return 2 * math.pi / current_year_days_count * (day_of_year - 1 + (hour - 12) / 24)
+end
+
+local get_time_equation_minutes = function(fractional_year)
+  return 229.18 * (0.000075 + 0.001868 * math.cos(fractional_year) - 0.032077 * math.sin(fractional_year) - 0.014615 * math.cos(2 * fractional_year) - 0.040849 * math.sin(2 * fractional_year))
+end
+
+local get_declination_angle = function(fractional_year)
+  return 0.006918 - 0.399912 * math.cos(fractional_year) + 0.070257 * math.sin(fractional_year) - 0.006758 * math.cos(2 * fractional_year) + 0.000907 * math.sin(2 * fractional_year) - 0.002697 * math.cos(3 * fractional_year) + 0.00148 * math.sin(3 * fractional_year)
+end
+
+local get_hour_angle = function(hour, latitude, to_sunrise)
+  local fractional_year = get_fractional_year(hour)
+  local declination_angle = get_declination_angle(fractional_year)
+  local hour_angle_sign = to_sunrise and 1 or -1
+
+  return hour_angle_sign * math.acos(math.cos(math.rad(90.833)) / (math.cos(math.rad(latitude)) * math.cos(declination_angle)) - math.tan(math.rad(latitude)) * math.tan(declination_angle))
+end
+
+local get_sunrise_sunset_time_minutes = function(latitude, longitude, is_sunrise)
+  local hour = os.date("%H")
+  local hour_angle = get_hour_angle(hour, latitude, is_sunrise)
+  local fractional_year = get_fractional_year(hour)
+  local time_equation_minutes = get_time_equation_minutes(fractional_year)
+
+  return 720 - 4 * (longitude + math.deg(hour_angle)) - time_equation_minutes
+end
+
+get_sunrise_time_minutes = function(latitude, longitude)
+  return get_sunrise_sunset_time_minutes(latitude, longitude, true)
+end
+
+get_sunset_time_minutes = function(latitude, longitude)
+  return get_sunrise_sunset_time_minutes(latitude, longitude, false)
+end
+
+get_redshift_dawn_time = function()
+  local redshift_settings_file_path = gears.filesystem.get_xdg_config_home() .. "redshift/redshift.conf"
+  local redshift_settings_file_content = read_file_content(redshift_settings_file_path)
+
+  if redshift_settings_file_content == nil then
+    return
+  end
+
+  local matches = redshift_settings_file_content:gmatch("dawn[-]time=(.-)%c")
+
+  for match in matches do
+    return match
+  end
+
+  return nil
+end
+
+set_redshift_dawn_time = function(value)
+  local redshift_settings_file_path = gears.filesystem.get_xdg_config_home() .. "redshift/redshift.conf"
+  local redshift_settings_file_content = read_file_content(redshift_settings_file_path)
+
+  if redshift_settings_file_content == nil then
+    return
+  end
+
+  local new_redshift_settings_file_content = redshift_settings_file_content
+  local pattern = "dawn[-]time=(.-)%c"
+
+  if redshift_settings_file_content:match(pattern) then
+    local new_setting = value == nil and "" or ("dawn-time=" .. os.date("%H:%M", value) .. "\n")
+    new_redshift_settings_file_content = redshift_settings_file_content:gsub(pattern, new_setting)
+  else
+    local pattern = "dusk[-]time=(.-)%c"
+    if redshift_settings_file_content:match(pattern) then
+      local new_setting = (value == nil and "" or ("dawn-time=" .. os.date("%H:%M", value) .. "\n")) .. "dusk-time=%1" .. "\n"
+      new_redshift_settings_file_content = redshift_settings_file_content:gsub(pattern, new_setting)
+    else
+      if value ~= nil then
+        local pattern = "%[redshift%]%c"
+        local new_setting = "[redshift]" .. "\n" .. "dawn-time=" .. os.date("%H:%M", value) .. "\n"
+        new_redshift_settings_file_content = redshift_settings_file_content:gsub(pattern, new_setting)
+      end
+    end
+  end
+
+  write_file_content(redshift_settings_file_path, new_redshift_settings_file_content)
+end
+
+get_redshift_dusk_time = function()
+  local redshift_settings_file_path = gears.filesystem.get_xdg_config_home() .. "redshift/redshift.conf"
+  local redshift_settings_file_content = read_file_content(redshift_settings_file_path)
+
+  if redshift_settings_file_content == nil then
+    return
+  end
+
+  local matches = redshift_settings_file_content:gmatch("dusk[-]time=(.-)%c")
+
+  for match in matches do
+    return match
+  end
+
+  return nil
+end
+
+set_redshift_dusk_time = function(value)
+  local redshift_settings_file_path = gears.filesystem.get_xdg_config_home() .. "redshift/redshift.conf"
+  local redshift_settings_file_content = read_file_content(redshift_settings_file_path)
+
+  if redshift_settings_file_content == nil then
+    return
+  end
+
+  local new_redshift_settings_file_content = redshift_settings_file_content
+  local pattern = "dusk[-]time=(.-)%c"
+
+  if redshift_settings_file_content:match(pattern) then
+    local new_setting = value == nil and "" or ("dusk-time=" .. os.date("%H:%M", value) .. "\n")
+    new_redshift_settings_file_content = redshift_settings_file_content:gsub(pattern, new_setting)
+  else
+    local pattern = "dawn[-]time=(.-)%c"
+    if redshift_settings_file_content:match(pattern) then
+      local new_setting = "dawn-time=%1" .. "\n" .. (value == nil and "" or ("dusk-time=" ..  os.date("%H:%M", value) .. "\n"))
+      new_redshift_settings_file_content = redshift_settings_file_content:gsub(pattern, new_setting)
+    else
+      if value ~= nil then
+        local pattern = "%[redshift%]%c"
+        local new_setting = "[redshift]" .. "\n" .. "dusk-time=" .. os.date("%H:%M", value)
+        new_redshift_settings_file_content = redshift_settings_file_content:gsub(pattern, new_setting)
+      end
+    end
+  end
+
+  write_file_content(redshift_settings_file_path, new_redshift_settings_file_content)
+end
+
+reset_redshift = function()
+  awful.spawn.easy_async("redshift -x", function() end)
+end
+
+restart_redshift = function()
+  awful.spawn.easy_async("systemctl restart redshift --user", function() end)
+end
+
+stop_redshift = function()
+  awful.spawn.easy_async("systemctl stop redshift --user", function() end)
 end

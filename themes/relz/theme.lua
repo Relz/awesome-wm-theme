@@ -1,4 +1,3 @@
-local awful = require("awful")
 local gears = require("gears")
 
 local theme = {}
@@ -8,13 +7,7 @@ theme.path = theme.root_path .. "theme.lua"
 theme.icons_path = theme.root_path .. "icons/"
 theme.mode_file_path = theme.root_path .. "mode"
 
-theme.mode = 'light'
-
-local mode_file = io.open(theme.mode_file_path, "r")
-if mode_file ~= nil then
-  theme.mode = mode_file:read("*all")
-  mode_file:close()
-end
+theme.mode= read_file_content(theme.mode_file_path, "r")
 
 theme.font = "Droid Sans Mono Regular 10"
 
