@@ -112,18 +112,6 @@ local set_volume = function(step, increase)
   set_system_volume(step, increase, function() vicious.force({ volume_widget.icon }) end)
 end
 
--- Keyboard layout
-
-local toggle_keyboard_layout = function()
-  if current_keyboard_layout == "us" then
-    set_keyboard_layout("ru,us");
-    current_keyboard_layout = "ru";
-  else
-    set_keyboard_layout("us,ru");
-    current_keyboard_layout = "us";
-  end
-end
-
 -- | Panels | --
 
 local screen_0_panel = Panel()
@@ -311,8 +299,6 @@ local global_keys = awful.util.table.join(
 
   awful.key({ "Mod4", "Control", "Shift" }, "c", function() awful.spawn("code") end, { description="Execute VSCode", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_es", function() awful.spawn("code") end),
-
-  awful.key({ "Mod1" }, "Shift_L", toggle_keyboard_layout, { description="Toggle keyboard layout", group="Keyboard" }),
 
   awful.key({ "Mod4" }, "d", toogle_minimize_restore_clients, { description="Toggle minimize restore clients", group="Client" }),
   awful.key({ "Mod4" }, "Cyrillic_ve", toogle_minimize_restore_clients)

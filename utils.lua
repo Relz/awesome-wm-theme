@@ -393,10 +393,6 @@ end
 
 -- Keyboard layout
 
-set_keyboard_layout = function(value)
-  awful.spawn("setxkbmap -display :0 -layout " .. value, false)
-end
-
 -- Show help
 
 show_help = function()
