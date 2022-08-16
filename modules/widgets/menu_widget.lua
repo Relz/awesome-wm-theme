@@ -55,7 +55,7 @@ MenuWidget_prototype = function()
     -- Private Funcs
     switch_theme_mode = function()
       local new_mode = beautiful.mode == "light" and "dark" or "light"
-      write_file_content(beautiful.mode_file_path, require("json").encode({theme_mode = new_mode}))
+      write_file_content(beautiful.mode_file_path, new_mode)
       set_gtk_theme_mode(new_mode)
       set_ulauncher_theme_mode(new_mode)
       set_obs_theme_mode(new_mode)
