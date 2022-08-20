@@ -402,6 +402,7 @@ end
 -- Change focused client
 
 change_focused_client = function(direction)
+  restore_clients()
   awful.client.focus.byidx(direction)
   if client.focus then client.focus:raise() end
 end
