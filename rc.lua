@@ -49,6 +49,8 @@ local geolocation = {
   latitude = 0,
   longitude = 0
 }
+local wired_interface = nil
+local wireless_interface = nil
 
 local numpad_key_codes = { 87, 88, 89, 83, 84, 85, 79, 80, 81 }
 
@@ -562,16 +564,48 @@ if geolocation.latitude == 0 and geolocation.longitude == 0 then
 
   geolocation.latitude = tonumber(latitude_string)
   geolocation.longitude = tonumber(longitude_string)
+
+  if geolocation.latitude == 0 and geolocation.longitude == 0 then
+    get_geolocation(function(latitude, longitude)
+      geolocation.latitude = latitude
+      geolocation.longitude = longitude
+
+      write_file_content(gears.filesystem.get_configuration_dir() .. "latitude", geolocation.latitude)
+      write_file_content(gears.filesystem.get_configuration_dir() .. "longitude", geolocation.longitude)
+    end)
+  end
 end
 
-if geolocation.latitude == 0 and geolocation.longitude == 0 then
-  get_geolocation(function(latitude, longitude)
-    geolocation.latitude = latitude
-    geolocation.longitude = longitude
+if wired_interface == nil then
+  wired_interface = read_file_content(gears.filesystem.get_configuration_dir() .. "wired_interface")
 
-    write_file_content(gears.filesystem.get_configuration_dir() .. "latitude", geolocation.latitude)
-    write_file_content(gears.filesystem.get_configuration_dir() .. "longitude", geolocation.longitude)
-  end)
+  if wired_interface == nil then
+    get_wired_interface(function(value)
+      wired_interface = value
+      write_file_content(gears.filesystem.get_configuration_dir() .. "wired_interface", wired_interface)
+      network_widget.set_wired_interface(wired_interface)
+    end)
+  else
+    network_widget.set_wired_interface(wired_interface)
+  end
+else
+  network_widget.set_wired_interface(wired_interface)
+end
+
+if wireless_interface == nil then
+  wireless_interface = read_file_content(gears.filesystem.get_configuration_dir() .. "wireless_interface")
+
+  if wireless_interface == nil then
+    get_wireless_interface(function(value)
+      wireless_interface = value
+      write_file_content(gears.filesystem.get_configuration_dir() .. "wireless_interface", wireless_interface)
+      network_widget.set_wireless_interface(wireless_interface)
+    end)
+  else
+    network_widget.set_wireless_interface(wireless_interface)
+  end
+else
+  network_widget.set_wireless_interface(wireless_interface)
 end
 
 -- | Autostart | --

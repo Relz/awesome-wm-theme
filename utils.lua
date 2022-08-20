@@ -733,3 +733,17 @@ end
 stop_redshift = function()
   awful.spawn.easy_async("systemctl stop redshift --user", function() end)
 end
+
+get_wired_interface = function(callback)
+  awful.spawn.easy_async("ip addr", function(ip_addr_stdout)
+    local wired_interface = ip_addr_stdout:match("%d+:%s(e%S+):")
+    callback(wired_interface)
+  end)
+end
+
+get_wireless_interface = function(callback)
+  awful.spawn.easy_async("ip addr", function(ip_addr_stdout)
+    local wireless_interface = ip_addr_stdout:match("%d+:%s(w%S+):")
+    callback(wireless_interface)
+  end)
+end
