@@ -18,13 +18,6 @@ NetworkWidget_prototype = function()
     wired_interface_name = "enp3s0",
     wireless_interface_name = "wlo1",
     -- Private Static Funcs
-    read_command_result = function(command)
-      local command_subprocess = io.popen(command)
-      local result = command_subprocess:read('*all')
-      command_subprocess:close()
-
-      return result
-    end,
     compute_linp_level = function(linp)
       if linp == nil then
         return "off"
@@ -88,7 +81,7 @@ NetworkWidget_prototype = function()
         or this.__private.linp == nil and "Disconnected" or this.__private.ssid .. ": " .. this.__private.linp .. "%"
     end,
     compute_wired_connection_state = function()
-        return this.__private_static.read_command_result("cat " .. this.__public.wired_path)
+        return run_command_sync("cat " .. this.__public.wired_path)
     end
   }
 

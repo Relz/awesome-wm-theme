@@ -4,6 +4,7 @@ local naughty = require("naughty")
 local vicious = require("vicious")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 BatteryWidget_prototype = function()
   local this = {}
@@ -104,7 +105,7 @@ BatteryWidget_prototype = function()
               text = "You might want to plug in your PC",
               bg = beautiful.danger_background,
               fg = beautiful.danger_foreground,
-              border_width = 1,
+              border_width = dpi(1),
               border_color = beautiful.danger_background,
               icon = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/notifications/battery_alert.png", beautiful.danger_foreground),
               timeout = 0,
@@ -169,10 +170,7 @@ BatteryWidget_prototype = function()
       return "0"
     end,
     compute_is_low_capacity = function(capacity)
-      if capacity <= 10 then
-        return true
-      end
-      return false
+      return capacity <= 10
     end,
     compute_icon_file_name_suffix = function()
       local possible_charging = this.__private.compute_possible_charging()

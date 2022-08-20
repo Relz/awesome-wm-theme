@@ -3,8 +3,8 @@ local wibox = require("wibox")
 local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 require("modules/confirm_dialog")
-require("utils")
 
 MenuWidget_prototype = function()
   local this = {}
@@ -43,7 +43,7 @@ MenuWidget_prototype = function()
           is_bottom_panel_position or is_left_panel_position,
           is_top_panel_position or is_left_panel_position,
           is_top_panel_position or is_right_panel_position,
-          8
+          dpi(8)
         )
       end
     end,

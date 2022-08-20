@@ -1,9 +1,5 @@
 local awful = require("awful")
 local wibox = require("wibox")
-local gears = require("gears")
-local hotkeys_popup = require("awful.hotkeys_popup")
-local beautiful = require("beautiful")
-require("utils")
 
 LaunchWidget_prototype = function()
   local this = {}

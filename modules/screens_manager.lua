@@ -2,6 +2,7 @@ local gears = require("gears")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 local _screens = {}
 
@@ -65,7 +66,7 @@ local create_tasklist = function(screen_index, panel_position, tag, tasks)
 		filter = function(c) return is_client_in_tag(c, tag) end,
     buttons = tasks.key_bindings,
     layout = {
-      spacing = 8,
+      spacing = dpi(8),
       layout = get_fixed_layout(panel_position)
     },
 		widget_template = {
@@ -111,8 +112,8 @@ local function create_left_layout(screen_index, panel)
         {
           {
             {
-              forced_width = is_horizontal_position(panel.position) and beautiful.menu_height - 6 or 0,
-              forced_height = is_horizontal_position(panel.position) and 0 or beautiful.menu_height - 6,
+              forced_width = is_horizontal_position(panel.position) and beautiful.menu_height - dpi(6) or 0,
+              forced_height = is_horizontal_position(panel.position) and 0 or beautiful.menu_height - dpi(6),
               widget = wibox.container.constraint
 
             },
@@ -125,19 +126,19 @@ local function create_left_layout(screen_index, panel)
             },
             layout = wibox.layout.stack,
           },
-          top = is_horizontal_position(panel.position) and 2 or 8,
-          right = is_horizontal_position(panel.position) and 8 or 2,
-          left = is_horizontal_position(panel.position) and 8 or 2,
-          bottom = is_horizontal_position(panel.position) and 2 or 8,
+          top = dpi(is_horizontal_position(panel.position) and 2 or 8),
+          right = dpi(is_horizontal_position(panel.position) and 8 or 2),
+          left = dpi(is_horizontal_position(panel.position) and 8 or 2),
+          bottom = dpi(is_horizontal_position(panel.position) and 2 or 8),
           widget = wibox.container.margin
         },
         id = "background_role",
         widget = wibox.container.background,
       },
       shape = function (cr, width, height)
-        gears.shape.rounded_rect(cr, width, height, 4)
+        gears.shape.rounded_rect(cr, width, height, dpi(4))
       end,
-      shape_border_width = 1,
+      shape_border_width = dpi(1),
       shape_border_color = beautiful.multi_widget_border_color,
       widget = wibox.container.background,
       create_callback = function(self, _, index, _)
@@ -149,17 +150,17 @@ local function create_left_layout(screen_index, panel)
 
   local taglist_margin_container = wibox.container.margin(tag_list)
   if is_horizontal_position(panel.position) then
-    taglist_margin_container.left = 4
-    taglist_margin_container.top = 2
-    taglist_margin_container.bottom = 2
+    taglist_margin_container.left = dpi(4)
+    taglist_margin_container.top = dpi(2)
+    taglist_margin_container.bottom = dpi(2)
   else
-    taglist_margin_container.top = 4
-    taglist_margin_container.left = 2
-    taglist_margin_container.right = 2
+    taglist_margin_container.top = dpi(4)
+    taglist_margin_container.left = dpi(2)
+    taglist_margin_container.right = dpi(2)
   end
 
   local launcher_margin_container = wibox.container.margin(panel.launcher.icon)
-  launcher_margin_container.margins = 2
+  launcher_margin_container.margins = dpi(2)
 
   local left_layout_widgets = create_fixed_layout(panel.position, {launcher_margin_container, taglist_margin_container})
 
@@ -168,13 +169,13 @@ end
 
 local function create_right_layout(screen_index, panel)
   local right_layout = create_fixed_layout(panel.position)
-  right_layout.spacing = 8
+  right_layout.spacing = dpi(8)
 
   if screen_index == 1 then
     local tray = wibox.widget.systray()
     tray:set_horizontal(is_horizontal_position(panel.position))
     local tray_margin_container = wibox.container.margin(tray)
-    tray_margin_container.margins = 2
+    tray_margin_container.margins = dpi(2)
     right_layout:add(tray_margin_container)
   end
 
@@ -187,7 +188,7 @@ local function create_right_layout(screen_index, panel)
       if widget.icon or widget.value then
         if widget.icon then
           local widget_icon_margin_container = wibox.container.margin(widget.icon)
-          widget_icon_margin_container.margins = 1
+          widget_icon_margin_container.margins = dpi(1)
           table.insert(containers, widget_icon_margin_container)
         end
         if widget.value then
@@ -205,20 +206,20 @@ local function create_right_layout(screen_index, panel)
       local widget_fixed_container = create_fixed_layout(panel.position, containers)
 
       local widgets_margin_container = wibox.container.margin(widget_fixed_container)
-      widgets_margin_container.margins = 2
+      widgets_margin_container.margins = dpi(2)
 
       local widget_background_container = wibox.container.background(
         widgets_margin_container,
         nil,
         function (cr, width, height)
-          gears.shape.rounded_rect(cr, width, height, 4)
+          gears.shape.rounded_rect(cr, width, height, dpi(4))
         end
       )
-      widget_background_container.shape_border_width = 1
+      widget_background_container.shape_border_width = dpi(1)
       widget_background_container.shape_border_color = beautiful.multi_widget_border_color
 
       top_level_container = wibox.container.margin(widget_background_container)
-      top_level_container.margins = 2
+      top_level_container.margins = dpi(2)
     end
 
     right_layout:add(top_level_container)
@@ -245,7 +246,7 @@ local function apply_panels(screen_index, panels)
   for _,panel in ipairs(panels) do
     local wibar = awful.wibar({screen = screen_index})
     wibar.position = panel.position
-    wibar.height = panel.thickness
+    wibar.height = dpi(panel.thickness, screen_index)
     wibar.widget = create_main_layout(screen_index, panel)
     wibar.opacity = panel.opacity
     wibar:struts {

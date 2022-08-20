@@ -1,4 +1,6 @@
 local gears = require("gears")
+local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 local theme = {}
 
@@ -30,25 +32,25 @@ theme.bg_urgent = theme.background_color
 theme.checkbox_shape = gears.shape.circle
 
 theme.checkbox_bg = theme.background_color
-theme.checkbox_border_width = 1
+theme.checkbox_border_width = dpi(1)
 theme.checkbox_border_color = theme.text_color
 
 theme.checkbox_check_bg = theme.background_color
-theme.checkbox_check_border_width = 1
+theme.checkbox_check_border_width = dpi(1)
 theme.checkbox_check_border_color = theme.text_color
 theme.checkbox_color = theme.text_color
 
 -- | Systray | --
 
 theme.bg_systray = theme.background_color
-theme.systray_icon_spacing = 8
+theme.systray_icon_spacing = dpi(8)
 
 -- | Tooltip | --
 
 theme.tooltip_bg = theme.background_color
 theme.tooltip_fg = theme.text_color
 theme.tooltip_shape = gears.shape.rounded_rect
-theme.tooltip_border_width = 1
+theme.tooltip_border_width = dpi(1)
 theme.tooltip_border_color = theme.text_color
 
 -- | Borders | --
@@ -63,30 +65,30 @@ theme.border_marked = theme.background_color .. "ee"
 theme.hotkeys_bg = theme.background_color .. "bb"
 theme.hotkeys_font = "Droid Sans Mono Bold 11"
 theme.hotkeys_description_font = "Droid Sans Mono Regular 10"
-theme.hotkeys_group_margin = 32
+theme.hotkeys_group_margin = dpi(32)
 theme.hotkeys_shape = function(cr, width, height)
-  gears.shape.rounded_rect(cr, width, height, 8)
+  gears.shape.rounded_rect(cr, width, height, dpi(8))
 end
 
 -- | Notifications | --
 
-theme.notification_max_width = 640
-theme.notification_max_height = 160
+theme.notification_max_width = dpi(640)
+theme.notification_max_height = dpi(160)
 theme.notification_font = "Noto Sans Regular 11"
 theme.notification_bg = theme.background_color
 theme.notification_fg = theme.text_color
-theme.notification_border_width = 1
+theme.notification_border_width = dpi(1)
 theme.notification_border_color = theme.background_color
 theme.notification_opacity = 0.8
-theme.notification_icon_size = 48
+theme.notification_icon_size = dpi(48)
 theme.notification_shape = function(cr, width, height)
   gears.shape.rounded_rect(cr, width, height, 3)
 end
 
 -- | Menu | --
 
-theme.menu_height = 24
-theme.menu_width = 180
+theme.menu_height = dpi(24)
+theme.menu_width = dpi(180)
 theme.menu_bg_normal = theme.background_color .. "66"
 theme.menu_bg_focus = theme.text_color .. "bb"
 
@@ -106,7 +108,7 @@ theme.taglist_bg_occupied = theme.text_color .. "11"
 theme.taglist_bg_urgent = theme.danger_background .. "66"
 
 theme.taglist_shape = function (cr, width, height)
-  gears.shape.rounded_rect(cr, width, height, 4)
+  gears.shape.rounded_rect(cr, width, height, dpi(4))
 end
 
 -- | Tasklist | --

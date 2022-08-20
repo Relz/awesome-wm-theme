@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 KeyboardLayoutWidget_prototype = function()
   local this = {}
@@ -34,7 +35,7 @@ KeyboardLayoutWidget_prototype = function()
     this.__private.keyboard_layout.widget.font = "Droid Sans Mono Bold 8"
 
     local inner_margin_container = wibox.container.margin(this.__private.keyboard_layout)
-    inner_margin_container.bottom = 1
+    inner_margin_container.bottom = dpi(1)
 
     local background_container = wibox.container.background(inner_margin_container)
     background_container.bg = beautiful.text_color
@@ -43,20 +44,20 @@ KeyboardLayoutWidget_prototype = function()
     background_container.shape_border_color = background_container.fg
 
     local margin_container = wibox.container.margin(background_container)
-    margin_container.top = 5
-    margin_container.bottom = 5
+    margin_container.top = dpi(5)
+    margin_container.bottom = dpi(5)
 
     this.__private.keyboard_layout:connect_signal("mouse::enter", function()
       background_container.bg = beautiful.background_color
       background_container.fg = beautiful.text_color
-      background_container.shape_border_width = 2
+      background_container.shape_border_width = dpi(2)
       background_container.shape_border_color = background_container.fg
     end)
 
     this.__private.keyboard_layout:connect_signal("mouse::leave", function()
       background_container.bg = beautiful.text_color
       background_container.fg = beautiful.background_color
-      background_container.shape_border_width = 0
+      background_container.shape_border_width = dpi(0)
       background_container.shape_border_color = background_container.fg
     end)
 

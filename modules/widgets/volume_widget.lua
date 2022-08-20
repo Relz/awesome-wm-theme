@@ -3,6 +3,7 @@ local wibox = require("wibox")
 local vicious = require("vicious")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 VolumeWidget_prototype = function()
   local this = {}
@@ -30,8 +31,8 @@ VolumeWidget_prototype = function()
       local is_bottom_panel_position = panel_position == "bottom"
       local is_left_panel_position = panel_position == "left"
 
-      local offset_x = is_left_panel_position and 8 or is_right_panel_position and -8 or 0
-      local offset_y = is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0
+      local offset_x = dpi(is_left_panel_position and 8 or is_right_panel_position and -8 or 0)
+      local offset_y = dpi(is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0)
 
       this.__private.settings_popup.offset = {
         x = offset_x,
@@ -334,7 +335,7 @@ VolumeWidget_prototype = function()
           align = "center",
           widget = wibox.widget.textbox
         },
-        margins = 8,
+        margins = dpi(8),
         widget = wibox.container.margin
       }
     end,
@@ -345,9 +346,9 @@ VolumeWidget_prototype = function()
 
         local checkbox = wibox.widget {
           checked = device.is_default,
-          paddings = 3,
-          forced_width = 16,
-          forced_height = 16,
+          paddings = dpi(3),
+          forced_width = dpi(16),
+          forced_height = dpi(16),
           widget = wibox.widget.checkbox
         }
 
@@ -365,12 +366,12 @@ VolumeWidget_prototype = function()
                   align = "left",
                   widget = wibox.widget.textbox
                 },
-                left = 8,
+                left = dpi(8),
                 layout = wibox.container.margin
               },
               layout = wibox.layout.align.horizontal
             },
-            margins = 8,
+            margins = dpi(8),
             layout = wibox.container.margin
           },
           widget = wibox.container.background

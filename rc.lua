@@ -45,7 +45,6 @@ local network_configuration_command = "nm-connection-editor"
 local launch_command = "ulauncher"
 
 local wallpaper_image_path = config_path .. "/themes/relz/wallpapers/cosmos_purple.jpg";
-local current_keyboard_layout = "us";
 local geolocation = {
   latitude = 0,
   longitude = 0
@@ -250,7 +249,7 @@ local global_keys = awful.util.table.join(
   awful.key({}, "XF86AudioStop", function () audio_stop() end, { description="Stop audio", group="Audio" }),
 
   -- Applications running
-  awful.key({ "Mod4", "Control", "Shift" }, "b", function() awful.spawn(browser) end, { description="Execute default web browser(" .. browser .. ")", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "b", function() awful.spawn(browser) end, { description="Execute default web browser (" .. browser .. ")", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_i", function() awful.spawn(browser) end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "t", function() awful.spawn("telegram-desktop") end, { description="Execute Telegram", group="Application" }),
@@ -259,13 +258,13 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control", "Shift" }, "l", function() awful.spawn("libreoffice") end, { description="Execute LibreOffice", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_de", function() awful.spawn("libreoffice") end),
 
-  awful.key({ "Mod4", "Control", "Shift" }, "e", function() awful.spawn(graphic_text_editor) end, { description="Execute default graphic text editor(" .. graphic_text_editor .. ")", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "e", function() awful.spawn(graphic_text_editor) end, { description="Execute default graphic text editor (" .. graphic_text_editor .. ")", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_u", function() awful.spawn(graphic_text_editor) end),
 
-  awful.key({ "Mod4", "Control", "Shift" }, "m", function() awful.spawn(music_player) end, { description="Execute default music player(" .. music_player .. ")", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "m", function() awful.spawn(music_player) end, { description="Execute default music player (" .. music_player .. ")", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_softsign", function() awful.spawn(music_player) end),
 
-  awful.key({ "Mod4", "Control", "Shift" }, "f", function() awful.spawn(file_manager) end, { description="Execute default file manager(" .. file_manager .. ")", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "f", function() awful.spawn(file_manager) end, { description="Execute default file manager (" .. file_manager .. ")", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_a", function() awful.spawn(file_manager) end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "j", function() awful.spawn("jetbrains-toolbox") end, { description="Execute Jetbrains-Toolbox", group="Application" }),
@@ -291,8 +290,8 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control", "Shift" }, "v", function() awful.spawn("viber") end, { description="Execute Viber", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_em", function() awful.spawn("viber") end),
 
-  awful.key({ "Mod4", "Control", "Shift" }, "`", function() awful.spawn("deepin-system-monitor") end, { description="Execute Deepin System Monitor", group="Application" }),
-  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_io", function() awful.spawn("deepin-system-monitor") end),
+  awful.key({ "Mod4", "Control", "Shift" }, "`", function() awful.spawn(system_monitor_command) end, { description="Execute System Monitor (" .. system_monitor_command .. ")", group="Application" }),
+  awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_io", function() awful.spawn(system_monitor_command) end),
 
   awful.key({ "Mod4", "Control", "Shift" }, "k", function() awful.spawn("gitkraken") end, { description="Execute GitKraken", group="Application" }),
   awful.key({ "Mod4", "Control", "Shift" }, "Cyrillic_el", function() awful.spawn("gitkraken") end),

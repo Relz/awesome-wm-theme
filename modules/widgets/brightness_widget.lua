@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 local slider_max_value = 24000
 local default_slider_value = slider_max_value - 5500
@@ -91,15 +92,15 @@ BrightnessWidget_prototype = function()
             text = lpad_string(tostring(value), 2, '0'),
             widget = wibox.widget.textbox
           },
-          top = 2,
-          right = 4,
-          bottom = 2,
-          left = 4,
+          top = dpi(2),
+          right = dpi(4),
+          bottom = dpi(2),
+          left = dpi(4),
           widget = wibox.container.margin
         },
         bg = beautiful.background_color .. "66",
         shape = function(cr, width, height)
-          gears.shape.rounded_rect(cr, width, height, 3)
+          gears.shape.rounded_rect(cr, width, height, dpi(3))
         end,
         widget = wibox.container.background
       }
@@ -152,8 +153,8 @@ BrightnessWidget_prototype = function()
             text = ":",
             widget = wibox.widget.textbox
           },
-          left = 2,
-          right = 2,
+          left = dpi(2),
+          right = dpi(2),
           layout = wibox.container.margin
         },
         minutes_widget,
@@ -174,8 +175,8 @@ BrightnessWidget_prototype = function()
       local is_bottom_panel_position = panel_position == "bottom"
       local is_left_panel_position = panel_position == "left"
 
-      local offset_x = is_left_panel_position and 8 or is_right_panel_position and -8 or 0
-      local offset_y = is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0
+      local offset_x = dpi(is_left_panel_position and 8 or is_right_panel_position and -8 or 0)
+      local offset_y = dpi(is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0)
 
       this.__private.settings_popup.offset = {
         x = offset_x,
@@ -329,12 +330,12 @@ BrightnessWidget_prototype = function()
           align = "center",
           widget = wibox.widget.textbox
         },
-        margins = 8,
+        margins = dpi(8),
         widget = wibox.container.margin
       }
     end,
     build_color_temperature_slider_row = function()
-      local width = 240
+      local width = dpi(240)
 
       local reset_button = wibox.widget {
         {
@@ -342,16 +343,16 @@ BrightnessWidget_prototype = function()
             text = 'Reset',
             widget = wibox.widget.textbox
           },
-          top = 2,
-          right = 8,
-          left = 8,
-          bottom = 2,
+          top = dpi(2),
+          right = dpi(8),
+          left = dpi(8),
+          bottom = dpi(2),
           widget = wibox.container.margin
         },
         shape = gears.shape.rounded_rect,
         bg = gears.color.transparent,
         fg = beautiful.text_color,
-        shape_border_width = 1,
+        shape_border_width = dpi(1),
         shape_border_color = beautiful.text_color,
         opacity = this.__private.is_enabled_schedule and 0.3 or 1,
         widget = wibox.container.background
@@ -363,14 +364,14 @@ BrightnessWidget_prototype = function()
         end
         reset_button.fg = beautiful.fg_focus
         reset_button.bg = beautiful.text_color
-        reset_button.shape_border_width = 0
+        reset_button.shape_border_width = dpi(0)
         reset_button.shape_border_color = reset_button.fg
       end)
 
       reset_button:connect_signal("mouse::leave", function()
         reset_button.bg = gears.color.transparent
         reset_button.fg = beautiful.text_color
-        reset_button.shape_border_width = 1
+        reset_button.shape_border_width = dpi(1)
         reset_button.shape_border_color = reset_button.fg
       end)
 
@@ -379,9 +380,9 @@ BrightnessWidget_prototype = function()
 
       this.__private.slider = wibox.widget {
         forced_width = width,
-        forced_height = 20,
+        forced_height = dpi(20),
         bar_shape = gears.shape.rounded_rect,
-        bar_height = 4,
+        bar_height = dpi(4),
         bar_color = gears.color.create_linear_pattern({
           from = {0, 0},
           to = {width, 0},
@@ -427,15 +428,15 @@ BrightnessWidget_prototype = function()
         {
           this.__private.slider,
           {
-            forced_width = 8,
+            forced_width = dpi(8),
             widget = wibox.container.constraint
           },
           reset_button,
           layout = wibox.layout.fixed.horizontal,
         },
-        right = 8,
-        bottom = 8,
-        left = 8,
+        right = dpi(8),
+        bottom = dpi(8),
+        left = dpi(8),
         widget = wibox.container.margin,
     }
     end,
@@ -446,13 +447,13 @@ BrightnessWidget_prototype = function()
 
       local checkbox = wibox.widget {
         checked = this.__private.is_enabled_schedule,
-        paddings = 2,
-        forced_width = 16,
-        forced_height = 16,
+        paddings = dpi(2),
+        forced_width = dpi(16),
+        forced_height = dpi(16),
         bg = checkbox_background,
         check_border_color = beautiful.background_color,
         shape = function(cr, width, height)
-          gears.shape.rounded_rect(cr, width, height, 2)
+          gears.shape.rounded_rect(cr, width, height, dpi(2))
         end,
         check_shape = function(cr, width, height)
             local size = math.min(width, height)
@@ -477,12 +478,12 @@ BrightnessWidget_prototype = function()
               align = "left",
               widget = wibox.widget.textbox
             },
-            left = 8,
+            left = dpi(8),
             layout = wibox.container.margin
           },
           layout = wibox.layout.align.horizontal
         },
-        margins = 8,
+        margins = dpi(8),
         layout = wibox.container.margin
       }
 
@@ -493,9 +494,9 @@ BrightnessWidget_prototype = function()
     build_schedule_auto_mode_toggle_row = function(on_click)
       local checkbox = wibox.widget {
         checked = this.__private.is_enabled_schedule_auto_mode,
-        paddings = 3,
-        forced_width = 16,
-        forced_height = 16,
+        paddings = dpi(3),
+        forced_width = dpi(16),
+        forced_height = dpi(16),
         widget = wibox.widget.checkbox
       }
 
@@ -512,12 +513,12 @@ BrightnessWidget_prototype = function()
               align = "left",
               widget = wibox.widget.textbox
             },
-            left = 8,
+            left = dpi(8),
             layout = wibox.container.margin
           },
           layout = wibox.layout.align.horizontal
         },
-        margins = 8,
+        margins = dpi(8),
         layout = wibox.container.margin
       }
 
@@ -528,9 +529,9 @@ BrightnessWidget_prototype = function()
     build_schedule_manual_mode_toggle_row = function(on_click)
       local checkbox = wibox.widget {
         checked = this.__private.is_enabled_schedule_manual_mode,
-        paddings = 3,
-        forced_width = 16,
-        forced_height = 16,
+        paddings = dpi(3),
+        forced_width = dpi(16),
+        forced_height = dpi(16),
         widget = wibox.widget.checkbox
       }
 
@@ -547,12 +548,12 @@ BrightnessWidget_prototype = function()
               align = "left",
               widget = wibox.widget.textbox
             },
-            left = 8,
+            left = dpi(8),
             layout = wibox.container.margin
           },
           layout = wibox.layout.align.horizontal
         },
-        margins = 8,
+        margins = dpi(8),
         layout = wibox.container.margin
       }
 
@@ -569,14 +570,14 @@ BrightnessWidget_prototype = function()
               align = "left",
               widget = wibox.widget.textbox
             },
-            left = 24,
-            right = 8,
+            left = dpi(24),
+            right = dpi(8),
             layout = wibox.container.margin
           },
           this.__private_static.create_time_picker(this.__private.schedule_start_time, set_time),
           layout = wibox.layout.fixed.horizontal
         },
-        margins = 8,
+        margins = dpi(8),
         layout = wibox.container.margin
       }
     end,
@@ -589,14 +590,14 @@ BrightnessWidget_prototype = function()
               align = "left",
               widget = wibox.widget.textbox
             },
-            left = 24,
-            right = 8,
+            left = dpi(24),
+            right = dpi(8),
             layout = wibox.container.margin
           },
           this.__private_static.create_time_picker(this.__private.schedule_end_time, set_time),
           layout = wibox.layout.fixed.horizontal
         },
-        margins = 8,
+        margins = dpi(8),
         layout = wibox.container.margin
       }
     end,

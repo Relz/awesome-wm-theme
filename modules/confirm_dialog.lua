@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 ConfirmDialog_prototype = function()
   local this = {}
@@ -29,16 +30,16 @@ ConfirmDialog_prototype = function()
               {
                 this.__private_static.create_secondary_button(cancel_text, on_cancel),
                 this.__private_static.create_primary_button(confirm_text, on_confirm),
-                spacing = 16,
+                spacing = dpi(16),
                 layout = wibox.layout.fixed.horizontal,
               },
               halign = "right",
               layout = wibox.container.place,
             },
-            spacing = 8,
+            spacing = dpi(8),
             layout = wibox.layout.fixed.vertical,
           },
-          margins = 24,
+          margins = dpi(24),
           widget = wibox.container.margin
         },
         shape = gears.shape.rounded_rect,
@@ -71,7 +72,7 @@ ConfirmDialog_prototype = function()
       local textbox = wibox.widget.textbox(text)
       textbox.font = "Noto Sans Regular 12"
 
-      local inner_margin_container = wibox.container.margin(textbox, 8, 8, 4, 4)
+      local inner_margin_container = wibox.container.margin(textbox, dpi(8), dpi(8), dpi(4), dpi(4))
 
       local background_container = wibox.container.background(inner_margin_container)
       background_container.bg = background_color_normal
@@ -80,8 +81,8 @@ ConfirmDialog_prototype = function()
       background_container.shape_border_color = background_container.fg
 
       local margin_container = wibox.container.margin(background_container)
-      margin_container.top = 5
-      margin_container.bottom = 5
+      margin_container.top = dpi(5)
+      margin_container.bottom = dpi(5)
 
       background_container:connect_signal("mouse::enter", function()
         background_container.bg = background_color_focus
