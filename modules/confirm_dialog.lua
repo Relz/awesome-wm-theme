@@ -69,20 +69,26 @@ ConfirmDialog_prototype = function()
       return this.__private_static.create_button(text, on_click, beautiful.background_color, beautiful.text_color)
     end,
     create_button = function(text, on_click, background_color_normal, background_color_focus)
-      local textbox = wibox.widget.textbox(text)
-      textbox.font = "Noto Sans Regular 12"
+      local background_container = wibox.widget {
+        {
+          {
+            text = text,
+            font = "Noto Sans Regular 12",
+            widget = wibox.widget.textbox
+          },
+          top = dpi(4),
+          right = dpi(8),
+          bottom = dpi(4),
+          left = dpi(8),
+          widget = wibox.container.margin
+        },
+        bg = background_color_normal,
+        fg = background_color_focus,
+        shape = gears.shape.rounded_rect,
+        shape_border_color = background_color_focus,
 
-      local inner_margin_container = wibox.container.margin(textbox, dpi(8), dpi(8), dpi(4), dpi(4))
-
-      local background_container = wibox.container.background(inner_margin_container)
-      background_container.bg = background_color_normal
-      background_container.fg = background_color_focus
-      background_container.shape = gears.shape.rounded_rect
-      background_container.shape_border_color = background_container.fg
-
-      local margin_container = wibox.container.margin(background_container)
-      margin_container.top = dpi(5)
-      margin_container.bottom = dpi(5)
+        widget = wibox.container.background
+      }
 
       background_container:connect_signal("mouse::enter", function()
         background_container.bg = background_color_focus
@@ -98,7 +104,12 @@ ConfirmDialog_prototype = function()
         awful.button({}, 1, on_click)
       ))
 
-      return margin_container
+      return wibox.widget {
+        background_container,
+        top = dpi(5),
+        bottom = dpi(5),
+        widget = wibox.container.margin
+      }
     end
   }
 

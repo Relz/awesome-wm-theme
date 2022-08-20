@@ -27,41 +27,46 @@ KeyboardLayoutWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
-    keyboard_layout = awful.widget.keyboardlayout()
   }
 
   this.__construct = function()
     -- Constructor
-    this.__private.keyboard_layout.widget.font = "Droid Sans Mono Bold 8"
+    local keyboard_layout = awful.widget.keyboardlayout()
+    keyboard_layout.widget.font = "Droid Sans Mono Bold 8"
 
-    local inner_margin_container = wibox.container.margin(this.__private.keyboard_layout)
-    inner_margin_container.bottom = dpi(1)
+    local background_container = wibox.widget {
+      {
+        keyboard_layout,
+        bottom = dpi(1),
+        widget = wibox.container.margin
+      },
+      bg = beautiful.text_color,
+      fg = beautiful.background_color,
+      shape = gears.shape.rounded_rect,
+      shape_border_color = beautiful.background_color,
+      widget = wibox.container.background
+    }
 
-    local background_container = wibox.container.background(inner_margin_container)
-    background_container.bg = beautiful.text_color
-    background_container.fg = beautiful.background_color
-    background_container.shape = gears.shape.rounded_rect
-    background_container.shape_border_color = background_container.fg
-
-    local margin_container = wibox.container.margin(background_container)
-    margin_container.top = dpi(5)
-    margin_container.bottom = dpi(5)
-
-    this.__private.keyboard_layout:connect_signal("mouse::enter", function()
+    keyboard_layout:connect_signal("mouse::enter", function()
       background_container.bg = beautiful.background_color
       background_container.fg = beautiful.text_color
       background_container.shape_border_width = dpi(2)
       background_container.shape_border_color = background_container.fg
     end)
 
-    this.__private.keyboard_layout:connect_signal("mouse::leave", function()
+    keyboard_layout:connect_signal("mouse::leave", function()
       background_container.bg = beautiful.text_color
       background_container.fg = beautiful.background_color
       background_container.shape_border_width = dpi(0)
       background_container.shape_border_color = background_container.fg
     end)
 
-    this.__public.value = margin_container
+    this.__public.value = wibox.widget {
+      background_container,
+      top = dpi(5),
+      bottom = dpi(5),
+      widget = wibox.container.margin
+    }
   end
 
   return this
