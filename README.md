@@ -70,7 +70,7 @@ In rc.lua in section "Screens" you can declare screen(s). Object of class "Scree
 
 In rc.lua in section "Key bindings" you can set key bindings. There are author's key binding, so you should leave only necessary ones for you, but don't remove awesome-specific, system-specific and default application specific key bindings.
 
-## Cleint rules
+## Client rules
 
 In rc.lua in section "Rules" you can set rules for clients. For example, some applications have own titlebar so Awesome WM titlebar is needless for them.
 
