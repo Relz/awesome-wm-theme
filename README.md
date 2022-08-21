@@ -1,26 +1,24 @@
 # Awesome WM theme
 A theme for the Awesome window manager 4.x.
 
-# Screenshots (outdated)
+# Screenshots
 
 ## Light mode
 
-![clear_desktop](https://user-images.githubusercontent.com/15068331/154843667-11603245-25a2-425e-802d-2147bff8bedb.png)
-![power_off_menu](https://user-images.githubusercontent.com/15068331/154843753-2479f2bb-8c08-4529-b736-6dd49b6c9b9e.png)
-![hotkeys_popup](https://user-images.githubusercontent.com/15068331/154843771-451e975c-8b2a-4b52-bb1f-2628433f3cc0.png)
-![clion_titlebar](https://user-images.githubusercontent.com/15068331/154844068-c2ee99bf-641a-47b5-8459-9ac4ae40c64c.png)
-![panel_bottom](https://user-images.githubusercontent.com/15068331/154844476-3367c8ed-8e76-400c-87d9-807340a2d19d.png)
-![panel_left](https://user-images.githubusercontent.com/15068331/154844669-c16061b8-b9b4-4ae2-80e8-81f2d08e0a80.png)
-![panel_right](https://user-images.githubusercontent.com/15068331/154844687-64089518-1c0f-4472-9227-3c4b8416bb7c.png)
-![panel_widgets](https://user-images.githubusercontent.com/15068331/154843949-d98b269f-5d5d-4f0c-9fe9-bdbbae9c6953.gif)
+![clear_desktop](https://user-images.githubusercontent.com/15068331/185809772-29cfcdde-2436-4e4d-b68f-eebadc553b74.png)
+![hotkeys_popup](https://user-images.githubusercontent.com/15068331/185809914-92d8d20d-410e-4f54-a648-757035480f1f.png)
+![titlebar](https://user-images.githubusercontent.com/15068331/185809961-f05c41bf-7c3c-4966-bc40-da1041e0cdaa.png)
+![panel_bottom](https://user-images.githubusercontent.com/15068331/185810214-0164360e-64f5-4fc3-9306-182b180b9fe3.png)
+![panel_left](https://user-images.githubusercontent.com/15068331/185810249-34c180f6-72d4-45ec-82b1-658e7ffbbf9c.png)
+![panel_right](https://user-images.githubusercontent.com/15068331/185810265-2eda131c-71be-4770-92c4-9aac2b8d7983.png)
+![panel_widgets](https://user-images.githubusercontent.com/15068331/185811162-9843d1c5-aa07-4853-95c1-1084c723fa7c.gif)
 
 
 ## Dark mode
 
-![clear_desktop_dark](https://user-images.githubusercontent.com/15068331/154844205-361cbaed-20fd-4758-96eb-1cc85244bb2b.png)
-![power_off_menu_dark](https://user-images.githubusercontent.com/15068331/154844237-49b03c82-0957-4a84-b905-beeb625e80fa.png)
-![hotkeys_popup](https://user-images.githubusercontent.com/15068331/154844315-c7596597-156f-4d0a-8d2d-83264d9da8a9.png)
-![clion_titlebar_dark](https://user-images.githubusercontent.com/15068331/154844274-2570186b-53c1-47a9-9a64-64996f3cfd1a.png)
+![clear_desktop_dark](https://user-images.githubusercontent.com/15068331/185811217-cce8cf27-4f8e-4ed7-a17e-2b50d2b1a329.png)
+![hotkeys_popup_dark](https://user-images.githubusercontent.com/15068331/185811232-d00e821b-bc02-46f9-870e-beab08547eac.png)
+![titlebar_dark](https://user-images.githubusercontent.com/15068331/185811256-539f638c-d20f-4e3e-82a7-6d80f4cbf297.png)
 
 # Prerequisites
 
