@@ -74,7 +74,8 @@ In rc.lua in section "Key bindings" you can set key bindings. There are author's
 
 In rc.lua in section "Rules" you can set rules for clients. For example, some applications have own titlebar so Awesome WM titlebar is needless for them.
 
-![application_with_own_titlebar](https://user-images.githubusercontent.com/15068331/65379046-78d15500-dcca-11e9-95d2-b570c4a10e0e.png)
+![application_with_own_titlebar](https://user-images.githubusercontent.com/15068331/185811684-56762212-3826-49c1-8366-cb2d0b2cf162.png)
+
 
 ## Autostart
 
