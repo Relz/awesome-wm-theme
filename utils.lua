@@ -567,6 +567,24 @@ snap_edge = function(client, where)
   awful.placement.no_offscreen(client)
 end
 
+-- Move client
+
+move_client = function(c)
+  c.maximized = false
+  client.focus = c
+  c:raise()
+  awful.mouse.client.move(c)
+end
+
+-- Resize client
+
+resize_client = function(c)
+  c.maximized = false
+  client.focus = c
+  c:raise()
+  awful.mouse.client.resize(c)
+end
+
 get_geolocation = function (callback)
   awful.spawn.easy_async("/usr/lib/geoclue-2.0/demos/where-am-i", function(geoclue_stdout)
     local latitude_string = geoclue_stdout:match("Latitude:%s+(%S+)"):gsub(",", "."):gsub("°", "")

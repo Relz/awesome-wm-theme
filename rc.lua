@@ -376,7 +376,9 @@ end
 local client_buttons = awful.util.table.join(
   awful.button({ }, 1, hide_dropdowns),
   awful.button({ }, 2, hide_dropdowns),
-  awful.button({ }, 3, hide_dropdowns)
+  awful.button({ }, 3, hide_dropdowns),
+  awful.button({ "Mod4" }, 1, move_client),
+  awful.button({ "Mod4" }, 3, resize_client)
 )
 
 awful.rules.rules = {
@@ -504,16 +506,8 @@ awful.rules.rules = {
 client.connect_signal("request::titlebars", function(c)
   -- Default buttons for the titlebar
   local buttons = awful.util.table.join(
-    awful.button({ }, 1, function()
-      client.focus = c
-      c:raise()
-      awful.mouse.client.move(c)
-    end),
-    awful.button({ }, 3, function()
-      client.focus = c
-      c:raise()
-      awful.mouse.client.resize(c)
-    end)
+    awful.button({ }, 1, function() move_client(c) end),
+    awful.button({ }, 3, function() resize_client(c) end)
   )
 
   awful.titlebar(c, {size = 24}) : setup {
