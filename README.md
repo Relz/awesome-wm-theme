@@ -66,6 +66,10 @@ In rc.lua in section "Screens" you can declare screen(s). Object of class "Scree
 + *wallpaper*. Path to wallpaper.
 + *panels*. List of panels.
 
+## Widgets
+
+In rc.lua in section "Widgets" you can setup widgets. Most widgets support single icon view and icon + label view. Setting first constructor argument to true enables icon + label view.
+
 ## Key bindings
 
 In rc.lua in section "Key bindings" you can set key bindings. There are author's key binding, so you should leave only necessary ones for you, but don't remove awesome-specific, system-specific and default application specific key bindings.
