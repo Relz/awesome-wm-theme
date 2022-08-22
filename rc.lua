@@ -151,28 +151,38 @@ screen_0_panel.launcher = launch_widget
 
 update_screens = function(card)
   local xrandr_output = run_command_sync("xrandr")
-  local primary_output = xrandr_output:match("(eDP[0-9-]+) connected")
-  local primary_output_rect = xrandr_output:match("eDP[0-9-]+ connected[a-z ]* ([0-9x+]+) [(]")
-  local is_hdmi_in_use = string.match(xrandr_output, "HDMI[0-9-]+ connected [^(]") ~= nil
-  local unused_hdmi = xrandr_output:match("(HDMI[0-9-]+) connected [(]")
-  local used_hdmi = xrandr_output:match("(HDMI[0-9-]+) connected [^(]")
-  local used_hdmi_rect = xrandr_output:match("HDMI[0-9-]+ connected[a-z ]* ([0-9x+]+) [(]")
-  local disconnected_hdmi_rect = xrandr_output:match("HDMI[0-9-]+ disconnected[a-z ]* ([0-9x+]+) [(]")
-  local is_hdmi_disconnected = unused_hdmi == nil and used_hdmi == nil
-  local is_screen_duplicated = primary_output_rect == used_hdmi_rect
+  local primary_output = xrandr_output:match("([a-zA-Z0-9-]+) connected primary")
+  if primary_output == nil then
+    primary_output = xrandr_output:match("([a-zA-Z0-9-]+) connected")
+  end
+  local primary_output_rect = xrandr_output:match(primary_output:gsub("-", "[-]") .. " connected[a-z ]* ([0-9x+]+) [(]")
 
+  local is_secondary_output_in_use = false
+  local is_screen_duplicated = false
 
-  if (not is_hdmi_in_use and unused_hdmi) or is_screen_duplicated then
-    local hdmi = is_screen_duplicated and used_hdmi or unused_hdmi
+  for _,secondary_output_name in ipairs({"HDMI", "DisplayPort", "DVI"}) do
+    is_secondary_output_in_use = is_secondary_output_in_use or string.match(xrandr_output, secondary_output_name .. "[0-9-]+ connected [^(]") ~= nil
+    local unused_secondary_output = xrandr_output:match("(" .. secondary_output_name .. "[0-9-]+) connected [(]")
+    local used_secondary_output = xrandr_output:match("(" .. secondary_output_name .. "[0-9-]+) connected [^(]")
+    local used_secondary_output_rect = xrandr_output:match(secondary_output_name .. "[0-9-]+ connected[a-z ]* ([0-9x+]+) [(]")
+    local disconnected_secondary_output_rect = xrandr_output:match(secondary_output_name .. "[0-9-]+ disconnected[a-z ]* ([0-9x+]+) [(]")
+    local is_secondary_output_disconnected = unused_secondary_output == nil and used_secondary_output == nil
+    is_screen_duplicated = is_screen_duplicated or primary_output_rect == used_secondary_output_rect
 
-    run_command_sync(
-      "xrandr " ..
-      "--output " .. primary_output .. " --preferred --primary " ..
-      "--output " .. hdmi .. " --right-of " .. primary_output .. " --preferred "
-    )
-  else
-    if is_hdmi_disconnected and disconnected_hdmi_rect then
-      run_command_sync("xrandr --auto")
+    if (not is_secondary_output_in_use and unused_secondary_output) or is_screen_duplicated then
+      local secondary_output = is_screen_duplicated and used_secondary_output or unused_secondary_output
+
+      run_command_sync(
+        "xrandr " ..
+        "--output " .. primary_output .. " --preferred --primary " ..
+        "--output " .. secondary_output .. " --right-of " .. primary_output .. " --preferred "
+      )
+      break
+    else
+      if is_secondary_output_disconnected and disconnected_secondary_output_rect then
+        run_command_sync("xrandr --auto")
+        break
+      end
     end
   end
 
@@ -181,7 +191,7 @@ update_screens = function(card)
     screen0.wallpaper = wallpaper_image_path
     screen0.panels = { screen_0_panel }
 
-    if is_hdmi_in_use and not is_screen_duplicated then
+    if is_secondary_output_in_use and not is_screen_duplicated then
       local screen1 = Screen()
       screen1.wallpaper = wallpaper_image_path
       screen1.panels = { screen_0_panel }
