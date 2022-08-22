@@ -326,8 +326,8 @@ end
 -- Brightness
 
 get_system_brightness = function(callback)
-  read_file_content_async("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
-    read_file_content_async("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
+  awful.spawn.easy_async("xfpm-power-backlight-helper --get-brightness", function(current_brightness_string)
+    awful.spawn.easy_async("xfpm-power-backlight-helper --get-max-brightness", function(max_brightness_string)
       local current_brightness = tonumber(current_brightness_string)
       local max_brightness = tonumber(max_brightness_string)
 
@@ -337,8 +337,8 @@ get_system_brightness = function(callback)
 end
 
 set_system_brightness = function(step_percent, increase, callback)
-  read_file_content_async("/sys/class/backlight/intel_backlight/brightness", function(current_brightness_string)
-    read_file_content_async("/sys/class/backlight/intel_backlight/max_brightness", function(max_brightness_string)
+  awful.spawn.easy_async("xfpm-power-backlight-helper --get-brightness", function(current_brightness_string)
+    awful.spawn.easy_async("xfpm-power-backlight-helper --get-max-brightness", function(max_brightness_string)
       local current_brightness = tonumber(current_brightness_string)
       local max_brightness = tonumber(max_brightness_string)
 
