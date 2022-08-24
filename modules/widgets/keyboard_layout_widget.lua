@@ -32,7 +32,7 @@ KeyboardLayoutWidget_prototype = function()
   this.__construct = function()
     -- Constructor
     local keyboard_layout = awful.widget.keyboardlayout()
-    keyboard_layout.widget.font = "Droid Sans Mono Bold 8"
+    keyboard_layout.widget.font = beautiful.font_family_mono .. "Bold 8"
 
     local background_container = wibox.widget {
       {

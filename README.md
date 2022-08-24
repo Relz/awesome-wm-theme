@@ -27,7 +27,7 @@ A theme for the Awesome window manager 4.x.
 + wireless_tools (if you use NetworkWidget)
 + Lain for Awesome WM 4.x
 + Vicious widgets for the Awesome WM 4.x
-+ Fonts: Droid, Noto (otherwise use another fonts in theme.lua instead)
++ Fonts: Droid (otherwise use another font in theme.lua instead)
 
 # Installation
 

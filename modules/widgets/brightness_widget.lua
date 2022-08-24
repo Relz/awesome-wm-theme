@@ -630,7 +630,7 @@ BrightnessWidget_prototype = function()
 
     if this.__private.show_text then
       this.__public.value = wibox.widget.textbox()
-      this.__public.value.font = "Droid Sans Mono Bold 9"
+      this.__public.value.font = beautiful.font_family_mono .. "Bold 9"
     end
 
     this.__private.is_enabled_schedule = this.__private_static.is_enabled_schedule()

@@ -9,9 +9,12 @@ theme.path = theme.root_path .. "theme.lua"
 theme.icons_path = theme.root_path .. "icons/"
 theme.mode_file_path = theme.root_path .. "mode"
 
-theme.mode= read_file_content(theme.mode_file_path, "r")
+theme.mode = read_file_content(theme.mode_file_path)
 
-theme.font = "Droid Sans Mono Regular 10"
+theme.font_family = "Droid Sans "
+theme.font_family_mono = theme.font_family .. "Mono "
+
+theme.font = theme.font_family_mono .. "Regular 10"
 
 theme.text_color = theme.mode == "dark" and "#f4feff" or "#1e293d"
 theme.background_color = theme.mode == "dark" and "#1e293d" or "#f4feff"
@@ -63,8 +66,8 @@ theme.border_marked = theme.background_color .. "ee"
 -- | Hotkeys popup | --
 
 theme.hotkeys_bg = theme.background_color .. "bb"
-theme.hotkeys_font = "Droid Sans Mono Bold 11"
-theme.hotkeys_description_font = "Droid Sans Mono Regular 10"
+theme.hotkeys_font = theme.font_family_mono .. "Bold 11"
+theme.hotkeys_description_font = theme.font_family_mono .. "Regular 10"
 theme.hotkeys_group_margin = dpi(32)
 theme.hotkeys_shape = function(cr, width, height)
   gears.shape.rounded_rect(cr, width, height, dpi(8))
@@ -74,7 +77,7 @@ end
 
 theme.notification_max_width = dpi(640)
 theme.notification_max_height = dpi(160)
-theme.notification_font = "Noto Sans Regular 11"
+theme.notification_font = theme.font_family .. "Regular 11"
 theme.notification_bg = theme.background_color
 theme.notification_fg = theme.text_color
 theme.notification_border_width = dpi(1)
@@ -95,7 +98,6 @@ theme.menu_bg_focus = theme.text_color .. "bb"
 -- | Taglist | --
 
 theme.taglist_spacing = 4
-theme.taglist_font = "Noto Sans Mono Regular 11"
 
 theme.taglist_fg_empty = theme.text_color
 theme.taglist_fg_focus = theme.text_color
@@ -114,8 +116,8 @@ end
 -- | Tasklist | --
 
 theme.tasklist_align = "center"
-theme.tasklist_font = "Droid Sans Mono Regular 9"
-theme.tasklist_font_focus = "Droid Sans Mono Bold 9"
+theme.tasklist_font = theme.font_family_mono .. "Regular 9"
+theme.tasklist_font_focus = theme.font_family_mono .. "Bold 9"
 theme.tasklist_disable_task_name = true
 theme.tasklist_plain_task_name = true
 theme.tasklist_bg_normal = theme.background_color

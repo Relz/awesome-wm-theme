@@ -18,12 +18,12 @@ ConfirmDialog_prototype = function()
           {
             {
               text = text,
-              font = "Noto Sans Bold 13",
+              font = beautiful.font_family .. "Bold 13",
               widget = wibox.widget.textbox
             },
             {
               text = description,
-              font = "Noto Sans Regular 12",
+              font = beautiful.font_family .. "Regular 12",
               widget = wibox.widget.textbox
             },
             {
@@ -73,7 +73,7 @@ ConfirmDialog_prototype = function()
         {
           {
             text = text,
-            font = "Noto Sans Regular 12",
+            font = beautiful.font_family .. "Regular 12",
             widget = wibox.widget.textbox
           },
           top = dpi(4),

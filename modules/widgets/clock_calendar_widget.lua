@@ -1,6 +1,7 @@
 local awful = require("awful")
 local lain = require("lain")
 local wibox = require("wibox")
+local beautiful = require("beautiful")
 
 ClockCalendarWidget_prototype = function()
   local this = {}
@@ -33,9 +34,9 @@ ClockCalendarWidget_prototype = function()
     this.__public.icon.image = clock_icon_path
 
     time = wibox.widget.textclock(lain.util.markup(text_color, "%H:%M "))
-    time.font = "Droid Sans Mono Bold 10"
+    time.font = beautiful.font_family_mono .. "Bold 10"
     date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b "))
-    date.font = "Droid Sans Mono Bold 10"
+    date.font = beautiful.font_family_mono .. "Bold 10"
 
     this.__public.value.widget = time
 
