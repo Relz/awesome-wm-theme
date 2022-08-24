@@ -75,9 +75,7 @@ BatteryWidget_prototype = function()
     tooltip_mode = 0,
     notification = nil;
     tooltip = awful.tooltip({
-      timer_function = function()
-        return this.__private.compute_tooltip_text()
-      end,
+      timer_function = function() return this.__private.compute_tooltip_text() end,
       mode = "outside"
     }),
     -- Private Funcs
@@ -86,8 +84,8 @@ BatteryWidget_prototype = function()
         return this.__private.capacity .. "%"
       end
       if this.__private.tooltip_mode == 1 then
-        local chargingOrDischarging = this.__private.is_charging and "charging" or "discharging"
-        return "Remaining " .. chargingOrDischarging .. " time: " .. this.__private.remaining_time
+        local charging_or_discharging = this.__private.is_charging and "charging" or "discharging"
+        return "Remaining " .. charging_or_discharging .. " time: " .. this.__private.remaining_time
       end
       if this.__private.tooltip_mode == 2 then
         return "Wear level: " .. this.__private.wear_level .. "%"

@@ -167,7 +167,7 @@ BrightnessWidget_prototype = function()
     -- Public Variables
     name = "BrightnessWidget",
     icon = wibox.widget.imagebox(),
-    value = wibox.container.background(),
+    value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
       local is_top_panel_position = panel_position == "top"
@@ -205,7 +205,9 @@ BrightnessWidget_prototype = function()
     update = function(brightness_percentage)
       this.__private.rebuild_popup()
       this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/brightness/brightness_" .. this.__private.compute_brightness_level(brightness_percentage) .. ".svg", beautiful.text_color)
-      this.__private.textbox.text = string.rep(" ", 3 - this.__private.get_number_digits_count(brightness_percentage)) ..  brightness_percentage .. "% "
+      if this.__private.show_text then
+        this.__public.value.text = string.rep(" ", 3 - this.__private.get_number_digits_count(brightness_percentage)) ..  brightness_percentage .. "% "
+      end
     end,
     hide_dropdown = function()
       this.__private.settings_popup.visible = false
@@ -214,9 +216,9 @@ BrightnessWidget_prototype = function()
 
   this.__private = {
     -- Private Variables
+    show_text = false,
     sunrise_datetime = nil,
     sunset_datetime = nil,
-    textbox = wibox.widget.textbox(),
     settings_popup = nil,
     slider = nil,
     slider_value = default_slider_value,
@@ -622,10 +624,14 @@ BrightnessWidget_prototype = function()
     end,
   }
 
-  this.__construct = function(brightness_percentage, geolocation)
+  this.__construct = function(show_text, brightness_percentage, geolocation)
     -- Constructor
-    this.__private.textbox.font = "Droid Sans Mono Bold 9"
-    this.__public.value.widget = this.__private.textbox
+    this.__private.show_text = show_text
+
+    if this.__private.show_text then
+      this.__public.value = wibox.widget.textbox()
+      this.__public.value.font = "Droid Sans Mono Bold 9"
+    end
 
     this.__private.is_enabled_schedule = this.__private_static.is_enabled_schedule()
 

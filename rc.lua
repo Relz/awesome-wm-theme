@@ -60,7 +60,7 @@ beautiful.init(config_path .. "/themes/relz/theme.lua")
 
 local cpu_widget = CpuWidget(false, system_monitor_command)
 local memory_widget = MemoryWidget(false, system_monitor_command)
-local brightness_widget = BrightnessWidget(100, geolocation)
+local brightness_widget = BrightnessWidget(true, 100, geolocation)
 local battery_widget = BatteryWidget(true, power_manager_settings_command)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
