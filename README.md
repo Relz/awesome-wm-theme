@@ -45,10 +45,10 @@ A theme for the Awesome window manager 4.x.
 
 In rc.lua in section "Variable definitions" you can set some variables:
 + *terminal*. You can execute default terminal by pressing `<Mod4> + <Return>`. Default value: "alacritty".
-+ *browser*. You can execute default browser by pressing `<Mod4> + b`. Default value: "google-chrome-stable".
-+ *file_manager*. You can execute default file manager by pressing `<Mod4> + f`. Default value: "nautilus".
-+ *graphic_text_editor*. You can execute default graphic text editor by pressing `<Mod4> + e`. Default value: "subl".
-+ *music_player*. You can execute default music player by pressing `<Mod4> + m`. Default value: "spotify".
++ *browser*. You can execute default browser by pressing `<Mod4> + <Control> + <Shift> + b`. Default value: "google-chrome-stable".
++ *file_manager*. You can execute default file manager by pressing `<Mod4> + <Control> + <Shift> + f`. Default value: "nautilus".
++ *graphic_text_editor*. You can execute default graphic text editor by pressing `<Mod4> + <Control> + <Shift> + e`. Default value: "subl".
++ *music_player*. You can execute default music player by pressing `<Mod4> + <Control> + <Shift> + m`. Default value: "spotify".
 + *session_lock_command*. You can lock your session by pressing `<Mod4> + l`. Also if you choose "Session lock" power off menu item, this command will be executed. Default value: "dm-tool lock".
 + *calendar_command*. Calendar will be opened by clicking on calendar and time widgets. Google calendar is used by default.
 + *power_manager_settings_command*. Power manager settings will be opened by clicking on battery widget. Xfce4 Power Manager Settings is used by default.
