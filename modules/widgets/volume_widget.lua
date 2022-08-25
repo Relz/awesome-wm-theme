@@ -26,30 +26,34 @@ VolumeWidget_prototype = function()
     value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
-      local is_top_panel_position = panel_position == "top"
-      local is_right_panel_position = panel_position == "right"
-      local is_bottom_panel_position = panel_position == "bottom"
-      local is_left_panel_position = panel_position == "left"
+      get_pacmd_installed(function(is_pacmd_installed)
+        if is_pacmd_installed then
+          local is_top_panel_position = panel_position == "top"
+          local is_right_panel_position = panel_position == "right"
+          local is_bottom_panel_position = panel_position == "bottom"
+          local is_left_panel_position = panel_position == "left"
 
-      local offset_x = dpi(is_left_panel_position and 8 or is_right_panel_position and -8 or 0)
-      local offset_y = dpi(is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0)
+          local offset_x = dpi(is_left_panel_position and 8 or is_right_panel_position and -8 or 0)
+          local offset_y = dpi(is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0)
 
-      this.__private.settings_popup.offset = {
-        x = offset_x,
-        y = offset_y,
-      }
+          this.__private.settings_popup.offset = {
+            x = offset_x,
+            y = offset_y,
+          }
 
-      container:connect_signal(
-        "button::press",
-        function(_, _, _, button_id, _, geometry)
-          if button_id == 1 then
-            this.__private.rebuild_popup()
-            local is_visible = this.__private.settings_popup.visible
-            this.__private.settings_popup:move_next_to(geometry)
-            this.__private.settings_popup.visible = not is_visible
-          end
+          container:connect_signal(
+            "button::press",
+            function(_, _, _, button_id, _, geometry)
+              if button_id == 1 then
+                this.__private.rebuild_popup()
+                local is_visible = this.__private.settings_popup.visible
+                this.__private.settings_popup:move_next_to(geometry)
+                this.__private.settings_popup.visible = not is_visible
+              end
+            end
+          )
         end
-      )
+      end)
 
       container:buttons(
         awful.util.table.join(

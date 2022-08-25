@@ -211,6 +211,12 @@ is_client_in_tag = function(c, tag)
   return false
 end
 
+get_program_installed = function(program_name, callback)
+  awful.spawn.easy_async("which " .. program_name, function(stdout, stderr, exit_reason, exit_code)
+    callback(exit_code == 0)
+  end)
+end
+
 set_gtk_theme_mode = function(theme_mode)
   local is_dark_theme = theme_mode == "dark"
   awful.spawn("gsettings set org.gnome.desktop.interface color-scheme prefer-" .. theme_mode)
@@ -360,6 +366,10 @@ set_system_brightness = function(step_percent, increase, callback)
 end
 
 -- Volume
+
+get_pacmd_installed = function(callback)
+  get_program_installed("pacmd", callback)
+end
 
 set_system_volume = function(step, increase, callback)
   local command = "amixer set Master " .. step .. "%";
@@ -646,9 +656,7 @@ get_sunset_time_minutes = function(latitude, longitude)
 end
 
 get_redshift_installed = function(callback)
-  awful.spawn.easy_async("which redshift", function(stdout, stderr, exit_reason, exit_code)
-    callback(exit_code == 0)
-  end)
+  get_program_installed("redshift", callback)
 end
 
 local cached_redshift_dawn_time = nil

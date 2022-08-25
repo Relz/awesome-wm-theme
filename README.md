@@ -30,6 +30,7 @@ A theme for the Awesome window manager 4.x.
 + wireless_tools (otherwise Network widget won't work)
 + redshift (otherwise Brightness widget won't let you setup color temperature)
 + geoclue (otherwise Brightness widget won't compute dusk time and dawn time for your geolocation)
++ PulseAudio (otherwise Volume widget won't let you choose input/output devices)
 
 # Installation
 
