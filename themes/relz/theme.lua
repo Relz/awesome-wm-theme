@@ -109,7 +109,7 @@ theme.taglist_bg_focus = theme.text_color .. "44"
 theme.taglist_bg_occupied = theme.text_color .. "11"
 theme.taglist_bg_urgent = theme.danger_background .. "66"
 
-theme.taglist_shape = function (cr, width, height)
+theme.taglist_shape = function(cr, width, height)
   gears.shape.rounded_rect(cr, width, height, dpi(4))
 end
 

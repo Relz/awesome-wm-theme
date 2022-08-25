@@ -45,7 +45,7 @@ ClockCalendarWidget_prototype = function()
     local loop_widgets_icons = { clock_icon_path, calendar_icon_path }
 
     this.__public.value:buttons(awful.util.table.join(awful.button({}, 1,
-        function ()
+        function()
             index = index % #loop_widgets + 1
             this.__public.value.widget = loop_widgets[index]
             this.__public.icon.image = loop_widgets_icons[index]

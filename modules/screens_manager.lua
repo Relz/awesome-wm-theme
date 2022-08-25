@@ -135,7 +135,7 @@ local function create_left_layout(screen_index, panel)
         id = "background_role",
         widget = wibox.container.background,
       },
-      shape = function (cr, width, height)
+      shape = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, dpi(4))
       end,
       shape_border_width = dpi(1),
@@ -211,7 +211,7 @@ local function create_right_layout(screen_index, panel)
       local widget_background_container = wibox.container.background(
         widgets_margin_container,
         nil,
-        function (cr, width, height)
+        function(cr, width, height)
           gears.shape.rounded_rect(cr, width, height, dpi(4))
         end
       )

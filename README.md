@@ -23,11 +23,13 @@ A theme for the Awesome window manager 4.x.
 # Prerequisites
 
 + Awesome WM 4.x
-+ LightDM (if you use *dm-lock* as session lock tool)
-+ wireless_tools (if you use NetworkWidget)
 + Lain for Awesome WM 4.x
 + Vicious widgets for the Awesome WM 4.x
-+ Fonts: Droid (otherwise use another font in theme.lua instead)
++ Droid Sans font (otherwise use another font in theme.lua)
++ LightDM (otherwise specify another session_lock_command in rc.lua)
++ wireless_tools (otherwise Network widget won't work)
++ redshift (otherwise Brightness widget won't let you setup color temperature)
++ geoclue (otherwise Brightness widget won't compute dusk time and dawn time for your geolocation)
 
 # Installation
 

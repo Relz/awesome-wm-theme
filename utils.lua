@@ -585,7 +585,7 @@ resize_client = function(c)
   awful.mouse.client.resize(c)
 end
 
-get_geolocation = function (callback)
+get_geolocation = function(callback)
   awful.spawn.easy_async("/usr/lib/geoclue-2.0/demos/where-am-i", function(geoclue_stdout)
     local latitude_string = geoclue_stdout:match("Latitude:%s+(%S+)"):gsub(",", "."):gsub("°", "")
     local longitude_string = geoclue_stdout:match("Longitude:%s+(%S+)"):gsub(",", "."):gsub("°", "")
@@ -645,17 +645,29 @@ get_sunset_time_minutes = function(latitude, longitude)
   return get_sunrise_sunset_time_minutes(latitude, longitude, false)
 end
 
+get_redshift_installed = function(callback)
+  awful.spawn.easy_async("which redshift", function(stdout, stderr, exit_reason, exit_code)
+    callback(exit_code == 0)
+  end)
+end
+
+local cached_redshift_dawn_time = nil
+
 get_redshift_dawn_time = function()
+  if cached_redshift_dawn_time ~= nil then
+    return cached_redshift_dawn_time
+  end
   local redshift_settings_file_path = gears.filesystem.get_xdg_config_home() .. "redshift/redshift.conf"
   local redshift_settings_file_content = read_file_content(redshift_settings_file_path)
 
   if redshift_settings_file_content == nil then
-    return
+    return nil
   end
 
   local matches = redshift_settings_file_content:gmatch("dawn[-]time=(.-)%c")
 
   for match in matches do
+    cached_redshift_dawn_time = match
     return match
   end
 
@@ -693,17 +705,23 @@ set_redshift_dawn_time = function(value)
   write_file_content(redshift_settings_file_path, new_redshift_settings_file_content)
 end
 
+local cached_redshift_dusk_time = nil
+
 get_redshift_dusk_time = function()
+  if cached_redshift_dusk_time ~= nil then
+    return cached_redshift_dusk_time
+  end
   local redshift_settings_file_path = gears.filesystem.get_xdg_config_home() .. "redshift/redshift.conf"
   local redshift_settings_file_content = read_file_content(redshift_settings_file_path)
 
   if redshift_settings_file_content == nil then
-    return
+    return nil
   end
 
   local matches = redshift_settings_file_content:gmatch("dusk[-]time=(.-)%c")
 
   for match in matches do
+    cached_redshift_dusk_time = match
     return match
   end
 
@@ -751,6 +769,10 @@ end
 
 stop_redshift = function()
   awful.spawn.easy_async("systemctl stop redshift --user", function() end)
+end
+
+set_color_temperature = function(color_temperature)
+  awful.spawn("redshift -P -O " .. color_temperature)
 end
 
 get_wired_interface = function(callback)

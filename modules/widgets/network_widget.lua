@@ -61,7 +61,7 @@ NetworkWidget_prototype = function()
       vicious.register(
         this.__public.icon,
         vicious.widgets.wifi,
-        function (widget, args)
+        function(widget, args)
           this.__private.ssid = args["{ssid}"]
           this.__private.linp = args["{linp}"]
           local wired_connection_state = this.__private.compute_wired_connection_state()

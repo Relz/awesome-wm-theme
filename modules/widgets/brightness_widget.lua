@@ -4,11 +4,11 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local slider_max_value = 24000
-local default_slider_value = slider_max_value - 5500
-
 BrightnessWidget_prototype = function()
   local this = {}
+
+  local slider_max_value = 24000
+  local default_slider_value = slider_max_value - 5500
 
   this.__public_static = {
     -- Public Static Variables
@@ -170,30 +170,34 @@ BrightnessWidget_prototype = function()
     value = nil,
     -- Public Funcs
     on_container_created = function(container, panel_position)
-      local is_top_panel_position = panel_position == "top"
-      local is_right_panel_position = panel_position == "right"
-      local is_bottom_panel_position = panel_position == "bottom"
-      local is_left_panel_position = panel_position == "left"
+      get_redshift_installed(function(is_redshift_installed)
+        if is_redshift_installed then
+          local is_top_panel_position = panel_position == "top"
+          local is_right_panel_position = panel_position == "right"
+          local is_bottom_panel_position = panel_position == "bottom"
+          local is_left_panel_position = panel_position == "left"
 
-      local offset_x = dpi(is_left_panel_position and 8 or is_right_panel_position and -8 or 0)
-      local offset_y = dpi(is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0)
+          local offset_x = dpi(is_left_panel_position and 8 or is_right_panel_position and -8 or 0)
+          local offset_y = dpi(is_top_panel_position and 8 or is_bottom_panel_position and -8 or 0)
 
-      this.__private.settings_popup.offset = {
-        x = offset_x,
-        y = offset_y,
-      }
+          this.__private.settings_popup.offset = {
+            x = offset_x,
+            y = offset_y,
+          }
 
-      container:connect_signal(
-        "button::press",
-        function(_, _, _, button_id, _, geometry)
-          if button_id == 1 then
-            this.__private.rebuild_popup()
-            local is_visible = this.__private.settings_popup.visible
-            this.__private.settings_popup:move_next_to(geometry)
-            this.__private.settings_popup.visible = not is_visible
-          end
+          container:connect_signal(
+            "button::press",
+            function(_, _, _, button_id, _, geometry)
+              if button_id == 1 then
+                this.__private.rebuild_popup()
+                local is_visible = this.__private.settings_popup.visible
+                this.__private.settings_popup:move_next_to(geometry)
+                this.__private.settings_popup.visible = not is_visible
+              end
+            end
+          )
         end
-      )
+      end)
 
       container:buttons(
         awful.util.table.join(
@@ -211,6 +215,26 @@ BrightnessWidget_prototype = function()
     end,
     hide_dropdown = function()
       this.__private.settings_popup.visible = false
+    end,
+    set_geolocation = function(geolocation)
+      if geolocation.latitude == nil or geolocation.longitude == nil then
+        return
+      end
+      local sunrise_time_total_minutes = get_sunrise_time_minutes(geolocation.latitude, geolocation.longitude)
+      local sunrise_time_hours = math.floor(sunrise_time_total_minutes / 60)
+      local sunrise_time_minutes = round_number(sunrise_time_total_minutes % 60)
+      this.__private.sunrise_datetime = create_local_datetime(nil, nil, nil, sunrise_time_hours, sunrise_time_minutes, 0)
+
+      local sunset_time_total_minutes = get_sunset_time_minutes(geolocation.latitude, geolocation.longitude)
+      local sunset_time_hours = math.floor(sunset_time_total_minutes / 60)
+      local sunset_time_minutes = round_number(sunset_time_total_minutes % 60)
+      this.__private.sunset_datetime = create_local_datetime(nil, nil, nil, sunset_time_hours, sunset_time_minutes, 0)
+
+      this.__private.is_enabled_schedule_auto_mode = get_redshift_dawn_time() == os.date("%H:%M", this.__private.sunrise_datetime) and get_redshift_dusk_time() == os.date("%H:%M", this.__private.sunset_datetime)
+      this.__private.is_enabled_schedule_manual_mode = not this.__private.is_enabled_schedule_auto_mode
+
+      this.__private.schedule_start_time = this.__private_static.get_schedule_start_time()
+      this.__private.schedule_end_time = this.__private_static.get_schedule_end_time()
     end,
   }
 
@@ -423,7 +447,7 @@ BrightnessWidget_prototype = function()
         this.__private.slider.handle_color = get_color_between(slider_handle_color_from, slider_handle_color_to, this.__private.slider_value / slider_max_value)
 
         local color_temperature = slider_max_value - this.__private.slider_value + 1000
-        awful.spawn("redshift -P -O " .. color_temperature)
+        set_color_temperature(color_temperature)
       end)
 
       return wibox.widget {
@@ -611,7 +635,9 @@ BrightnessWidget_prototype = function()
       table.insert(rows, this.__private.build_enable_schedule_row(this.__private.toggle_schedule))
 
       if this.__private.is_enabled_schedule then
-        table.insert(rows, this.__private.build_schedule_auto_mode_toggle_row(this.__private.toggle_schedule_auto_mode))
+        if this.__private.sunrise_datetime ~= nil and this.__private.sunset_datetime ~= nil then
+          table.insert(rows, this.__private.build_schedule_auto_mode_toggle_row(this.__private.toggle_schedule_auto_mode))
+        end
         table.insert(rows, this.__private.build_schedule_manual_mode_toggle_row(this.__private.toggle_schedule_manual_mode))
       end
 
@@ -624,7 +650,7 @@ BrightnessWidget_prototype = function()
     end,
   }
 
-  this.__construct = function(show_text, brightness_percentage, geolocation)
+  this.__construct = function(show_text, brightness_percentage)
     -- Constructor
     this.__private.show_text = show_text
 
@@ -638,22 +664,6 @@ BrightnessWidget_prototype = function()
     if this.__private.is_enabled_schedule then
       restart_redshift()
     end
-
-    local sunrise_time_total_minutes = get_sunrise_time_minutes(geolocation.latitude, geolocation.longitude)
-    local sunrise_time_hours = math.floor(sunrise_time_total_minutes / 60)
-    local sunrise_time_minutes = round_number(sunrise_time_total_minutes % 60)
-    this.__private.sunrise_datetime = create_local_datetime(nil, nil, nil, sunrise_time_hours, sunrise_time_minutes, 0)
-
-    local sunset_time_total_minutes = get_sunset_time_minutes(geolocation.latitude, geolocation.longitude)
-    local sunset_time_hours = math.floor(sunset_time_total_minutes / 60)
-    local sunset_time_minutes = round_number(sunset_time_total_minutes % 60)
-    this.__private.sunset_datetime = create_local_datetime(nil, nil, nil, sunset_time_hours, sunset_time_minutes, 0)
-
-    this.__private.is_enabled_schedule_auto_mode = get_redshift_dawn_time() == os.date("%H:%M", this.__private.sunrise_datetime) and get_redshift_dusk_time() == os.date("%H:%M", this.__private.sunset_datetime)
-    this.__private.is_enabled_schedule_manual_mode = not this.__private.is_enabled_schedule_auto_mode
-
-    this.__private.schedule_start_time = this.__private_static.get_schedule_start_time()
-    this.__private.schedule_end_time = this.__private_static.get_schedule_end_time()
 
     this.__private.settings_popup = awful.popup {
       widget = {},

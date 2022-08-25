@@ -34,7 +34,7 @@ MenuWidget_prototype = function()
       local is_bottom_panel_position = panel_position == "bottom"
       local is_left_panel_position = panel_position == "left"
 
-      this.__private.mainmenu.wibox.shape = function (cr, width, height)
+      this.__private.mainmenu.wibox.shape = function(cr, width, height)
         gears.shape.partially_rounded_rect(
           cr,
           width,

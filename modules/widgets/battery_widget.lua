@@ -192,7 +192,7 @@ BatteryWidget_prototype = function()
     vicious.register(
       this.__public.icon,
       vicious.widgets.bat,
-      function (widget, args)
+      function(widget, args)
         this.__private.is_charging = args[1] == "+"
         this.__private.capacity = args[2]
         this.__private.remaining_time = args[3]

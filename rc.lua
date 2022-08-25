@@ -60,7 +60,7 @@ beautiful.init(config_path .. "/themes/relz/theme.lua")
 
 local cpu_widget = CpuWidget(false, system_monitor_command)
 local memory_widget = MemoryWidget(false, system_monitor_command)
-local brightness_widget = BrightnessWidget(true, 100, geolocation)
+local brightness_widget = BrightnessWidget(true, 100)
 local battery_widget = BatteryWidget(true, power_manager_settings_command)
 local calendar_widget = CalendarWidget(beautiful.widget_calendar, beautiful.text_color, calendar_command)
 local clock_widget = ClockWidget(beautiful.widget_clock, beautiful.text_color, calendar_command)
@@ -224,11 +224,11 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "/", show_help, { description="Show hotkeys", group="Awesome" }),
   awful.key({ "Mod4" }, ".", show_help),
 
-  awful.key({ "Mod4" }, "Tab", function () change_focused_client(1) end, { description="Change focused client to next", group="Client" }),
-  awful.key({ "Mod4", "Shift" }, "Tab", function () change_focused_client(-1) end, { description="Change focused client to previous", group="Client" }),
+  awful.key({ "Mod4" }, "Tab", function() change_focused_client(1) end, { description="Change focused client to next", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "Tab", function() change_focused_client(-1) end, { description="Change focused client to previous", group="Client" }),
 
-  awful.key({ "Mod4" }, "Left",  function () awful.tag.viewidx(-1) end),
-  awful.key({ "Mod4" }, "Right", function () awful.tag.viewidx(1) end),
+  awful.key({ "Mod4" }, "Left",  function() awful.tag.viewidx(-1) end),
+  awful.key({ "Mod4" }, "Right", function() awful.tag.viewidx(1) end),
 
   awful.key({ "Mod4", "Control" }, "r", awesome.restart, { description="Restart awesome", group="Awesome" }),
   awful.key({ "Mod4", "Control" }, "Cyrillic_ka", awesome.restart),
@@ -239,26 +239,26 @@ local global_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "l", function() awful.spawn(session_lock_command) end, { description="Lock the session", group="Session" }),
   awful.key({ "Mod4" }, "Cyrillic_de", function() awful.spawn(session_lock_command) end),
 
-  awful.key({ "Mod4" }, "Return", function () awful.spawn(terminal) end, { description="Execute default terminal(" .. terminal .. ")", group="Application" }),
+  awful.key({ "Mod4" }, "Return", function() awful.spawn(terminal) end, { description="Execute default terminal (" .. terminal .. ")", group="Application" }),
 
-  awful.key({}, "XF86MonBrightnessUp", function () set_brightness(5, true) end, { description="Increase brightness by 5", group="Brightness" }),
-  awful.key({}, "XF86MonBrightnessDown", function () set_brightness(5, false) end, { description="Decrease brightness by 5", group="Brightness" }),
+  awful.key({}, "XF86MonBrightnessUp", function() set_brightness(5, true) end, { description="Increase brightness by 5", group="Brightness" }),
+  awful.key({}, "XF86MonBrightnessDown", function() set_brightness(5, false) end, { description="Decrease brightness by 5", group="Brightness" }),
 
-  awful.key({ "Control" }, "XF86MonBrightnessUp", function () set_brightness(10, true) end, { description="Increase brightness by 10", group="Brightness" }),
-  awful.key({ "Control" }, "XF86MonBrightnessDown", function () set_brightness(10, false) end, { description="Decrease brightness by 10", group="Brightness" }),
+  awful.key({ "Control" }, "XF86MonBrightnessUp", function() set_brightness(10, true) end, { description="Increase brightness by 10", group="Brightness" }),
+  awful.key({ "Control" }, "XF86MonBrightnessDown", function() set_brightness(10, false) end, { description="Decrease brightness by 10", group="Brightness" }),
 
-  awful.key({}, "XF86AudioMute", function () mute() end, { description="Toggle sound volume", group="Volume" }),
+  awful.key({}, "XF86AudioMute", function() mute() end, { description="Toggle sound volume", group="Volume" }),
 
-  awful.key({}, "XF86AudioRaiseVolume", function () set_volume(5, true) end, { description="Raise volume by 5", group="Volume" }),
-  awful.key({}, "XF86AudioLowerVolume", function () set_volume(5, false) end, { description="Lower volume by 5", group="Volume" }),
+  awful.key({}, "XF86AudioRaiseVolume", function() set_volume(5, true) end, { description="Raise volume by 5", group="Volume" }),
+  awful.key({}, "XF86AudioLowerVolume", function() set_volume(5, false) end, { description="Lower volume by 5", group="Volume" }),
 
-  awful.key({ "Control" }, "XF86AudioRaiseVolume", function () set_volume(10, true) end, { description="Raise volume by 10", group="Volume" }),
-  awful.key({ "Control" }, "XF86AudioLowerVolume", function () set_volume(10, false) end, { description="Lower volume by 10", group="Volume" }),
+  awful.key({ "Control" }, "XF86AudioRaiseVolume", function() set_volume(10, true) end, { description="Raise volume by 10", group="Volume" }),
+  awful.key({ "Control" }, "XF86AudioLowerVolume", function() set_volume(10, false) end, { description="Lower volume by 10", group="Volume" }),
 
-  awful.key({}, "XF86AudioPrev", function () audio_previous() end, { description="Previous audio", group="Audio" }),
-  awful.key({}, "XF86AudioPlay", function () audio_toggle_play_pause() end, { description="Play/Pause audio", group="Audio" }),
-  awful.key({}, "XF86AudioNext", function () audio_next() end, { description="Next audio", group="Audio" }),
-  awful.key({}, "XF86AudioStop", function () audio_stop() end, { description="Stop audio", group="Audio" }),
+  awful.key({}, "XF86AudioPrev", function() audio_previous() end, { description="Previous audio", group="Audio" }),
+  awful.key({}, "XF86AudioPlay", function() audio_toggle_play_pause() end, { description="Play/Pause audio", group="Audio" }),
+  awful.key({}, "XF86AudioNext", function() audio_next() end, { description="Next audio", group="Audio" }),
+  awful.key({}, "XF86AudioStop", function() audio_stop() end, { description="Stop audio", group="Audio" }),
 
   -- Applications running
   awful.key({ "Mod4", "Control", "Shift" }, "b", function() awful.spawn(browser) end, { description="Execute default web browser (" .. browser .. ")", group="Application" }),
@@ -319,7 +319,7 @@ local client_keys = awful.util.table.join(
   awful.key({ "Mod4" }, "f", toggle_fullscreen, { description="Toggle fullscreen", group="Client" }),
   awful.key({ "Mod4" }, "Cyrillic_a", toggle_fullscreen),
 
-  awful.key({ "Mod4" }, "F4", function (c) c:kill() end, { description="Kill focused client", group="Client" }),
+  awful.key({ "Mod4" }, "F4", function(c) c:kill() end, { description="Kill focused client", group="Client" }),
 
   awful.key({ "Mod4" }, "o", move_client_to_next_screen, { description="Move to next screen", group="Client" }),
   awful.key({ "Mod4" }, "Cyrillic_shcha", move_client_to_next_screen),
@@ -334,33 +334,33 @@ local client_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control" }, "Cyrillic_softsign", maximize_client_to_multiple_monitor),
 
   -- Snap to edge/corner - Use arrow keys
-  awful.key({ "Mod4", "Shift" }, "Down",  function (c) snap_edge(c, 'bottom') end),
-  awful.key({ "Mod4", "Shift" }, "Left",  function (c) snap_edge(c, 'left') end),
-  awful.key({ "Mod4", "Shift" }, "Right", function (c) snap_edge(c, 'right') end),
-  awful.key({ "Mod4", "Shift" }, "Up",    function (c) snap_edge(c, 'top') end),
+  awful.key({ "Mod4", "Shift" }, "Down",  function(c) snap_edge(c, 'bottom') end),
+  awful.key({ "Mod4", "Shift" }, "Left",  function(c) snap_edge(c, 'left') end),
+  awful.key({ "Mod4", "Shift" }, "Right", function(c) snap_edge(c, 'right') end),
+  awful.key({ "Mod4", "Shift" }, "Up",    function(c) snap_edge(c, 'top') end),
 
   -- Snap to edge/corner - Use numpad
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[1], function (c) snap_edge(c, 'bottom_left') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[2], function (c) snap_edge(c, 'bottom') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[3], function (c) snap_edge(c, 'bottom_right') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[4], function (c) snap_edge(c, 'left') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[5], function (c) snap_edge(c, 'centered') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[6], function (c) snap_edge(c, 'right') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[7], function (c) snap_edge(c, 'top_left') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[8], function (c) snap_edge(c, 'top') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[9], function (c) snap_edge(c, 'top_right') end)
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[1], function(c) snap_edge(c, 'bottom_left') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[2], function(c) snap_edge(c, 'bottom') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[3], function(c) snap_edge(c, 'bottom_right') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[4], function(c) snap_edge(c, 'left') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[5], function(c) snap_edge(c, 'centered') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[6], function(c) snap_edge(c, 'right') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[7], function(c) snap_edge(c, 'top_left') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[8], function(c) snap_edge(c, 'top') end),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[9], function(c) snap_edge(c, 'top_right') end)
 )
 
 for i = 1, 9 do
   client_keys = awful.util.table.join(client_keys,
-    awful.key({ "Mod4", "Shift"   }, "#" .. i + 9, function (c) do_for_tag(i, function (tag) c:move_to_tag(tag) end) end, { description="Move focused client to tag #", group="Client" })
+    awful.key({ "Mod4", "Shift"   }, "#" .. i + 9, function(c) do_for_tag(i, function(tag) c:move_to_tag(tag) end) end, { description="Move focused client to tag #", group="Client" })
   )
 end
 
 for i = 1, 9 do
   global_keys = awful.util.table.join(global_keys,
-    awful.key({ "Mod4"            }, "#" .. i + 9, function () do_for_tag(i, function(tag) tag:view_only() end) end, { description="View only tag #", group="Tag" }),
-    awful.key({ "Mod4", "Control" }, "#" .. i + 9, function () do_for_tag(i, function(tag) awful.tag.viewtoggle(tag) end) end, { description="Add view tag #", group="Tag" })
+    awful.key({ "Mod4"            }, "#" .. i + 9, function() do_for_tag(i, function(tag) tag:view_only() end) end, { description="View only tag #", group="Tag" }),
+    awful.key({ "Mod4", "Control" }, "#" .. i + 9, function() do_for_tag(i, function(tag) awful.tag.viewtoggle(tag) end) end, { description="Add view tag #", group="Tag" })
   )
 end
 
@@ -543,7 +543,7 @@ client.connect_signal("request::titlebars", function(c)
   }
 end)
 
-client.connect_signal("manage", function (c, startup)
+client.connect_signal("manage", function(c, startup)
   c:connect_signal("mouse::enter", function(c)
     if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier and awful.client.focus.filter(c) then
       client.focus = c
@@ -558,6 +558,19 @@ end)
 
 -- | Initialization | --
 
+local redshift_config_directory = gears.filesystem.get_xdg_config_home() .. "redshift"
+
+if not gears.filesystem.dir_readable(redshift_config_directory) then
+  gears.filesystem.make_directories(redshift_config_directory)
+end
+
+local redshift_config_path = redshift_config_directory .. "/redshift.conf"
+
+if not gears.filesystem.file_readable(redshift_config_path) then
+  write_file_content(redshift_config_directory .. "/redshift.conf", "[redshift]\n")
+end
+
+
 get_system_brightness(function(value_percent)
   brightness_widget.update(value_percent)
 end)
@@ -566,18 +579,25 @@ if geolocation.latitude == 0 and geolocation.longitude == 0 then
   local latitude_string = read_file_content(gears.filesystem.get_configuration_dir() .. "latitude")
   local longitude_string = read_file_content(gears.filesystem.get_configuration_dir() .. "longitude")
 
-  geolocation.latitude = tonumber(latitude_string)
-  geolocation.longitude = tonumber(longitude_string)
+  geolocation.latitude = tonumber(latitude_string) or 0
+  geolocation.longitude = tonumber(longitude_string) or 0
 
   if geolocation.latitude == 0 and geolocation.longitude == 0 then
     get_geolocation(function(latitude, longitude)
+      require("naughty").notify({title=longitude})
       geolocation.latitude = latitude
       geolocation.longitude = longitude
 
       write_file_content(gears.filesystem.get_configuration_dir() .. "latitude", geolocation.latitude)
       write_file_content(gears.filesystem.get_configuration_dir() .. "longitude", geolocation.longitude)
+
+      brightness_widget.set_geolocation(geolocation)
     end)
+  else
+    brightness_widget.set_geolocation(geolocation)
   end
+else
+  brightness_widget.set_geolocation(geolocation)
 end
 
 if wired_interface == nil then

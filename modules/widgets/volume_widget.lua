@@ -421,7 +421,7 @@ VolumeWidget_prototype = function()
 
       return device_name
     end,
-    rebuild_popup = function ()
+    rebuild_popup = function()
       local rows  = { layout = wibox.layout.fixed.vertical }
       awful.spawn.easy_async("pacmd list-cards", function(get_cards_stdout)
 
@@ -549,7 +549,7 @@ VolumeWidget_prototype = function()
     vicious.register(
       this.__public.icon,
       vicious.widgets.volume,
-      function (widget, args)
+      function(widget, args)
         this.__private.volume_value = args[1]
         this.__private.is_muted = args[2] == "🔈"
         this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. ".svg", beautiful.text_color)

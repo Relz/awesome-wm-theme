@@ -98,7 +98,7 @@ CpuWidget_prototype = function()
     vicious.register(
       this.__public.icon,
       vicious.widgets.cpu,
-      function (widget, args)
+      function(widget, args)
         this.__private.cpu_usage = args[1]
         this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/cpu/cpu_" .. this.__private.compute_usage_level(this.__private.cpu_usage) .. ".svg", beautiful.text_color)
         if this.__private.show_text then
