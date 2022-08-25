@@ -140,9 +140,9 @@ MenuWidget_prototype = function()
     end
   }
 
-  this.__construct = function(icon_path, session_lock_command)
+  this.__construct = function(session_lock_command)
     -- Constructor
-    this.__public.icon.image = icon_path
+    this.__public.icon.image = beautiful.widget_menu_icon
 
     this.__private.mainmenu = awful.menu({ items = {
       { "Show hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },

@@ -133,16 +133,16 @@ theme.multi_widget_border_color = theme.mode == "dark" and "#34455c" or "#bbd2d8
 
 -- | Clock / Calendar | --
 
-theme.widget_clock    = gears.color.recolor_image(theme.icons_path .. "/widgets/time.svg", theme.text_color)
-theme.widget_calendar = gears.color.recolor_image(theme.icons_path .. "/widgets/calendar.svg", theme.text_color)
+theme.widget_clock_icon    = gears.color.recolor_image(theme.icons_path .. "/widgets/time.svg", theme.text_color)
+theme.widget_calendar_icon = gears.color.recolor_image(theme.icons_path .. "/widgets/calendar.svg", theme.text_color)
 
 -- | Menu | --
 
-theme.widget_menu = gears.color.recolor_image(theme.icons_path .. "/widgets/menu.svg", theme.text_color)
+theme.widget_menu_icon = gears.color.recolor_image(theme.icons_path .. "/widgets/menu.svg", theme.text_color)
 
 -- | Launch | --
 
-theme.widget_launch = gears.color.recolor_image(theme.icons_path .. "/widgets/launch.svg", theme.text_color)
+theme.widget_launch_icon = gears.color.recolor_image(theme.icons_path .. "/widgets/launch.svg", theme.text_color)
 
 -- | Client's titlebar | --
 

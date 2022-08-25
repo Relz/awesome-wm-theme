@@ -62,13 +62,13 @@ local cpu_widget = CpuWidget(false, system_monitor_command)
 local memory_widget = MemoryWidget(false, system_monitor_command)
 local brightness_widget = BrightnessWidget(true, 100)
 local battery_widget = BatteryWidget(true, power_manager_settings_command)
-local calendar_widget = CalendarWidget(beautiful.widget_calendar, calendar_command)
-local clock_widget = ClockWidget(beautiful.widget_clock, calendar_command)
-local menu_widget = MenuWidget(beautiful.widget_menu, session_lock_command)
+local calendar_widget = CalendarWidget(calendar_command)
+local clock_widget = ClockWidget(calendar_command)
+local menu_widget = MenuWidget(session_lock_command)
 local network_widget = NetworkWidget(false, network_configuration_command)
 local volume_widget = VolumeWidget(true)
-local keyboard_layout_widget = KeyboardLayoutWidget(beautiful.mode)
-local launch_widget = LaunchWidget(beautiful.widget_launch, launch_command)
+local keyboard_layout_widget = KeyboardLayoutWidget()
+local launch_widget = LaunchWidget(launch_command)
 
 -- | Functions | --
 
