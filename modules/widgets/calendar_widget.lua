@@ -31,7 +31,7 @@ CalendarWidget_prototype = function()
 
   this.__construct = function(icon_path, text_color, calendar_command)
     -- Constructor
-    date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b "))
+    local date = wibox.widget.textclock(lain.util.markup(text_color, "%a %b %d "))
     date.font = beautiful.font_family_mono .. "Bold 10"
 
     this.__public.value.widget = date

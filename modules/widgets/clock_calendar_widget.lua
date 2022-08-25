@@ -33,9 +33,9 @@ ClockCalendarWidget_prototype = function()
     -- Constructor
     this.__public.icon.image = clock_icon_path
 
-    time = wibox.widget.textclock(lain.util.markup(text_color, "%H:%M "))
+    local time = wibox.widget.textclock(lain.util.markup(text_color, "%H:%M "))
     time.font = beautiful.font_family_mono .. "Bold 10"
-    date = wibox.widget.textclock(lain.util.markup(text_color, "%d %b "))
+    local date = wibox.widget.textclock(lain.util.markup(text_color, "%a %b %d "))
     date.font = beautiful.font_family_mono .. "Bold 10"
 
     this.__public.value.widget = time
