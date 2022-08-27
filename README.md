@@ -35,8 +35,7 @@ A theme for the Awesome window manager 4.x.
 # Installation
 
 ```
-> git clone https://github.com/Relz/awesome-wm-theme.git
-> mv -bv awesome-wm-theme/* ~/.config/awesome; rm -rf awesome-wm-theme
+> git clone https://github.com/Relz/awesome-wm-theme.git ~/.config/awesome
 ```
 
 # Customization
