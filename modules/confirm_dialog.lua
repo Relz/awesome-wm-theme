@@ -101,7 +101,7 @@ ConfirmDialog_prototype = function()
       end)
 
       background_container:buttons(awful.util.table.join(
-        awful.button({}, 1, on_click)
+        awful.button({}, 1, function() on_click() end)
       ))
 
       return wibox.widget {
