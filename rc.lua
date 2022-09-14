@@ -509,6 +509,13 @@ awful.rules.rules = {
       border_width = 0,
       titlebars_enabled = false
     }
+  },
+  {
+    rule = { class = "Blueberry.py" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
   }
 }
 

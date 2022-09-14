@@ -12,6 +12,10 @@ math_clamp = function(value, min, max)
   return math.max(min, math.min(value, max))
 end
 
+clamp_percent = function(value)
+  return math.max(0, math.min(value, 100))
+end
+
 lpad_string = function(str, len, char)
   if char == nil then
     char = ' '
@@ -367,20 +371,64 @@ end
 
 -- Volume
 
-get_pacmd_installed = function(callback)
-  get_program_installed("pacmd", callback)
+local cached_audio_server = nil
+
+get_audio_server = function(callback)
+  if cached_audio_server ~= nil then
+    callback(cached_audio_server)
+  else
+    get_program_installed("pactl", function(is_pactl_installed)
+      if is_pactl_installed then
+        cached_audio_server = "pactl"
+        callback("pactl")
+      else
+        get_program_installed("pacmd", function(is_pacmd_installed)
+          if is_pacmd_installed then
+            cached_audio_server = "pacmd"
+            callback("pacmd")
+          else
+            callback(nil)
+          end
+        end)
+      end
+    end)
+  end
+end
+
+get_audio_server_installed = function(callback)
+  get_audio_server(function(audio_server)
+    callback(audio_server ~= nil)
+  end)
+end
+
+get_system_volume = function(callback)
+  awful.spawn.easy_async("pactl get-default-sink", function(default_sink_stdout)
+    local default_sink = default_sink_stdout:gsub("\n", "")
+    awful.spawn.easy_async("pactl get-sink-volume " .. default_sink, function(current_default_sink_volume_output)
+      local current_default_sink_volume = tonumber(current_default_sink_volume_output:match("(%d+)%%"))
+      callback(current_default_sink_volume)
+    end)
+  end)
 end
 
 set_system_volume = function(step, increase, callback)
-  local command = "amixer set Master " .. step .. "%";
-  if increase ~= nil then
-      if increase then
-      command = command .. "+";
+  awful.spawn.easy_async("pactl get-default-sink", function(default_sink_stdout)
+    local default_sink = default_sink_stdout:gsub("\n", "")
+    awful.spawn.easy_async("pactl get-sink-volume " .. default_sink, function(current_default_sink_volume_output)
+      local current_default_sink_volume = tonumber(current_default_sink_volume_output:match("(%d+)%%"))
+      local command = "pactl set-sink-volume " .. default_sink;
+      local new_volume_value = 0
+      if increase == nil then
+        new_volume_value = clamp_percent(step)
+      elseif increase then
+        new_volume_value = clamp_percent(current_default_sink_volume + step)
       else
-      command = command .. "-";
+        new_volume_value = clamp_percent(current_default_sink_volume - step)
       end
-  end
-  awful.spawn.easy_async(command, callback)
+      command = command .. " " .. new_volume_value .. "%"
+      awful.spawn.easy_async(command, callback)
+    end)
+  end)
 end
 
 -- Audio
