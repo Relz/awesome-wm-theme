@@ -334,21 +334,21 @@ local client_keys = awful.util.table.join(
   awful.key({ "Mod4", "Control" }, "Cyrillic_softsign", maximize_client_to_multiple_monitor),
 
   -- Snap to edge/corner - Use arrow keys
-  awful.key({ "Mod4", "Shift" }, "Down",  function(c) snap_edge(c, 'bottom') end),
-  awful.key({ "Mod4", "Shift" }, "Left",  function(c) snap_edge(c, 'left') end),
-  awful.key({ "Mod4", "Shift" }, "Right", function(c) snap_edge(c, 'right') end),
-  awful.key({ "Mod4", "Shift" }, "Up",    function(c) snap_edge(c, 'top') end),
+  awful.key({ "Mod4", "Shift" }, "Down",  function(c) snap_edge(c, 'bottom') end, { description="Snap client to bottom", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "Left",  function(c) snap_edge(c, 'left') end, { description="Snap client to left", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "Right", function(c) snap_edge(c, 'right') end, { description="Snap client to right", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "Up",    function(c) snap_edge(c, 'top') end, { description="Snap client to top", group="Client" }),
 
   -- Snap to edge/corner - Use numpad
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[1], function(c) snap_edge(c, 'bottom_left') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[2], function(c) snap_edge(c, 'bottom') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[3], function(c) snap_edge(c, 'bottom_right') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[4], function(c) snap_edge(c, 'left') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[5], function(c) snap_edge(c, 'centered') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[6], function(c) snap_edge(c, 'right') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[7], function(c) snap_edge(c, 'top_left') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[8], function(c) snap_edge(c, 'top') end),
-  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[9], function(c) snap_edge(c, 'top_right') end)
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[1], function(c) snap_edge(c, 'bottom_left') end, { description="Snap client to bottom-left", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[2], function(c) snap_edge(c, 'bottom') end, { description="Snap client to bottom", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[3], function(c) snap_edge(c, 'bottom_right') end, { description="Snap client to bottom-right", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[4], function(c) snap_edge(c, 'left') end, { description="Snap client to left", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[5], function(c) snap_edge(c, 'centered') end, { description="Snap client to center", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[6], function(c) snap_edge(c, 'right') end, { description="Snap client to right", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[7], function(c) snap_edge(c, 'top_left') end, { description="Snap client to top-left", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[8], function(c) snap_edge(c, 'top') end, { description="Snap client to top", group="Client" }),
+  awful.key({ "Mod4", "Shift" }, "#" .. numpad_key_codes[9], function(c) snap_edge(c, 'top_right') end, { description="Snap client to top-right", group="Client" })
 )
 
 for i = 1, 9 do
@@ -390,6 +390,18 @@ local client_buttons = awful.util.table.join(
   awful.button({ "Mod4" }, 1, move_client),
   awful.button({ "Mod4" }, 3, resize_client)
 )
+
+local hotkeys_popup = require("awful.hotkeys_popup.widget")
+hotkeys_popup.add_hotkeys({
+  ["Client"] = {{
+    modifiers = {"Mod4"},
+    keys = {
+        LMB="Move focused client",
+        RMB="Resize focused client"
+    }
+  }}
+})
+hotkeys_popup.add_group_rules("Client")
 
 awful.rules.rules = {
   {
