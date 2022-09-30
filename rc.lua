@@ -13,6 +13,7 @@ require("modules/widgets/clock_widget")
 require("modules/widgets/menu_widget")
 require("modules/widgets/keyboard_layout_widget")
 require("modules/widgets/volume_widget")
+require("modules/widgets/microphone_widget")
 require("modules/widgets/launch_widget")
 
 require("awful.autofocus")
@@ -67,6 +68,7 @@ local clock_widget = ClockWidget(calendar_command)
 local menu_widget = MenuWidget(session_lock_command)
 local network_widget = NetworkWidget(false, network_configuration_command)
 local volume_widget = VolumeWidget(true)
+local microphone_widget = MicrophoneWidget(true)
 local keyboard_layout_widget = KeyboardLayoutWidget()
 local launch_widget = LaunchWidget(launch_command)
 
@@ -110,7 +112,7 @@ local mute = function()
 end
 
 local set_volume = function(step, increase)
-  set_system_volume(step, increase, function() vicious.force({ volume_widget.icon }) end)
+  set_sink_volume(step, increase, function() vicious.force({ volume_widget.icon }) end)
 end
 
 -- | Panels | --
@@ -136,6 +138,7 @@ screen_0_panel.widgets = {
   memory_widget,
   network_widget,
   volume_widget,
+  microphone_widget,
   brightness_widget,
   battery_widget,
   keyboard_layout_widget,

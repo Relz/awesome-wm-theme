@@ -5,7 +5,7 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-VolumeWidget_prototype = function()
+MicrophoneWidget_prototype = function()
   local this = {}
 
   this.__public_static = {
@@ -21,7 +21,7 @@ VolumeWidget_prototype = function()
 
   this.__public = {
     -- Public Variables
-    name = "VolumeWidget",
+    name = "MicrophoneWidget",
     icon = wibox.widget.imagebox(),
     value = nil,
     -- Public Funcs
@@ -73,20 +73,8 @@ VolumeWidget_prototype = function()
     is_muted = true,
     settings_popup = nil,
     -- Private Funcs
-    compute_volume_level = function(is_muted, volume_value)
-      if (is_muted or volume_value == 0) then
-        return "muted"
-      elseif volume_value < 30 then
-        return "low"
-      elseif volume_value < 65 then
-        return "medium"
-      elseif volume_value <= 100 then
-        return "high"
-      end
-      return "muted"
-    end,
     set_volume = function(step, increase)
-      set_sink_volume(step, increase, function() vicious.force({ this.__public.icon }) end)
+      set_source_volume(step, increase, function() vicious.force({ this.__public.icon }) end)
     end,
     update = function()
       this.__private.rebuild_popup()
@@ -188,6 +176,7 @@ VolumeWidget_prototype = function()
             local sinks = parse_audio_server_devices(get_sinks_stdout, default_sink)
 
             local other_profiles_sinks = {}
+            local other_profiles_sources = {}
 
             for _,card in ipairs(cards) do
               local card_sink
@@ -234,13 +223,64 @@ VolumeWidget_prototype = function()
                 )
               end
 
+              switch_profile_name = nil
+              switch_profile_short_description = nil
+
+              for profile_name, profile_description in pairs(card.profiles) do
+                local bluetooth_profile = card_sink.properties.bluetooth_protocol or card_sink.properties.api_bluez5_profile
+                if bluetooth_profile ~= profile_name then
+                  if string.match(profile_description, "Handsfree Head Unit %(HFP%)") or string.match(profile_description, "Headset Head Unit %(HSP/HFP%)") then
+                    switch_profile_name = profile_name
+                    switch_profile_short_description = card_sink.properties.bluetooth_protocol == nil
+                      and "Handsfree"
+                      or "Headset"
+                  end
+                end
+              end
+
+              if switch_profile_name ~= nil then
+                table.insert(
+                  other_profiles_sources,
+                  {
+                    is_default = false,
+                    Name = card["Name"],
+                    profile_name = switch_profile_name,
+                    profile_short_description = switch_profile_short_description,
+                    properties = {
+                      device_description = card_sink.properties.device_description
+                    },
+                    ports = card_sink.ports,
+                    active_port = card_sink.active_port
+                  }
+                )
+              end
+
               ::continue::
             end
 
-            table.insert(rows, this.__private.build_popup_devices_rows(sinks, this.__private.update, "set-default-sink"))
-            table.insert(rows, this.__private.build_popup_devices_rows(other_profiles_sinks, this.__private.update, "set-card-profile"))
+            awful.spawn.easy_async("pactl list sources", function(get_sources_stdout)
+              get_default_source(function(default_source)
+                local sources = parse_audio_server_devices(get_sources_stdout, default_source)
 
-            this.__private.settings_popup:setup(rows)
+                for _,source in ipairs(sources) do
+                  for _,sink in ipairs(sinks) do
+                    if source["Monitor of Sink"] == sink["Name"] then
+                      source.monitor_sink = {
+                        ports = sink.ports,
+                        active_port = sink.active_port
+                      }
+                      goto continue
+                    end
+                  end
+                  ::continue::
+                end
+
+                table.insert(rows, this.__private.build_popup_devices_rows(sources, this.__private.update, "set-default-source"))
+                table.insert(rows, this.__private.build_popup_devices_rows(other_profiles_sources, this.__private.update, "set-card-profile"))
+
+                this.__private.settings_popup:setup(rows)
+              end)
+            end)
           end)
         end)
       end)
@@ -260,10 +300,15 @@ VolumeWidget_prototype = function()
       this.__public.icon,
       vicious.widgets.volume,
       function()
-        get_sink_volume(function(current_volume)
+        get_source_volume(function(current_volume)
           this.__private.volume_value = current_volume
           this.__private.is_muted = current_volume == 0
-          this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/volume/volume_" .. this.__private.compute_volume_level(this.__private.is_muted, this.__private.volume_value) .. ".svg", beautiful.text_color)
+
+          local icon_file_name = "microphone"
+          if this.__private.is_muted then
+            icon_file_name = icon_file_name .. "_muted"
+          end
+          this.__public.icon.image = gears.color.recolor_image(this.__private_static.config_path .. "/themes/relz/icons/widgets/microphone/" .. icon_file_name .. ".svg", beautiful.text_color)
 
           if this.__private.show_text then
             this.__public.value.text = string.rep(" ", 3 - get_percent_number_digits_count(this.__private.volume_value)) .. this.__private.volume_value .. "% "
@@ -310,4 +355,4 @@ VolumeWidget_prototype = function()
   return this
 end
 
-VolumeWidget = createClass(VolumeWidget_prototype)
+MicrophoneWidget = createClass(MicrophoneWidget_prototype)

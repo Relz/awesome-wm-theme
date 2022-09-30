@@ -369,7 +369,7 @@ set_system_brightness = function(step_percent, increase, callback)
   end)
 end
 
--- Volume
+-- Audio
 
 local cached_audio_server = nil
 
@@ -401,9 +401,22 @@ get_audio_server_installed = function(callback)
   end)
 end
 
-get_system_volume = function(callback)
+get_default_sink = function(callback)
   awful.spawn.easy_async("pactl get-default-sink", function(default_sink_stdout)
     local default_sink = default_sink_stdout:gsub("\n", "")
+    callback(default_sink)
+  end)
+end
+
+get_default_source = function(callback)
+  awful.spawn.easy_async("pactl get-default-source", function(default_source_stdout)
+    local default_source = default_source_stdout:gsub("\n", "")
+    callback(default_source)
+  end)
+end
+
+get_sink_volume = function(callback)
+  get_default_sink(function(default_sink)
     awful.spawn.easy_async("pactl get-sink-volume " .. default_sink, function(current_default_sink_volume_output)
       local current_default_sink_volume = tonumber(current_default_sink_volume_output:match("(%d+)%%"))
       callback(current_default_sink_volume)
@@ -411,9 +424,17 @@ get_system_volume = function(callback)
   end)
 end
 
-set_system_volume = function(step, increase, callback)
-  awful.spawn.easy_async("pactl get-default-sink", function(default_sink_stdout)
-    local default_sink = default_sink_stdout:gsub("\n", "")
+get_source_volume = function(callback)
+  get_default_source(function(default_source)
+    awful.spawn.easy_async("pactl get-source-volume " .. default_source, function(current_default_source_volume_output)
+      local current_default_source_volume = tonumber(current_default_source_volume_output:match("(%d+)%%"))
+      callback(current_default_source_volume)
+    end)
+  end)
+end
+
+set_sink_volume = function(step, increase, callback)
+  get_default_sink(function(default_sink)
     awful.spawn.easy_async("pactl get-sink-volume " .. default_sink, function(current_default_sink_volume_output)
       local current_default_sink_volume = tonumber(current_default_sink_volume_output:match("(%d+)%%"))
       local command = "pactl set-sink-volume " .. default_sink;
@@ -431,7 +452,209 @@ set_system_volume = function(step, increase, callback)
   end)
 end
 
--- Audio
+set_source_volume = function(step, increase, callback)
+  get_default_source(function(default_source)
+    awful.spawn.easy_async("pactl get-source-volume " .. default_source, function(current_default_source_volume_output)
+      local current_default_source_volume = tonumber(current_default_source_volume_output:match("(%d+)%%"))
+      local command = "pactl set-source-volume " .. default_source;
+      local new_volume_value = 0
+      if increase == nil then
+        new_volume_value = clamp_percent(step)
+      elseif increase then
+        new_volume_value = clamp_percent(current_default_source_volume + step)
+      else
+        new_volume_value = clamp_percent(current_default_source_volume - step)
+      end
+      command = command .. " " .. new_volume_value .. "%"
+      awful.spawn.easy_async(command, callback)
+    end)
+  end)
+end
+
+parse_audio_server_devices = function(audio_server_output, default_device)
+  local device_index_pattern = "^%a+ #(%d+)"
+  local devices = {}
+
+  local device
+  local properties
+  local profiles
+  local ports
+  local port
+  local port_properties
+
+  local in_device = false
+  local in_properties = false
+  local in_ports = false
+  local in_profiles = false
+  local in_port_properties = false
+
+  local matches = audio_server_output:gmatch("[^\r\n]+")
+
+  local lines = {}
+
+  for match in matches do
+    table.insert(lines, match)
+  end
+
+  for i = #lines - 1, 1, -1 do
+    local line = lines[i]
+    local next_line = lines[i + 1]
+    if not string.match(next_line, ":") and not string.match(next_line, "=") and not string.match(next_line, device_index_pattern) then
+      lines[i] = line .. next_line
+      table.remove(lines, i + 1)
+    end
+  end
+
+  for _,line in ipairs(lines) do
+    if string.match(line, device_index_pattern) then
+      in_device = true
+      in_properties = false
+      in_ports = false
+      in_profiles = false
+      in_port_properties = false
+      device = {
+        id = line:match(device_index_pattern)
+      }
+      table.insert(devices, device)
+      goto continue
+    end
+
+    if string.match(line, "%s+Properties:") then
+      in_device = false
+      in_properties = not in_ports
+      in_profiles = false
+      in_port_properties = in_ports
+
+      if in_ports then
+        port_properties = {}
+        ports[port].properties = port_properties
+      else
+        properties = {}
+        device.properties = properties
+      end
+
+      in_ports = false
+
+      goto continue
+    end
+
+    if string.match(line, "%s+Profiles:") then
+      in_device = false
+      in_properties = false
+      in_ports = false
+      in_profiles = true
+      in_port_properties = false
+      profiles = {}
+      device.profiles = profiles
+      goto continue
+    end
+
+    if string.match(line, "%s+Active Profile:") then
+      in_device = false
+      in_properties = false
+      in_ports = false
+      in_profiles = false
+      in_port_properties = false
+      device.active_profile = line:match(": (.+)"):gsub("<",""):gsub(">","")
+      goto continue
+    end
+
+    if string.match(line, "%s+Ports:") then
+
+      in_device = false
+      in_properties = false
+      in_ports = true
+      in_profiles = false
+      in_port_properties = false
+      ports = {}
+      device.ports = ports
+      goto continue
+    end
+
+    if string.match(line, "%s+Active Port: ") then
+      in_device = false
+      in_properties = false
+      in_ports = false
+      in_profiles = false
+      in_port_properties = false
+      device.active_port = line:match(": (.+)"):gsub("<",""):gsub(">","")
+      goto continue
+    end
+
+    if in_device then
+      local key = line:match("%s+(.+):")
+      local value = line:match(": (.+)"):gsub("<",""):gsub(">","")
+      device[key] = value
+    end
+
+    if in_properties then
+      local matches = string.gmatch(line, "([^=]+)")
+
+      local parts = {}
+
+      for match in matches do
+        table.insert(parts, match)
+      end
+
+      local key = parts[1]:gsub("%s", ""):gsub("%.", "_"):gsub("-", "_"):gsub(":", ""):gsub("%s+$", "")
+      local value = parts[2]
+      if value ~= nil then
+        value = value:gsub("\"", ""):gsub("^%s+", ""):gsub(" Analog Stereo", "")
+      end
+
+      properties[key] = value
+    end
+
+    if in_profiles then
+      local key = line:match("%s+(%S+):")
+      local value = line:match(": (.+) %(")
+
+      profiles[key] = value
+    end
+
+    if in_port_properties and string.match(line, ":") then
+      in_port_properties = false
+      in_ports = true
+    end
+
+    if in_port_properties then
+      local matches = string.gmatch(line, "([^=]+)")
+
+      local parts = {}
+
+      for match in matches do
+        table.insert(parts, match)
+      end
+
+
+      local key = parts[1]:gsub("    ", ""):gsub("%.", "_"):gsub("-", "_"):gsub(":", ""):gsub("%s+$", "")
+      local value = parts[2]
+      if value ~= nil then
+        value = value:gsub("\"", ""):gsub("^%s+", "")
+      end
+
+      port_properties[key] = value
+    end
+
+    if in_ports then
+      local key = line:match("(%S+):")
+      local value = line:match(": (.+) %(")
+
+      port = key
+
+      ports[port] = {
+        name = value
+      }
+    end
+    ::continue::
+  end
+
+  for _,device in ipairs(devices) do
+    device.is_default = device["Name"] == default_device
+  end
+
+  return devices
+end
 
 audio_previous = function()
   awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous", false)
