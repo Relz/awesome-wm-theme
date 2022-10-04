@@ -148,7 +148,7 @@ MicrophoneWidget_prototype = function()
       local port = nil
       if device.active_port ~= nil and device.ports[device.active_port] ~= nil then
         port = device.ports[device.active_port]
-      elseif device.monitor_sink ~= nil then
+      elseif device.monitor_sink ~= nil and device.monitor_sink.active_port ~= nil then
         port = device.monitor_sink.ports[device.monitor_sink.active_port]
       end
 

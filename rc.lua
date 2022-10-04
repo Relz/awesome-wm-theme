@@ -6,6 +6,7 @@ require("modules/panel")
 require("modules/widgets/cpu_widget")
 require("modules/widgets/memory_widget")
 require("modules/widgets/network_widget")
+require("modules/widgets/bluetooth_widget")
 require("modules/widgets/brightness_widget")
 require("modules/widgets/battery_widget")
 require("modules/widgets/calendar_widget")
@@ -67,6 +68,7 @@ local calendar_widget = CalendarWidget(calendar_command)
 local clock_widget = ClockWidget(calendar_command)
 local menu_widget = MenuWidget(session_lock_command)
 local network_widget = NetworkWidget(false, network_configuration_command)
+local bluetooth_widget = BluetoothWidget(true)
 local volume_widget = VolumeWidget(true)
 local microphone_widget = MicrophoneWidget(true)
 local keyboard_layout_widget = KeyboardLayoutWidget()
@@ -137,6 +139,7 @@ screen_0_panel.widgets = {
   cpu_widget,
   memory_widget,
   network_widget,
+  bluetooth_widget,
   volume_widget,
   microphone_widget,
   brightness_widget,

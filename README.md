@@ -93,6 +93,19 @@ You can switch theme mode in menu.
 
 PS: also in rc.lua and theme.lua you can make your own experiments, suggestions are appreciated. For example, you can create widget for bluetooth, add calendar popup to ClockCalendarWidget, extend theme modes. Let's make the world better together!
 
+## Extend connected bluetooth device info with battery level
+
+Bluetooth widget shows alias name for connected bluetooth device. There is a way to show battery level also. This feature is not enabled by default. You have to turn on it manually. To do it, edit `bluetooth.service` file by adding `--experimental` flag to bluetooth daemon executing:
+
+```ini
+ExecStart=/usr/lib/bluetooth/bluetoothd
+```
+change to
+
+```ini
+ExecStart=/usr/lib/bluetooth/bluetoothd --experimental
+```
+
 ## Subscribe to Direct Rendering Manager change event
 
 There is `update_screens` function in rc.lua that configures _xrandr_ output. It's useful to call this function when external monitors is connected/disconnected.

@@ -672,7 +672,64 @@ audio_stop = function()
   awful.spawn("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop", false)
 end
 
--- Keyboard layout
+-- Bluetooth
+
+local get_bluetooth_adapter_index = function(callback)
+  awful.spawn.easy_async("rfkill list bluetooth", function(rfkill_list_bluetooth_output)
+    callback(string.match(rfkill_list_bluetooth_output, "^(%d+): "))
+  end)
+end
+
+local bluetooth_status_subscribers = {}
+
+subscribe_bluetooth_status = function(callback)
+  table.insert(bluetooth_status_subscribers, callback)
+
+  if #bluetooth_status_subscribers == 1 then
+    get_bluetooth_adapter_index(function(index)
+      awful.spawn.with_line_callback("rfkill event", {
+        stdout = function(line)
+          if string.match(line, "idx " .. index .. " ") then
+            for _,bluetooth_status_subscriber in ipairs(bluetooth_status_subscribers) do
+              bluetooth_status_subscriber(string.match(line, "soft 0 hard 0") ~= nil)
+            end
+          end
+        end
+      })
+    end)
+  end
+end
+
+is_bluetooth_device_connected = function(callback)
+  awful.spawn.easy_async("bluetoothctl info", function(bluetoothctl_info_output)
+    callback(string.match(bluetoothctl_info_output, "Missing device address argument\n") == nil)
+  end)
+end
+
+get_bluetooth_device = function(callback)
+  is_bluetooth_device_connected(function(is_connected)
+    if not is_connected then
+      callback({
+        connected = false
+      })
+    end
+
+    awful.spawn.easy_async("bluetoothctl info", function(bluetoothctl_info_output)
+      local bluetooth_device = {
+        mac_address = bluetoothctl_info_output:match("^Device (.-) "),
+        name = bluetoothctl_info_output:match("Name: (.-)\n"),
+        alias = bluetoothctl_info_output:match("Alias: (.-)\n"),
+        paired = bluetoothctl_info_output:match("Paired: yes") ~= nil,
+        bonded = bluetoothctl_info_output:match("Bonded: yes") ~= nil,
+        trusted = bluetoothctl_info_output:match("Trusted: yes") ~= nil,
+        blocked = bluetoothctl_info_output:match("Blocked: yes") ~= nil,
+        connected = bluetoothctl_info_output:match("Connected: yes") ~= nil,
+        battery_percentage = tonumber(bluetoothctl_info_output:match("Battery Percentage: %w+ %((%d-)%)"))
+      }
+      callback(bluetooth_device)
+    end)
+  end)
+end
 
 -- Show help
 
