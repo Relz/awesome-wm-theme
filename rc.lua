@@ -534,6 +534,13 @@ awful.rules.rules = {
       border_width = 0,
       titlebars_enabled = false
     }
+  },
+  {
+    rule = { class = "org.gnome.Nautilus" },
+    properties = {
+      border_width = 0,
+      titlebars_enabled = false
+    }
   }
 }
 
