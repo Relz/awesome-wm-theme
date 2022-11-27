@@ -50,7 +50,7 @@ BluetoothWidget_prototype = function()
             if this.__public.value.text ~= "" then
               this.__public.value.text = this.__public.value.text .. " "
             end
-            this.__public.value.text = this.__public.value.text .. string.rep(" ", 3 - get_percent_number_digits_count(bluetooth_device.battery_percentage)) .. bluetooth_device.battery_percentage .. "%"
+            this.__public.value.text = this.__public.value.text .. bluetooth_device.battery_percentage .. "%"
           end
           if this.__public.value.text ~= "" then
             this.__public.value.text = " " .. this.__public.value.text .. " "
