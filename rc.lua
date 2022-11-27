@@ -669,7 +669,7 @@ end
 executer.execute_commands({
   "wmname LG3D",
   "xfce4-power-manager",
-  "picom --experimental-backends --backend glx",
+  "picom --backend glx",
   "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
   "/usr/lib/geoclue-2.0/demos/agent",
   "xfce4-clipman",
