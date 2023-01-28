@@ -112,8 +112,8 @@ local function create_left_layout(screen_index, panel)
         {
           {
             {
-              forced_width = is_horizontal_position(panel.position) and beautiful.menu_height - dpi(6) or 0,
-              forced_height = is_horizontal_position(panel.position) and 0 or beautiful.menu_height - dpi(6),
+              forced_width = is_horizontal_position(panel.position) and panel.thickness - dpi(6) or 0,
+              forced_height = is_horizontal_position(panel.position) and 0 or panel.thickness - dpi(6),
               widget = wibox.container.constraint
 
             },
@@ -244,11 +244,13 @@ end
 
 local function apply_panels(screen_index, panels)
   for _,panel in ipairs(panels) do
-    local wibar = awful.wibar({screen = screen_index})
-    wibar.position = panel.position
-    wibar.height = dpi(panel.thickness, screen_index)
-    wibar.widget = create_main_layout(screen_index, panel)
-    wibar.opacity = panel.opacity
+    local wibar = awful.wibar({
+      screen = screen_index,
+      position = panel.position,
+      height = dpi(panel.thickness, screen_index),
+      widget = create_main_layout(screen_index, panel),
+      opacity = panel.opacity
+    })
     wibar:struts {
       top = panel.position == "top" and wibar.height or 0,
       right = panel.position == "right" and wibar.width or 0,
